@@ -6,11 +6,8 @@
 
 all: up
 
-up: data
+up:
 	docker compose -f src/docker-compose.yml up --build --detach
-
-data:
-	mkdir ./data
 
 clean:
 	docker compose -f src/docker-compose.yml down
