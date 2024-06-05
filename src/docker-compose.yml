@@ -7,11 +7,11 @@ services:
     volumes:
       - db:/var/lib/postgresql/data
     networks:
-      - parallel-network
+      - transcendence-network
     ports:
       - 5432:5432
     env_file:
-      - ./back_port/.env
+      - ./env
     restart: unless-stopped
 
 volumes:
