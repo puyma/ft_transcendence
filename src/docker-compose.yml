@@ -5,7 +5,7 @@ services:
     container_name: postgresql
     image: postgres:16.3-alpine3.20
     volumes:
-      - db:/var/lib/postgresql/data
+      - ./data:/var/lib/postgresql/data
     networks:
       - transcendence-network
     ports:
@@ -13,15 +13,6 @@ services:
     env_file:
       - .env
     restart: unless-stopped
-
-volumes:
-  db:
-    name: "transcendecen_db"
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: "./data"
 
 networks:
   transcendence-network:
