@@ -1,0 +1,29 @@
+name: transcendece
+
+services:
+  database:
+    container_name: postgresql
+    image: postgres:16.3-alpine3.20
+    volumes:
+      - db:/var/lib/postgresql/data
+    networks:
+      - parallel-network
+    ports:
+      - 5432:5432
+    env_file:
+      - ./back_port/.env
+    restart: unless-stopped
+
+volumes:
+  db:
+    name: "transcendecen_db"
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: "./data"
+
+networks:
+  parallel-network:
+    name: "transcendence-network"
+
