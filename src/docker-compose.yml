@@ -2,7 +2,7 @@ name: transcendece
 
 services:
   database:
-    container_name: postgresql
+    container_name: transcendence_postgresql
     image: postgres:16.3-alpine3.20
     volumes:
       - ./data:/var/lib/postgresql/data
