@@ -7,7 +7,7 @@
 all: up
 
 up: data
-	docker compose -f src/docker-compose.yml up --build
+	docker compose -f src/docker-compose.yml up --build --detach
 
 data:
 	mkdir ./data
