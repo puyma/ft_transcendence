@@ -11,7 +11,7 @@ services:
     ports:
       - 5432:5432
     env_file:
-      - ./env
+      - .env
     restart: unless-stopped
 
 volumes:
@@ -24,6 +24,6 @@ volumes:
       device: "./data"
 
 networks:
-  parallel-network:
+  transcendence-network:
     name: "transcendence-network"
 
