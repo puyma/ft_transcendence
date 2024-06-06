@@ -1,0 +1,39 @@
+name: transcendece
+
+services:
+  database:
+    container_name: transcendence-database
+    image: postgres:alpine
+    volumes:
+      - db:/var/lib/postgresql/data
+    networks:
+      - transcendence-network
+    ports:
+      - 5432:5432
+    env_file:
+      - ./database/.env
+    restart: on-failure:3
+
+  backend:
+    container_name: transcendence-backend
+    image: python:3-alpine
+    networks:
+      - transcendence-network
+    env_file:
+      - ./backend/.env
+    restart: on-failure:3
+
+volumes:
+  db:
+    name: transcendence-data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      # path relative to the file docker-compose.yml's directory
+      device: "./database/data"
+
+networks:
+  transcendence-network:
+    name: "transcendence-network"
+
