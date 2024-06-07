@@ -14,12 +14,12 @@ $(SRC_DIR)/database/data:
 up: | $(SRC_DIR)/database/data
 	docker compose \
 		-f $(SRC_DIR)/docker-compose.yml \
-		--project-name ft_transcendence \
-		up --build #--detach
+		up --build --detach
 		
 clean:
-	docker compose -f $(SRC_DIR)/docker-compose.yml down --volumes
+	docker compose -f $(SRC_DIR)/docker-compose.yml down
 
 fclean: clean
+	docker compose -f $(SRC_DIR)/docker-compose.yml down --volumes
 
 re: fclean up
