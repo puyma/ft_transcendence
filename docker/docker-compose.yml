@@ -19,6 +19,8 @@ services:
     image: python:3-alpine
     networks:
       - transcendence-network
+    depends_on:
+      - database
     env_file:
       - ./backend/.env
     restart: on-failure:3
