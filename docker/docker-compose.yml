@@ -23,6 +23,16 @@ services:
       - ./backend/.env
     restart: on-failure:3
 
+  server:
+    container_name: transcendence-nginx
+    image: nginx:stable-alpine
+    volumes:
+      - ./server/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./server/conf.d:/etc/nginx/conf.d:ro
+    networks:
+      - transcendence-network
+    restart: on-failure:3
+
 volumes:
   db:
     name: transcendence-data
