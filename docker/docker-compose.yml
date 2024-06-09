@@ -16,7 +16,8 @@ services:
 
   backend:
     container_name: transcendence-backend
-    image: python:3-alpine
+    image: python:3-alpine-custom
+    build: ./backend
     networks:
       - transcendence-network
     depends_on:
@@ -24,6 +25,11 @@ services:
     env_file:
       - ./backend/.env
     restart: on-failure:3
+    #dev
+    command: ash
+    tty: true
+    ports:
+      - 8000:8000
 
   server:
     container_name: transcendence-nginx
