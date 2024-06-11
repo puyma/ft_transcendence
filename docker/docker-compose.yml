@@ -11,10 +11,9 @@ services:
     ports:
       - 5432:5432
     environment:
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?err}
-      - POSTGRES_USER=${POSTGRES_USER?err}
-      - POSTGRES_DB=${POSTGRES_DB?err}
-      - PGSERVICE=${PGSERVICE}
+      - POSTGRES_DB=${DB_NAME?err}
+      - POSTGRES_USER=${DB_USER?err}
+      - POSTGRES_PASSWORD=${DB_PASSWORD?err}
       - PGDATA=/var/lib/postgresql/data/pgdata
     restart: on-failure:3
 
@@ -29,7 +28,10 @@ services:
     depends_on:
       - database
     environment:
-      - PYTHON_VAR=none
+      - DATABASE_NAME=${DB_NAME?err}
+      - DATABASE_USER=${DB_USER?err}
+      - DATABASE_PASSWORD=${DB_PASSWORD}
+      - DATABASE_PORT=5432
     restart: on-failure:3
     #dev
     command: ash
