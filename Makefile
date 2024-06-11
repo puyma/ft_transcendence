@@ -14,6 +14,7 @@ $(SRC_DIR)/database/data:
 up: | $(SRC_DIR)/database/data
 	docker compose \
 		-f $(SRC_DIR)/docker-compose.yml \
+		--env-file .env \
 		up --build --detach
 		
 clean:

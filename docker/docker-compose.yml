@@ -10,20 +10,26 @@ services:
       - transcendence-network
     ports:
       - 5432:5432
-    env_file:
-      - ./database/.env
+    environment:
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD?err}
+      - POSTGRES_USER=${POSTGRES_USER?err}
+      - POSTGRES_DB=${POSTGRES_DB?err}
+      - PGSERVICE=${PGSERVICE}
+      - PGDATA=/var/lib/postgresql/data/pgdata
     restart: on-failure:3
 
   backend:
     container_name: transcendence-backend
     image: python:3-alpine-custom
     build: ./backend
+    volumes:
+      - ./..:/ft_transcendence:rw
     networks:
       - transcendence-network
     depends_on:
       - database
-    env_file:
-      - ./backend/.env
+    environment:
+      - PYTHON_VAR=none
     restart: on-failure:3
     #dev
     command: ash
