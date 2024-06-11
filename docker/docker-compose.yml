@@ -15,6 +15,7 @@ services:
       - POSTGRES_USER=${DB_USER?err}
       - POSTGRES_PASSWORD=${DB_PASSWORD?err}
       - PGDATA=/var/lib/postgresql/data/pgdata
+    attach: false
     restart: on-failure:3
 
   backend:
@@ -22,7 +23,9 @@ services:
     image: python:3-alpine-custom
     build: ./backend
     volumes:
-      - ./../backend:/ft_transcendence:rw
+      - ./..:/ft_transcendence:rw
+    working_dir: /ft_transcendence
+    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
     networks:
       - transcendence-network
     depends_on:
@@ -32,6 +35,7 @@ services:
       - DATABASE_USER=${DB_USER?err}
       - DATABASE_PASSWORD=${DB_PASSWORD}
       - DATABASE_PORT=5432
+    attach: false
     restart: on-failure:3
     ports:
       - 8000:8000
@@ -44,6 +48,7 @@ services:
       - ./server/conf.d:/etc/nginx/conf.d:ro
     networks:
       - transcendence-network
+    attach: false
     restart: on-failure:3
 
 volumes:
