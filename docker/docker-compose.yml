@@ -22,7 +22,7 @@ services:
     image: python:3-alpine-custom
     build: ./backend
     volumes:
-      - ./..:/ft_transcendence:rw
+      - ./../backend:/ft_transcendence:rw
     networks:
       - transcendence-network
     depends_on:
@@ -33,9 +33,6 @@ services:
       - DATABASE_PASSWORD=${DB_PASSWORD}
       - DATABASE_PORT=5432
     restart: on-failure:3
-    #dev
-    command: ash
-    tty: true
     ports:
       - 8000:8000
 
