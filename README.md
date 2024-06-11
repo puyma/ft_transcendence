@@ -1,5 +1,7 @@
 To configure the database, postgres's default environment variables
-must be set. Add them in a file called ".env".
+must be set.
+
+Add them in a file called ".env".
 
 ```
 DB_NAME=
