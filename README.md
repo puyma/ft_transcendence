@@ -21,5 +21,5 @@ To delete the 'data' directory where the database is stored use `sudo` or, in ca
 Must be ran from the root of the repository.
 
 ```
-docker run --rm --mount type=bind,src=./docker/database,dst=/ft postgres:alpine ash -c "rm -rf /ft/data"
+docker run --tty --rm --mount type=bind,src=./docker/database,dst=/ft postgres:alpine ash -c "rm -vr /ft/data"
 ```
