@@ -18,6 +18,8 @@ The postgres startup script sets them (chown) to a user postgres that only exist
 
 To delete the 'data' directory where the database is stored use `sudo` or, in case of not having the required permissions, remove it from inside a container where permissions properly map to those of the 'data' directory.
 
+Must be ran from the root of the repository.
+
 ```
 docker run --rm --mount type=bind,src=./docker/database,dst=/ft postgres:alpine ash -c "rm -rf /ft/data"
 ```
