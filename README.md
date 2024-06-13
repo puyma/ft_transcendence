@@ -9,8 +9,6 @@ DB_USER=
 DB_PASSWORD=
 ```
 
-[temp]
-
 # TODO
 
 - [ ] Solve database data directory (./data/pgdata) permissions.
