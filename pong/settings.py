@@ -79,7 +79,7 @@ DATABASES = {
 		'NAME': os.environ.get( 'DATABASE_NAME' ),
 		'USER': os.environ.get( 'DATABASE_USER' ),
 		'PASSWORD': os.environ.get( 'DATABASE_PASSWORD' ),
-		'HOST': 'transcendence-database.transcendence-network',
+		'HOST': 'tr-database',
 		'PORT': os.environ.get( 'DATABASE_PORT' ),
     }
 }

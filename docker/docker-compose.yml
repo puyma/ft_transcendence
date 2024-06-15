@@ -2,12 +2,12 @@ name: ft_transcendece
 
 services:
   database:
-    container_name: transcendence-database
+    container_name: tr-database
     image: postgres:alpine
     volumes:
       - db:/var/lib/postgresql/data
     networks:
-      - transcendence-network
+      - tr-network
     ports:
       - 5432:5432
     environment:
@@ -18,7 +18,7 @@ services:
     restart: on-failure:3
 
   backend:
-    container_name: transcendence-backend
+    container_name: tr-backend
     image: python:3-alpine-custom
     build: ./backend
     volumes:
@@ -26,7 +26,7 @@ services:
     working_dir: /ft_transcendence
     command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
     networks:
-      - transcendence-network
+      - tr-network
     depends_on:
       - database
     environment:
@@ -40,7 +40,7 @@ services:
 
 volumes:
   db:
-    name: transcendence-data
+    name: tr-data
     driver: local
     driver_opts:
       type: none
@@ -49,5 +49,5 @@ volumes:
       device: "./database/data"
 
 networks:
-  transcendence-network:
-    name: "transcendence-network"
+  tr-network:
+    name: "tr-network"
