@@ -22,9 +22,9 @@ up: | $(SRC_DIR)/database/data
 		up --build --detach
 		
 clean:
-	docker compose -f $(SRC_DIR)/docker-compose.yml down
+	docker compose -f $(SRC_DIR)/docker-compose.yml --env-file .env down
 
 fclean: clean
-	docker compose -f $(SRC_DIR)/docker-compose.yml down --volumes
+	docker compose -f $(SRC_DIR)/docker-compose.yml --env-file .env down --volumes
 
 re: fclean up

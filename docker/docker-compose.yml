@@ -1,0 +1,53 @@
+name: ft_transcendece
+
+services:
+  database:
+    container_name: tr-database
+    image: postgres:alpine
+    volumes:
+      - db:/var/lib/postgresql/data
+    networks:
+      - tr-network
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=${DB_NAME?err}
+      - POSTGRES_USER=${DB_USER?err}
+      - POSTGRES_PASSWORD=${DB_PASSWORD?err}
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    restart: on-failure:3
+
+  backend:
+    container_name: tr-backend
+    image: python:3-alpine-custom
+    build: ./backend
+    volumes:
+      - ./..:/ft_transcendence:rw
+    working_dir: /ft_transcendence
+    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+    networks:
+      - tr-network
+    depends_on:
+      - database
+    environment:
+      - DATABASE_NAME=${DB_NAME?err}
+      - DATABASE_USER=${DB_USER?err}
+      - DATABASE_PASSWORD=${DB_PASSWORD}
+      - DATABASE_PORT=5432
+    restart: on-failure:3
+    ports:
+      - 8000:8000
+
+volumes:
+  db:
+    name: tr-data
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      # path relative to the file docker-compose.yml's directory
+      device: "./database/data"
+
+networks:
+  tr-network:
+    name: "tr-network"
