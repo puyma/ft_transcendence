@@ -24,7 +24,7 @@ services:
     volumes:
       - ./..:/ft_transcendence:rw
     working_dir: /ft_transcendence
-    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+    command: ["python", "transcendence/manage.py", "runserver", "0.0.0.0:8000"]
     networks:
       - tr-network
     depends_on:
