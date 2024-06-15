@@ -75,15 +75,14 @@ WSGI_APPLICATION = 'pong.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get( 'DATABASE_NAME' ),
-	'USERS': os.environ.get( 'DATABASE_USER' ),
-	'PASSWORD': os.environ.get( 'DATABASE_PASSWORD' ),
-	'HOST': 'transcendence-database.transcendence.network',
-	'PORT': os.environ.get( 'DATABASE_PORT' ),
+		'ENGINE': 'django.db.backends.postgresql',
+		'NAME': os.environ.get( 'DATABASE_NAME' ),
+		'USER': os.environ.get( 'DATABASE_USER' ),
+		'PASSWORD': os.environ.get( 'DATABASE_PASSWORD' ),
+		'HOST': 'transcendence-database.transcendence-network',
+		'PORT': os.environ.get( 'DATABASE_PORT' ),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
