@@ -24,7 +24,7 @@ services:
     volumes:
       - ./..:/project:rw
     working_dir: /project
-    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+    command: ["daphne", "-b", "0.0.0.0", "-p", "8001", "transcendence.asgi:application"]
     networks:
       - tr-network
     depends_on:
@@ -36,7 +36,7 @@ services:
       - DATABASE_PORT=5432
     restart: on-failure:3
     ports:
-      - 8000:8000
+      - 8001
 
   server:
     container_name: tr-server
@@ -44,6 +44,8 @@ services:
     volumes:
       - ./server/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./server/conf.d/:/etc/nginx/conf.d/:ro
+      - ./../app:/usr/share/nginx/html/app/:ro
+      - ./../static:/usr/share/nginx/html/static/:ro
     networks:
       - tr-network
     depends_on:
