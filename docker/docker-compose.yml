@@ -22,9 +22,9 @@ services:
     image: python:3-alpine-custom
     build: ./backend
     volumes:
-      - ./..:/ft_transcendence:rw
-    working_dir: /ft_transcendence
-    command: ["python", "transcendence/manage.py", "runserver", "0.0.0.0:8000"]
+      - ./..:/project:rw
+    working_dir: /project
+    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
     networks:
       - tr-network
     depends_on:
@@ -37,6 +37,21 @@ services:
     restart: on-failure:3
     ports:
       - 8000:8000
+
+  server:
+    container_name: tr-server
+    image: nginx:alpine
+    volumes:
+      - ./server/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./server/conf.d/:/etc/nginx/conf.d/:ro
+    networks:
+      - tr-network
+    depends_on:
+      - database
+      - backend
+    restart: on-failure:3
+    ports:
+      - 9000:9000
 
 volumes:
   db:
