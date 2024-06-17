@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+	'hello_world',
 ]
 
 MIDDLEWARE = [
@@ -75,11 +76,14 @@ WSGI_APPLICATION = 'transcendence.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+		'ENGINE': 'django.db.backends.postgresql',
+		'NAME': os.environ.get( 'DATABASE_NAME' ),
+		'USER': os.environ.get( 'DATABASE_USER' ),
+		'PASSWORD': os.environ.get( 'DATABASE_PASSWORD' ),
+		'HOST': 'tr-database',
+		'PORT': os.environ.get( 'DATABASE_PORT' ),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
