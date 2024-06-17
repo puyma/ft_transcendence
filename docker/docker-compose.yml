@@ -8,8 +8,8 @@ services:
       - db:/var/lib/postgresql/data
     networks:
       - tr-network
-    ports:
-      - 5432:5432
+    expose:
+      - 5432
     environment:
       - POSTGRES_DB=${DB_NAME?err}
       - POSTGRES_USER=${DB_USER?err}
@@ -35,7 +35,7 @@ services:
       - DATABASE_PASSWORD=${DB_PASSWORD}
       - DATABASE_PORT=5432
     restart: on-failure:3
-    ports:
+    expose:
       - 8001
 
   server:
