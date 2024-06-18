@@ -1,0 +1,28 @@
+:root {
+  color-scheme: light dark;
+}
+
+/* Either this way (Baseline 2022)
+
+@media (prefers-color-scheme: light) {
+  main {
+    color: black;
+    background-color: white;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  main {
+    color: white;
+    background-color: black;
+  }
+}
+
+*/
+
+/* Or this other way (Baseline 2024) */
+
+main {
+  color: light-dark(black, white);
+  background-color: light-dark(white, black);
+}
