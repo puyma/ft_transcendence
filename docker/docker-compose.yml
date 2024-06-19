@@ -28,7 +28,9 @@ services:
   backend:
     container_name: tr-backend
     image: python:3-alpine-custom
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: backend.Dockerfile
     volumes:
       - ./..:/project:rw
     working_dir: /project
