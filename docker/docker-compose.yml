@@ -10,6 +10,14 @@ services:
       - tr-network
     expose:
       - 5432
+    healthcheck:
+      # pg_isready might be configured with more arguments (host, port, user)
+      test: ["CMD", "pg_isready", "-d", "$DB_NAME"]
+      interval: 1s
+      timeout: 8s
+      start_period: 4s
+      start_interval: 2s
+      retries: 4
     environment:
       - POSTGRES_DB=${DB_NAME?err}
       - POSTGRES_USER=${DB_USER?err}
@@ -28,7 +36,8 @@ services:
     networks:
       - tr-network
     depends_on:
-      - database
+      database:
+        condition: service_healthy
     environment:
       - DATABASE_NAME=${DB_NAME?err}
       - DATABASE_USER=${DB_USER?err}
