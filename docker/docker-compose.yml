@@ -34,7 +34,7 @@ services:
     volumes:
       - ./..:/project:rw
     working_dir: /project
-    command: ["daphne", "-b", "0.0.0.0", "-p", "8001", "transcendence.asgi:application"]
+    command: ["hypercorn", "-b", "0.0.0.0:8001", "transcendence.asgi:application"]
     networks:
       - tr-network
     expose:
