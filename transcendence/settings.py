@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
+
 import os
 from pathlib import Path
 
@@ -20,12 +21,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-oao-r*dts$9n0t#4*6!a#*x^d$mow9ta0^tpbrt_n9rs5t#4fz'
+SECRET_KEY = 'django-insecure-fkk4c3g$f!58(s9-!&lx7r%3&@0j43#(nd9evhh1_vw*@gkfy+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+	"tr-backend.tr-network",
+]
 
 
 # Application definition
@@ -37,7 +40,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-	'hello_world'
 ]
 
 MIDDLEWARE = [
