@@ -1,0 +1,14 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Sprae test</title>
+	</head>
+	<body>
+		<main>
+			<h1 :if="user">Hello <span :text="user.name">World</span>.</h1>
+		</main>
+		<script type="module">
+			import sprae from './sprae'
+		</script>
+	</body>
+</html>

@@ -27,7 +27,7 @@ services:
 
   backend:
     container_name: tr-backend
-    image: python:3-alpine-custom
+    image: python:tr-custom
     build:
       context: ./backend
       dockerfile: backend.Dockerfile
@@ -37,6 +37,8 @@ services:
     command: ["hypercorn", "-b", "0.0.0.0:8001", "transcendence.asgi:application"]
     networks:
       - tr-network
+    expose:
+      - 8001
     depends_on:
       database:
         condition: service_healthy
@@ -46,8 +48,6 @@ services:
       - DATABASE_PASSWORD=${DB_PASSWORD}
       - DATABASE_PORT=5432
     restart: on-failure:3
-    expose:
-      - 8001
 
   server:
     container_name: tr-server
@@ -59,12 +59,19 @@ services:
       - ./../static:/usr/share/nginx/html/static/:ro
     networks:
       - tr-network
-    depends_on:
-      - database
-      - backend
-    restart: on-failure:3
     ports:
       - 9000:9000
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://tr-server:9000"]
+      interval: 1s
+      timeout: 8s
+      start_period: 4s
+      start_interval: 2s
+      retries: 4
+    depends_on:
+      backend:
+        condition: service_started
+    restart: on-failure:3
 
 volumes:
   db:
