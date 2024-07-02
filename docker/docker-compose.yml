@@ -37,6 +37,8 @@ services:
     command: ["hypercorn", "-b", "0.0.0.0:8001", "transcendence.asgi:application"]
     networks:
       - tr-network
+    ports:
+      - 8001:8001
     expose:
       - 8001
     depends_on:
@@ -63,7 +65,7 @@ services:
       - 9000:9000
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://tr-server:9000"]
-      interval: 1s
+      interval: 10s
       timeout: 8s
       start_period: 4s
       start_interval: 2s

@@ -26,9 +26,15 @@ SECRET_KEY = 'django-insecure-fkk4c3g$f!58(s9-!&lx7r%3&@0j43#(nd9evhh1_vw*@gkfy+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-	"tr-backend.tr-network",
-]
+if DEBUG is True:
+	ALLOWED_HOSTS = [
+			"localhost",
+			"tr-backend.tr-network",
+			]
+else:
+	ALLOWED_HOSTS = [
+			"tr-backend.tr-network",
+			]
 
 
 # Application definition
@@ -40,7 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-	'users',
+	'users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
@@ -123,6 +129,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+
+STATIC_ROOT = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

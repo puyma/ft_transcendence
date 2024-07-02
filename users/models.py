@@ -1,11 +1,8 @@
 from django.db import models
+from django.db.models.functions import Now
 
 # A model’s database table name is constructed by joining the model’s “app label”
 # to the model’s class name, with an underscore between them.
-
-class Avatar ( models.Model ):
-	id = models.BigAutoField( primary_key=True )
-	img = models.ImageField()
 
 class User ( models.Model ):
 	class Meta:
@@ -23,7 +20,10 @@ class User ( models.Model ):
 	# with it's location wherever it should be found.
 	## consider FileField, FilePathField, mount directory of avatars somewhere
 	## consider ImageField, limit img size.
-	#old: avatar_link = models.URLField()
-	avatar = models.ForeignKey( 'Avatar', on_delete=models.CASCADE )
+	avatar_link = models.URLField( max_length=200 )
+	#avatar = models.ForeignKey( 'Avatar', on_delete=models.CASCADE )
 
-	created_at = models.DateTimeField()
+	created_at = models.DateTimeField( db_default=Now() )
+
+	def __str__(self):
+		return ( f'{self.username}, created: {self.created_at}' )
