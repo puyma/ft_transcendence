@@ -8,7 +8,7 @@
 
 SRC_DIR		?=	./docker
 
-.PHONY: all up clean fclean re
+.PHONY: all up clean fclean re purgedb
 
 all: up
 
@@ -28,3 +28,6 @@ fclean: clean
 	docker compose -f $(SRC_DIR)/docker-compose.yml --env-file .env down --volumes
 
 re: fclean up
+
+purgedb:
+	docker run --tty --rm --mount type=bind,src=./docker/database,dst=/ft postgres:alpine ash -c "rm -vr /ft/data"

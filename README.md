@@ -9,7 +9,9 @@ DB_USER=
 DB_PASSWORD=
 ```
 
-# TODO
+In order to fully erase database's contents (stored by default in ./database/data) just run `make purgedb`
+
+<!--
 
 - [ ] Solve database data directory (./data/pgdata) permissions.
 The postgres startup script sets them (chown) to a user postgres that only exists inside the container and does not map with the host system.
@@ -21,3 +23,5 @@ Must be ran from the root of the repository.
 ```
 docker run --tty --rm --mount type=bind,src=./docker/database,dst=/ft postgres:alpine ash -c "rm -vr /ft/data"
 ```
+
+-->
