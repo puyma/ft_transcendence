@@ -31,6 +31,9 @@ if DEBUG is True:
 			"localhost",
 			"tr-backend.tr-network",
 			]
+	CSRF_TRUSTED_ORIGINS = [
+			"http://localhost:9000"
+			]
 else:
 	ALLOWED_HOSTS = [
 			"tr-backend.tr-network",

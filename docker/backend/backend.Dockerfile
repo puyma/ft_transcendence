@@ -6,3 +6,5 @@ RUN python3 -m pip install Pillow
 
 # Force the stdout and stderr streams to be unbuffered.
 ENV PTHONUNBUFFERED=1
+
+CMD ["hypercorn", "-b", "0.0.0.0:8001", "transcendence.asgi:application"]
