@@ -1,8 +1,8 @@
 {% if user_list %}
 	<ul>
-		{% for user in user_list %}
+	{% for user in user_list %}
 		<li>{{ user.username }}</li>
-		{% endfor %}
+	{% endfor %}
 	</ul>
 {% else %}
 	<p>No users yet</p>

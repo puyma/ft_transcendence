@@ -9,4 +9,4 @@ def user_list ( request ):
 			"user_list": user_list,
 			}
 	# return ( HttpResponse( template.render( context, request ) ) )
-	return ( render( request, "user/index.html", context ) )
+	return ( render( request, "users/index.html", context ) )
