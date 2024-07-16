@@ -1,18 +1,21 @@
 @import url("https://fonts.googleapis.com/css2?family=DotGothic16&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
 
-:root{
+:root {
     --bs-letter-spacing: 0.1em;
     --bs-body-font-family: "DotGothic16", sans-serif;
     --bs-dark-color: rgba(0, 0, 0, 0.966); /* changing the value dark for a black */
 }
 
-h1
-{
+h1 {
     font-weight: 600;
     letter-spacing: var(--bs-letter-spacing);
 }
 
 body {
+	min-height: 100vh;
+}
+
+main {
     letter-spacing: var(--bs-letter-spacing);
 }
 
@@ -22,8 +25,7 @@ body {
 
 .vertical {
     border-left: 6px dashed rgb(255, 255, 255);
-
     height: 100%;
     position: absolute;
     left: 50%;
-  }
+}
