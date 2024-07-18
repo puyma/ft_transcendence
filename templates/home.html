@@ -3,10 +3,16 @@
 {% block header %}
 
 <header>
-	<div class="position-absolute top-0 end-0 p-3">
-		<button class="btn btn-light btn-lg mx-3" type="button">LOG IN</button>
-	</div>
 </header>
+<nav>
+	<div class="position-absolute top-0 end-0 p-3">
+		{% if user.is_authenticated %}
+		{% include "components/button.html" with href="user" innerHTML="{{ user.username }}" %}
+		{% else %}
+		{% include "components/button.html" with href="login" innerHTML="LOG IN" %}
+		{% endif %}
+	</div>
+</nav>
 
 {% endblock header %}
 
@@ -20,12 +26,8 @@
         </div>
         <div class="col-12">
           <div class="d-grid gap-2 justify-content-center align-content-center">
-            <a href="solo_play.html" class="btn btn-light btn-lg mx-3"
-			   role="button">SOLO PLAY</a>
-            <a href="double_play.html" class="btn btn-light btn-lg mx-3"
-			   role="button">DOUBLE PLAY</a>
-            <a href="tournament.html" class="btn btn-light btn-lg mx-3"
-			   role="button">TOURNAMENT</a>
+			{% include "components/button.html" with href="play" innerHTML="SOLO" %}
+			{% include "components/button.html" with href="tournament" innerHTML="MULTIPLAYER" %}
           </div>
         </div>
       </div>

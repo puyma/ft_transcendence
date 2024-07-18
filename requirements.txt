@@ -1,3 +1,0 @@
-Django>=5
-psycopg>=3
-psycopg-binary>=3
