@@ -1,35 +1,45 @@
-{% extends "base.html" %}
+{% extends "base.html" %} {% block main %}
 
-{% block header %}
+<main
+  class="bg-dark text-white d-flex flex-column justify-content-center align-items-center"
+>
+  <div class="container">
+    <div class="row mt-4 justify-content-center">
+      <div class="col-12">
+        <h1 class="text-center mb-4 display-1">PONG GAME</h1>
+      </div>
+      <div class="col-12">
+        <div class="d-grid gap-2 justify-content-center align-content-center">
+          <a
+            href="solo_play.html"
+            class="btn btn-light btn-lg mx-3"
+            role="button"
+            >SOLO PLAY</a
+          >
+          <a
+            href="double_play.html"
+            class="btn btn-light btn-lg mx-3"
+            role="button"
+            >DOUBLE PLAY</a
+          >
+          <a
+            href="{% url 'tournament' %}"
+            class="btn btn-light btn-lg mx-3"
+            role="button"
+            data-ajax="true"
+            >TOURNAMENT</a
+          >
 
-<header>
-	<div class="position-absolute top-0 end-0 p-3">
-		<button class="btn btn-light btn-lg mx-3" type="button">LOG IN</button>
-	</div>
-</header>
-
-{% endblock header %}
-
-{% block main %}
-
-<main class="bg-dark text-white d-flex flex-column justify-content-center align-items-center">
-    <div class="container">
-      <div class="row mt-4 justify-content-center">
-        <div class="col-12">
-          <h1 class="text-center mb-4 display-1">PONG GAME</h1>
-        </div>
-        <div class="col-12">
-          <div class="d-grid gap-2 justify-content-center align-content-center">
-            <a href="solo_play.html" class="btn btn-light btn-lg mx-3"
-			   role="button">SOLO PLAY</a>
-            <a href="double_play.html" class="btn btn-light btn-lg mx-3"
-			   role="button">DOUBLE PLAY</a>
-            <a href="tournament.html" class="btn btn-light btn-lg mx-3"
-			   role="button">TOURNAMENT</a>
-          </div>
+          <!-- <a
+            href="tournament.html"
+            class="btn btn-light btn-lg mx-3"
+            role="button"
+            >TOURNAMENT</a
+          > -->
         </div>
       </div>
     </div>
-  </main>
+  </div>
+</main>
 
 {% endblock main %}
