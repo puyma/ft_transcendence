@@ -19,3 +19,11 @@ class TournamentView ( TemplateView ):
 		context["title"] = "P4ngP2ong"
 		context["lang"] = "en"
 		return ( context )
+	
+def double_play_view(request):
+    context = {
+		"title":"P4ngP2ong",
+		"lang":"en",
+        "username": "clara"
+    }
+    return render(request, 'double_play.html', context)
