@@ -27,3 +27,11 @@ def double_play_view(request):
         "username": "clara"
     }
     return render(request, 'double_play.html', context)
+
+def solo_play_view(request):
+    context = {
+		"title":"P4ngP2ong",
+		"lang":"en",
+        "username": "clara"
+    }
+    return render(request, 'solo_play.html', context)
