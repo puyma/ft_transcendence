@@ -23,6 +23,4 @@ urlpatterns = [
     path( 'admin/', admin.site.urls ),
 	path( '', HomepageView.as_view(), name="home" ),
     path('tournament/', TournamentView.as_view(), name='tournament'),
-
-	path( 'polls/', include( "polls.urls" ) ),
 ]
