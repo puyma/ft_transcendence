@@ -15,38 +15,42 @@
     <title>{{ title | default:"FUcking POng@!" }}</title>
   </head>
 
-  <body>
-    {% block header %}
-    <header>
-      <div class="position-absolute top-0 end-0 p-3">
-        <button class="btn btn-light btn-lg mx-3" type="button">LOG IN</button>
-      </div>
-    </header>
-    {% endblock header %}
-    <div id="content">{% block main %}{% endblock main %}</div>
-    {% block footer %}{% endblock footer %}
-    <script>
-      $(document).ready(function () {
-        $("a[data-ajax=true]").click(function (event) {
-          event.preventDefault();
-          var url = $(this).attr("href");
-          $.ajax({
-            url: url,
-            method: "GET",
-            success: function (data) {
-              $("#content").html(data);
-            },
-            error: function (xhr, status, error) {
-              console.error("Error loading content: ", error);
-            },
-          });
-        });
+  <body class="bg-dark text-white">
+  {% block header %}
+  <header>
+    <div class="position-absolute top-0 end-0 p-3">
+      <button class="btn btn-light btn-lg mx-3" type="button">LOG IN</button>
+    </div>
+  </header>
+  {% endblock header %}
+  {% block main %}{% endblock main %}
+  {% block footer %}{% endblock footer %}
+  <script>
+  
+  document.addEventListener('DOMContentLoaded', function (){
+  document.querySelectorAll('a[data-ajax=true]').forEach(function (link) { //htmx probar 
+  link.addEventListener('click', function (event) {
+    event.preventDefault(); 
+    var url = this.getAttribute('href');
+    fetch(url)
+      .then(response => response.text())
+      .then(data => {
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(data, 'text/html');
+        var newContent = document.getElementsByTagName("main")[0].innerHTML;
+      })
+      .catch(error => {
+        console.error('Error loading content: ', error);
       });
-    </script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
-      crossorigin="anonymous"
-    ></script>
-  </body>
+      });
+    });
+  });
+
+  </script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"
+  ></script>
+</body>
 </html>
