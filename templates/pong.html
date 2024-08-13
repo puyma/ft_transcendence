@@ -1,0 +1,32 @@
+{% load static %}
+{% block main %}
+<main>
+    <style>
+        body,
+        html {
+          margin: 0;
+          padding: 0;
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+        }
+        canvas {
+          display: block;
+          width: 100%;
+          height: 100%;
+          image-rendering: pixelated;
+          outline: none; /* Remove the default focus outline */
+  
+          /* display: block;
+              image-rendering: pixelated; */
+        }
+    </style>
+    <canvas id="canvas"></canvas>
+    <script src="{% static 'js/pong.js' %}"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+</main>
+{% endblock main %}
