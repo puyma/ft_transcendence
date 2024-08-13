@@ -43,3 +43,11 @@ def play_view(request):
         "username": "clara"
     }
     return render(request, 'play.html', context)
+
+def pong_view(request):
+    context = {
+		"title":"P4ngP2ong",
+		"lang":"en",
+        "username": "clara"
+    }
+    return render(request, 'pong.html', context)
