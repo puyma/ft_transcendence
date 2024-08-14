@@ -15,7 +15,7 @@
             class="btn btn-light btn-lg mx-3"
             role="button"
             data-ajax="true"
-            id="soloPlayBtn"
+            id="soloPlay"
             >SOLO PLAY</a
           >
           <a
@@ -23,6 +23,7 @@
             class="btn btn-light btn-lg mx-3"
             role="button"
             data-ajax="true"
+            id="doublePlay"
             >DOUBLE PLAY</a
           >
           <a
@@ -36,6 +37,15 @@
       </div>
     </div>
   </div>
+  <script>
+    document.getElementById('soloPlay').addEventListener('click', function() {
+        sessionStorage.setItem('modoJuego', 'solo');
+    });
+
+    document.getElementById('doublePlay').addEventListener('click', function() {
+        sessionStorage.setItem('modoJuego', 'doble');
+    });
+</script>
 </main>
 
 {% endblock main %}

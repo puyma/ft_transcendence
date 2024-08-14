@@ -2,6 +2,10 @@ document.addEventListener("DOMContentLoaded", function() {
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
 
+    //sessionStorage para guardar el modo de juego
+    const modoJuego = sessionStorage.getItem('modoJuego');
+    const soloPlay = modoJuego === 'solo';
+
     function resizeCanvas() {
         const dpr = window.devicePixelRatio || 1;
         canvas.width = window.innerWidth * dpr;
@@ -14,14 +18,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Scale factor for making the game elements larger
     const scaleFactor = 1.5;
-
-    // let soloPlay = true;
-    // document.getElementById('soloPlayBtn').addEventListener('click', function() {
-    //     soloPlay = true;
-    // });
-    // document.getElementById('twoPlayerBtn').addEventListener('click', function() {
-    //     soloPlay = false;
-    // });
 
     const user = {
         x: 0,
@@ -110,17 +106,17 @@ document.addEventListener("DOMContentLoaded", function() {
                 user.y += paddleSpeed;
             }
         }
-        // if (!soloPlay) {
-        //     if (evt.key === "ArrowUp") {
-        //         if (com.y > 0) {
-        //             com.y -= paddleSpeed;
-        //         }
-        //     } else if (evt.key === "ArrowDown") {
-        //         if (com.y + com.height < canvas.height / window.devicePixelRatio) {
-        //             com.y += paddleSpeed;
-        //         }
-        //     }
-        // }
+        if (!soloPlay) {
+            if (evt.key === "ArrowUp") {
+                if (com.y > 0) {
+                    com.y -= paddleSpeed;
+                }
+            } else if (evt.key === "ArrowDown") {
+                if (com.y + com.height < canvas.height / window.devicePixelRatio) {
+                    com.y += paddleSpeed;
+                }
+            }
+        }
     }
 
     function collision(b, p) {
@@ -142,48 +138,6 @@ document.addEventListener("DOMContentLoaded", function() {
         ball.speed = ball.velocityX = ball.velocityY = 7;
     }
 
-    // ORIGINAL
-    // function update() {
-    //     if (ball.x - ball.radius < 0) {
-    //         com.score++;
-    //         if (com.score === 11 || user.score === 11) {
-    //             window.location.href = "game_over.html";
-    //         }
-    //         resetBall();
-    //     } else if (ball.x + ball.radius > canvas.width / window.devicePixelRatio) {
-    //         user.score++;
-    //         if (user.score === 11 || com.score === 11) {
-    //             window.location.href = "game_over.html";
-    //         }
-    //         resetBall();
-    //     }
-
-    //     ball.x += ball.velocityX;
-    //     ball.y += ball.velocityY;
-
-    //     let comLevel = 0.2; // Increased AI paddle speed
-    //     com.y += (ball.y - (com.y + com.height / 2)) * comLevel;
-
-    //     if (ball.y + ball.radius > canvas.height / window.devicePixelRatio || ball.y - ball.radius < 0) {
-    //         ball.velocityY = -ball.velocityY;
-    //     }
-
-    //     let player = (ball.x < canvas.width / 2 / window.devicePixelRatio) ? user : com;
-    //     if (collision(ball, player)) {
-    //         let collidePoint = ball.y - (player.y + player.height / 2);
-    //         collidePoint = collidePoint / (player.height / 2);
-
-    //         let angleRad = collidePoint * Math.PI / 4;
-    //         let direction = (ball.x < canvas.width / 2 / window.devicePixelRatio) ? 1 : -1;
-
-    //         ball.velocityX = direction * ball.speed * Math.cos(angleRad);
-    //         ball.velocityY = ball.speed * Math.sin(angleRad);
-
-    //         ball.speed += 0.2; // Increased ball speed increment
-    //     }
-    // }
-
-    //PRUEBA 1
     let comLevel = 0.7;
     let lastUpdate = Date.now();
     let updateInterval = 16;
@@ -231,9 +185,10 @@ document.addEventListener("DOMContentLoaded", function() {
         ball.x += ball.velocityX;
         ball.y += ball.velocityY;
 
-        // if (soloPlay) {
+        //update soloPlay
+        if (soloPlay) {
             updateComPaddle();
-        // }
+        }
 
         if (ball.y + ball.radius > canvas.height / window.devicePixelRatio || ball.y - ball.radius < 0) {
             ball.velocityY = -ball.velocityY;
