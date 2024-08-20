@@ -1,0 +1,38 @@
+services:
+
+	django:
+		build:
+			context: ./
+			dockerfile: django.dockerfile
+		entrypoint: django-entrypoint.sh
+		volumes:
+			- ./:/usr/src/app/
+		environment:
+			DEBUG: "True"
+			ALLOWED_HOSTS: dump-ubuntu-barcelona
+			SECRET_KEY: random-key-123456
+			DB_ENGINE: django.db.backends.postgresql
+			DB_NAME: transcendence-database
+			DB_USER: tr-user-marti
+			DB_PASSWORD: Hey123456
+			DB_HOST: database
+			DB_PORT: 5432
+			DOMAIN: dump-ubuntu-barcelona
+			DOMAIN_URL: http://dump-ubuntu-barcelona
+			REDIS_HOST: redis
+			REDIS_PORT: 6379
+			DEFAULT_FROM_EMAIL: no-reply@dump-ubuntu-barcelona
+			STATIC_URL: /static/
+			STATIC_ROOT: static
+			MEDIA_URL: /media/
+			EMAIL_HOST: mailhog
+			EMAIL_USE_TLS: "False"
+			EMAIL_USE_SSL: "False"
+			EMAIL_PORT: 1025
+			EMAIL_USER: tr-m
+			EMAIL_PASSWORD: Hey123456
+		expose:
+			- 8000
+		depends_on:
+			- database
+			- redis
