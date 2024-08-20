@@ -18,9 +18,9 @@ services:
       ALLOWED_HOSTS: dump-ubuntu-barcelona
       SECRET_KEY: random-key-123456
       DB_ENGINE: django.db.backends.postgresql
-      DB_NAME: transcendence-database
-      DB_USER: tr-user-marti
-      DB_PASSWORD: Hey123456
+      DB_NAME: tr-database
+      DB_USER: tr-user
+      DB_PASSWORD: tr-password
       DB_HOST: database
       DB_PORT: 5432
       DOMAIN: dump-ubuntu-barcelona
@@ -35,8 +35,8 @@ services:
       EMAIL_USE_TLS: "False"
       EMAIL_USE_SSL: "False"
       EMAIL_PORT: 1025
-      EMAIL_USER: tr-m
-      EMAIL_PASSWORD: Hey123456
+      EMAIL_USER: tr-mail@tr.mail
+      EMAIL_PASSWORD: tr-password
     expose:
       - 8000
     volumes:
