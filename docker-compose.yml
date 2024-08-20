@@ -12,19 +12,19 @@ services:
       redis:
         condition: service_started
         restart: true
-    entrypoint: django-entrypoint.sh
+    entrypoint: ./django-entrypoint.sh
     environment:
       DEBUG: "True"
-      ALLOWED_HOSTS: dump-ubuntu-barcelona
-      SECRET_KEY: random-key-123456
+      ALLOWED_HOSTS: localhost,dump-ubuntu-barcelona
+      SECRET_KEY: tr-secret-key
       DB_ENGINE: django.db.backends.postgresql
       DB_NAME: tr-database
       DB_USER: tr-user
       DB_PASSWORD: tr-password
       DB_HOST: database
       DB_PORT: 5432
-      DOMAIN: dump-ubuntu-barcelona
-      DOMAIN_URL: http://dump-ubuntu-barcelona
+      DOMAIN: localhost
+      DOMAIN_URL: http://localhost
       REDIS_HOST: redis
       REDIS_PORT: 6379
       DEFAULT_FROM_EMAIL: no-reply@dump-ubuntu-barcelona
@@ -39,21 +39,37 @@ services:
       EMAIL_PASSWORD: tr-password
     expose:
       - 8000
+    image: python:3.12-alpine3.20-django
+    networks:
+      - tr-network
     volumes:
       - ./:/usr/app/
-    working_dir: /usr/app/
 
   database:
     container_name: tr-database
+    environment:
+      POSTGRES_USER: tr-user
+      POSTGRES_PASSWORD: tr-password
+      POSTGRES_DB: tr-database
+    expose:
+      - 5432
     image: postgres:16.4-alpine3.20
+    networks:
+      - tr-network
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data/
 
   redis:
     container_name: tr-redis
-    image: redis:7.4-alpine
     depends_on:
       database:
-        condition: services_started
+        condition: service_started
         restart: true
+    expose:
+      - 6379
+    image: redis:7.4-alpine
+    networks:
+      - tr-network
 
   server:
     container_name: tr-server
@@ -62,3 +78,24 @@ services:
       django:
         condition: service_started
         restart: true
+    networks:
+      - tr-network
+    ports:
+      - 8000:80
+      #- 443:443
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./caddy_data:/data
+
+  mailhog:
+    container_name: tr-mail
+    expose:
+      - 1025
+      - 8025
+    image: mailhog/mailhog:latest
+    networks:
+      - tr-network
+
+networks:
+  tr-network:
+    name: tr-network
