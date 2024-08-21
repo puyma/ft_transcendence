@@ -21,17 +21,17 @@ services:
       DB_NAME: tr-database
       DB_USER: tr-user
       DB_PASSWORD: tr-password
-      DB_HOST: database
+      DB_HOST: tr-database
       DB_PORT: 5432
       DOMAIN: localhost
       DOMAIN_URL: http://localhost
-      REDIS_HOST: redis
+      REDIS_HOST: tr-redis
       REDIS_PORT: 6379
       DEFAULT_FROM_EMAIL: no-reply@dump-ubuntu-barcelona
       STATIC_URL: /static/
       STATIC_ROOT: static
       MEDIA_URL: /media/
-      EMAIL_HOST: mailhog
+      EMAIL_HOST: tr-mail
       EMAIL_USE_TLS: "False"
       EMAIL_USE_SSL: "False"
       EMAIL_PORT: 1025
