@@ -1,0 +1,49 @@
+{% load static %}
+
+<!doctype html>
+<html>
+
+	<head>
+		<link rel="stylesheet" href="{% static 'css/main.css' %}">
+		<script defer src="{% static 'js/index.js' %}"></script>
+		<title>Feed</title>
+	</head>
+
+	<body data-host="{{ request.get_host }}" data-scheme="{{ request.scheme }}">
+		<header>
+			<h1>Stuff</h1>
+		</header>
+
+		<main>
+			<section class="message-form">
+				<form>
+					<input type="text"
+						   placeholder="Name"
+						   id="message-form__author"
+						   class="message-form__author"
+						   name="author"
+						   required>
+					<textarea name="message"
+							  placeholder="Write whatever"
+							  id="message-form__text"
+							  class="message-form__text"
+							  required>
+					</textarea>
+					<input type="submit" class="message-form__submit"
+										 id="message-form__submit"
+										 value="Send">
+				</form>
+			</section>
+
+			<section id="messages">
+				<div id="messages__list"></div>
+			</section>
+
+		</main>
+
+		<footer>
+		</footer>
+
+	</body>
+
+</html>
