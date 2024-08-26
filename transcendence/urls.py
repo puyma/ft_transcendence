@@ -11,5 +11,6 @@ urlpatterns = [
 	path( 'user/', include( 'users.urls' ) ),
     path( 'bmi/', views.bmi, name='bmi' ),
 	path( 'feed/', include( 'feed.urls' ) ),
+	path( 'chat/', include( 'chat.urls' ) ),
     path( 'admin/', admin.site.urls ),
 ]

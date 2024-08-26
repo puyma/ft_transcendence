@@ -26,6 +26,22 @@ class FeedConsumer ( JsonWebsocketConsumer ):
 				self.send_list_messages()
 			case 'list messages':
 				self.send_list_messages( data['page'] )
+			case 'delete message':
+				Message.objects.get( id=data['id'] ).delete()
+				self.send_list_messages()
+			case 'open edit page':
+				self.open_edit_page( data['id'] )
+			case 'update message':
+				Message.objects.filter( id=data['id'] ).update( author=data['author'], text=data['text'] )
+				self.send_list_messages()
+
+	def open_edit_page ( self, identifier ):
+		message = Message.objects.get( id=identifier )
+		async_to_sync( self.channel_layer.group_send )( self.room_name, {
+			'type': 'send.html',
+			'selector': f'#message--{identifier}',
+			'html': render_to_string( 'feed/components/_edit-message.html', { 'message': message } ),
+			} );
 
 	def send_html ( self, event ):
 		data = { 'selector': event['selector'], 'html': event['html'] }

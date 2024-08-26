@@ -1,0 +1,25 @@
+{% load static %}
+
+<!doctype html>
+<html>
+	<head>
+		<meta charset='utf-8'>
+		<meta name='viewport'
+			  content='width=device-width,user-scalable=no,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0'>
+		<title>Chat</title>
+		<link rel='stylesheet' href="{% static 'css/main.css' %}">
+		<script defer src="{% static 'js/index.js' %}"></script>
+	</head>
+	<body data-host="{{ request.get_host }}" data-scheme="{{ request.scheme }}">
+		<h1 class="title">Chat</h1>
+		<h2 class="subtitle">I'm <span id="logged-user"></span></h2>
+		<div class="container chat">
+			<aside id="aside">
+				{% include "chat/components/_aside.html" with users=users %}
+			</aside>
+			<main id="main">
+				{% include "chat/components/_chat.html" %}
+			</main>
+		</div>
+	</body>
+</html>

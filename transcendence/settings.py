@@ -32,7 +32,7 @@ INSTALLED_APPS = [
 	'channels',
 	'pong',
     'users',
-	'feed',
+	'chat',
 ]
 
 MIDDLEWARE = [

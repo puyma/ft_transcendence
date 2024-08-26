@@ -1,21 +1,10 @@
-//                                                                            //
-// index.js                                                                   //
-// Thu 22 Aug 2024 12:07:03 PM CEST                                           //
-
-// Variables
 
 const scheme = document.body.dataset.scheme === 'http' ? 'ws' : 'wss';
 const host = document.body.dataset.host;
-const webSocket = new WebSocket ( `${scheme}://${host}/ws/feed/` );
-const inputAuthor = document.getElementById( "message-form__author" );
-const inputText = document.getElementById( "message-form__text" );
-const inputSubmit = document.getElementById( "message-form__submit" );
+const ws = new WebSocket ( `${scheme}://${host}/ws/chat/` );
 
-// Functions
-
-// Send data to server through WebSocket
-// @param	{string}	message
-// @param	{WebSocket}	ws
+// @param	{string}		message
+// @param	{WebSocket}		ws
 // @return	{void}
 
 function send_data ( message, ws )
@@ -30,65 +19,40 @@ function send_data ( message, ws )
 function send_new_message ( ev )
 {
 	ev.preventDefault();
-	const new_data = {
-		"action": "add message",
-		"data": {
-			"author": inputAuthor.value,
-			"text": inputText.value,
-		},
-	};
-	send_data ( new_data, webSocket );
-	inputText.value = "";
+	const message_text = document.querySelector( "#message-text" );
+	send_data( {
+		"action": 'new message',
+		"data": { "message": message_text.value },
+	}, ws );
+	message_text.value = '';
 	return ;
 }
 
 // @param	{Event}	ev
 // @return	{void}
 
-function on_new_message ( ev )
+function change_group ( ev )
 {
+	ev.preventDefault();
+	send_data( {
+		"action": "change group",
+		"data": {
+			"groupName": ev.target.dataset.groupName,
+			"isGroup": ev.target.dataset.groupPublic === "true",
+		},
+	}, ws);
+	return ;
+}
+
+ws.addEventListener( "message", (ev) => {
 	const data = JSON.parse( ev.data );
 	document.querySelector( data.selector ).innerHTML = data.html;
-	document.querySelector( "#messages__next-page" )
-		?.addEventListener( "click", go_to_next_page );
-	document.querySelector( "#messages__previous-page" )
-		?.addEventListener( "click", go_to_previous_page );
-	return ;
-}
 
-function get_current_page ()
-{
-	return ( parseInt( document.querySelector( "#paginator" ).dataset.page ) );
-}
+	const messages_list = document.querySelector( "#messages-list" );
+	messages_list.scrollTop = messages_list.scrollHeight;
 
-// @param	{Event}	ev
-// @return	{void}
-
-function go_to_next_page ( ev )
-{
-	const new_data = {
-		"action": "list messages",
-		"data": { "page": get_current_page() + 1, },
-	};
-	send_data( new_data, webSocket );
-	return ;
-}
-
-// @param	{Event}	ev
-// @return	{void}
-
-function go_to_previous_page ( ev )
-{
-	const new_data = {
-		"action": "list messages",
-		"data": { "page": get_current_page() - 1, },
-	};
-	send_data( new_data, webSocket );
-	return ;
-}
-
-// Events
-
-webSocket.addEventListener( "message", on_new_message );
-
-inputSubmit.addEventListener( "click", send_new_message );
+	document.querySelector( "#send" ).addEventListener( 'click', send_new_message );
+	document.querySelectorAll( ".nav__link" ).forEach( button => {
+		button.addEventListener( 'click', change_group );
+	} );
+} );
