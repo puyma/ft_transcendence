@@ -1,0 +1,22 @@
+http://localhost
+{
+	root * /usr/app/
+
+	@notStatic {
+		not path /static/* /media/*
+	}
+
+	reverse_proxy @notStatic tr-backend:8000
+
+	file_server
+
+	log {
+		output stderr
+		level ERROR
+	}
+}
+
+http://webmail.localhost
+{
+	reverse_proxy mailhog:8025
+}

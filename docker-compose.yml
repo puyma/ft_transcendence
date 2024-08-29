@@ -1,0 +1,112 @@
+name: tr
+
+services:
+
+  django:
+    container_name: tr-backend
+    build:
+      context: ./
+      dockerfile: django.dockerfile
+    depends_on:
+      database:
+        condition: service_healthy
+        restart: true
+      redis:
+        condition: service_started
+        restart: true
+    entrypoint: ./django-entrypoint.sh
+    environment:
+      DEBUG: "True"
+      ALLOWED_HOSTS: localhost,dump-ubuntu-barcelona
+      SECRET_KEY: tr-secret-key
+      DB_ENGINE: django.db.backends.postgresql
+      DB_NAME: tr-database
+      DB_USER: tr-user
+      DB_PASSWORD: tr-password
+      DB_HOST: tr-database
+      DB_PORT: 5432
+      DOMAIN: localhost
+      DOMAIN_URL: http://localhost
+      REDIS_HOST: tr-redis
+      REDIS_PORT: 6379
+      DEFAULT_FROM_EMAIL: no-reply@dump-ubuntu-barcelona
+      STATIC_URL: /static/
+      STATIC_ROOT: static
+      MEDIA_URL: /media/
+      EMAIL_HOST: tr-mail
+      EMAIL_USE_TLS: "False"
+      EMAIL_USE_SSL: "False"
+      EMAIL_PORT: 1025
+      EMAIL_USER: tr-mail@tr.mail
+      EMAIL_PASSWORD: tr-password
+    expose:
+      - 8000
+    image: python:3.12-alpine3.20-django
+    networks:
+      - tr-network
+    volumes:
+      - ./:/usr/app/
+
+  database:
+    container_name: tr-database
+    environment:
+      POSTGRES_USER: tr-user
+      POSTGRES_PASSWORD: tr-password
+      POSTGRES_DB: tr-database
+    expose:
+      - 5432
+    healthcheck:
+      # pg_isready might be configured with more arguments (host, port, user)
+      test: ["CMD", "pg_isready", "-d", "$DB_NAME"]
+      interval: 1s
+      timeout: 8s
+      start_period: 4s
+      start_interval: 2s
+      retries: 4
+    image: postgres:16.4-alpine3.20
+    networks:
+      - tr-network
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data/
+
+  redis:
+    container_name: tr-redis
+    depends_on:
+      database:
+        condition: service_started
+        restart: true
+    expose:
+      - 6379
+    image: redis:7.4-alpine
+    networks:
+      - tr-network
+
+  server:
+    container_name: tr-server
+    image: caddy:2.8-alpine
+    depends_on:
+      django:
+        condition: service_started
+        restart: true
+    networks:
+      - tr-network
+    ports:
+      - 8000:80
+      #- 443:443
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./caddy_data:/data
+      - ./:/usr/app/
+
+  mailhog:
+    container_name: tr-mail
+    expose:
+      - 1025
+      - 8025
+    image: mailhog/mailhog:latest
+    networks:
+      - tr-network
+
+networks:
+  tr-network:
+    name: tr-network
