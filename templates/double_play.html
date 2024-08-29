@@ -1,0 +1,44 @@
+{% block main %}
+<main>
+  <div class="vertical"></div>
+  <div
+    class="container d-flex justify-content-center align-items-center"
+    style="min-height: 100vh"
+  >
+    <div class="row justify-content-center align-items-center flex-nowrap">
+      <div>
+        <div class="d-flex flex-column align-items-center">
+          <h1 class="text-white mb-3">PLAYER 1</h1>
+          <div class="d-grid gap-2 justify-content-center align-content-center">
+            <a
+              href="https://auth.42.fr/auth/realms/students-42/protocol/openid-connect/auth?client_id=intra&redirect_uri=https%3A%2F%2Fprofile.intra.42.fr%2Fusers%2Fauth%2Fkeycloak_student%2Fcallback&response_type=code&state=e02b16dd004f35462384e63c88d090b7cd845c5fb9b95e7a"
+              class="btn btn-light"
+              role="button"
+              >LOG IN 42</a
+            >
+            <a href="{% url 'pong' %}" class="btn btn-light" role="button"
+              >ANONYMOUS</a
+            >
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="d-flex flex-column align-items-center">
+          <h1 class="text-white mb-3">PLAYER 2</h1>
+          <div class="d-grid gap-2 justify-content-center align-content-center">
+            <a
+              href="https://auth.42.fr/auth/realms/students-42/protocol/openid-connect/auth?client_id=intra&redirect_uri=https%3A%2F%2Fprofile.intra.42.fr%2Fusers%2Fauth%2Fkeycloak_student%2Fcallback&response_type=code&state=e02b16dd004f35462384e63c88d090b7cd845c5fb9b95e7al"
+              class="btn btn-light"
+              role="button"
+              >LOG IN 42</a
+            >
+            <a href="double_play.html" class="btn btn-light" role="button"
+              >ANONYMOUS {{ username }}</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock main %}

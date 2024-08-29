@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>HTMX Pong Game</title>
+	</head>
+	<body>
+		<main>
+			<button hx-get="/play" hx-swap="outerHTML" hx-target="main" 
+				hx-push-url="true" hx-replace-url="true">PLAY</button>
+			<button hx-get="/tournament" hx-swap="outerHTML" hx-target="main">TOURNAMENT</button>
+		</main>
+		<script src="https://unpkg.com/htmx.org@2.0.0"></script>
+	</body>
+</html>
