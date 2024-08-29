@@ -42,7 +42,7 @@ class ProfileView ( generic.TemplateView ):
 		return ( context )
 
 class TournamentView ( generic.TemplateView ):
-	template_name = "app/pages/tournament.html"
+	template_name = "app/base.html"
 
 	def get_context_data ( self, **kwargs ):
 		context = super().get_context_data( **kwargs )
@@ -50,7 +50,7 @@ class TournamentView ( generic.TemplateView ):
 		return ( context )
 
 class PlayView ( generic.TemplateView ):
-	template_name = "app/pages/tournament.html"
+	template_name = "app/base.html"
 
 	def get_context_data ( self, **kwargs ):
 		context = super().get_context_data( **kwargs )
@@ -71,30 +71,34 @@ def double_play_view ( request ):
     context = {
 		"title":"P4ngP2ong",
 		"lang":"en",
-        "username": "clara"
+        "username": "clara",
+		"page": "app/pages/double_play.html",
     }
-    return ( render( request, 'app/pages/double_play.html', context) )
+    return ( render( request, 'app/base.html', context) )
 
 def solo_play_view ( request ):
     context = {
 		"title":"P4ngP2ong",
 		"lang":"en",
-        "username": "clara"
+        "username": "clara",
+		"page": "app/pages/solo_play.html",
     }
-    return ( render( request, 'app/pages/solo_play.html', context ) )
+    return ( render( request, 'app/base.html', context ) )
 
 def play_view ( request ):
     context = {
 		"title":"P4ngP2ong",
 		"lang":"en",
-        "username": "clara"
+        "username": "clara",
+		"page": "app/pages/play.html",
     }
-    return render ( request, 'app/pages/play.html', context )
+    return render ( request, 'app/base.html', context )
 
 def pong_view ( request ):
     context = {
 		"title":"P4ngP2ong",
 		"lang":"en",
-        "username": "clara"
+        "username": "clara",
+		"page": "app/pages/pong.html",
     }
-    return ( render( request, 'app/pages/pong.html', context ) )
+    return ( render( request, 'app/base.html', context ) )
