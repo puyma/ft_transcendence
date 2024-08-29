@@ -1,29 +1,28 @@
-"""
-URL configuration for transcendence project.
+# URL configuration for transcendence project.
 
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.0/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
-from django.urls import include, path
-from .views import HomepageView, TournamentView, double_play_view, solo_play_view, play_view, pong_view
+from django.urls import path
+from app import views
+
+from .views import HomepageView
+from .views import TournamentView
+from .views import double_play_view
+from .views import solo_play_view
+from .views import play_view
+from .views import pong_view
 
 urlpatterns = [
+	path( '', views.HomepageView.as_view(), name='home' ),
+	path( 'login/', views.LoginView.as_view(), name='login' ),
+	path( 'signup/', views.SignupView.as_view(), name='signup' ),
+	path( 'profile/', views.ProfileView.as_view(), name='profile' ),
     path( 'admin/', admin.site.urls ),
-	path( '', HomepageView.as_view(), name="home" ),
     path('tournament/', TournamentView.as_view(), name='tournament'),
     path('double_play/', double_play_view, name='double_play'),
-    path('solo_play/play/', play_view, name='play'),
     path('solo_play/', solo_play_view, name='solo_play'),
+    path('solo_play/play/', play_view, name='play'),
     path('solo_play/play/pong/', pong_view, name='pong'),
 ]
+
+#path( 'user/<username>', views.username, name='username' ),
+# handle404...
