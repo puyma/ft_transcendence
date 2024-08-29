@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
+    resizeCanvas(); 
 
     // Scale factor for making the game elements larger
     const scaleFactor = 1.5;
