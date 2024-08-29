@@ -16,12 +16,16 @@ urlpatterns = [
 	path( 'login/', views.LoginView.as_view(), name='login' ),
 	path( 'signup/', views.SignupView.as_view(), name='signup' ),
 	path( 'profile/', views.ProfileView.as_view(), name='profile' ),
+	path( 'tournament/', views.TournamentView.as_view(), name='tournament' ),
+
+    path( 'double_play/', views.double_play_view, name='double_play' ),
+    path( 'solo_play/', views.solo_play_view, name='solo_play' ),
+    path( 'solo_play/play/', views.play_view, name='play' ),
+    path( 'solo_play/play/pong/', views.pong_view, name='pong' ),
+
+	path( 'pong/play/solo', views.GameView.as_view() ),
+
     path( 'admin/', admin.site.urls ),
-    path( 'tournament/', TournamentView.as_view(), name='tournament' ),
-    path( 'double_play/', double_play_view, name='double_play' ),
-    path( 'solo_play/', solo_play_view, name='solo_play' ),
-    path( 'solo_play/play/', play_view, name='play' ),
-    path( 'solo_play/play/pong/', pong_view, name='pong' ),
 ]
 
 #path( 'user/<username>', views.username, name='username' ),
