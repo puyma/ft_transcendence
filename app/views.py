@@ -14,6 +14,18 @@ class HomepageView ( generic.TemplateView ):
 		context["page"] = "app/pages/home.html"
 		return ( context )
 
+def login ( request ):
+
+	print ( request.user )
+	if request.user.is_authenticated:
+		return ( ProfileView.as_view() )
+
+	context = {
+			"page": "app/pages/login.html",
+			"form": LoginForm(),
+			}
+	return ( render( request, 'app/base.html', context ) )
+
 class LoginView ( generic.TemplateView ):
 	template_name = "app/base.html"
 
@@ -37,6 +49,7 @@ class ProfileView ( generic.TemplateView ):
 	template_name = "app/base.html"
 
 	def get_context_data ( self, **kwargs ):
+		print ( kwargs )
 		context = super().get_context_data( **kwargs )
 		context["page"] = "app/pages/profile.html"
 		return ( context )
@@ -77,13 +90,14 @@ def double_play_view ( request ):
     return ( render( request, 'app/base.html', context) )
 
 def solo_play_view ( request ):
-    context = {
+
+	context = {
 		"title":"P4ngP2ong",
 		"lang":"en",
         "username": "clara",
 		"page": "app/pages/solo_play.html",
     }
-    return ( render( request, 'app/base.html', context ) )
+	return ( render( request, 'app/base.html', context ) )
 
 def play_view ( request ):
     context = {
@@ -92,7 +106,7 @@ def play_view ( request ):
         "username": "clara",
 		"page": "app/pages/play.html",
     }
-    return render ( request, 'app/base.html', context )
+    return ( render ( request, 'app/base.html', context ) )
 
 def pong_view ( request ):
     context = {
