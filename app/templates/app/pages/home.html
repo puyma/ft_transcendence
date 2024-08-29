@@ -1,2 +1,40 @@
-<main>
-</main>
+  <div class="container">
+    <div class="row mt-4 justify-content-center">
+      <div class="col-12">
+        <h1 class="text-center mb-4 display-1">PONG GAME</h1>
+      </div>
+      <div class="col-12">
+        <div class="d-grid gap-2 justify-content-center align-content-center">
+          <a href="{% url 'solo_play' %}"
+			 class="btn btn-light btn-lg mx-3"
+			 role="button"
+			 data-ajax="true"
+			 id="soloPlay">
+			  SOLO PLAY
+		  </a>
+          <a href="{% url 'double_play' %}"
+			 class="btn btn-light btn-lg mx-3"
+			 role="button"
+			 data-ajax="true"
+			 id="doublePlay">
+			  DOUBLE PLAY
+		  </a>
+          <a href="{% url 'tournament' %}"
+			 class="btn btn-light btn-lg mx-3"
+			 role="button"
+			 data-ajax="true">
+			  TOURNAMENT
+		  </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.getElementById('soloPlay').addEventListener('click', function() {
+        sessionStorage.setItem('modoJuego', 'solo');
+    });
+
+    document.getElementById('doublePlay').addEventListener('click', function() {
+        sessionStorage.setItem('modoJuego', 'doble');
+    });
+</script>
