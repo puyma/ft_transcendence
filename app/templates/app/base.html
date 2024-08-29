@@ -26,7 +26,11 @@
 		<!-- {% block header %} -->
 		<header>
 			<div class="position-absolute top-0 end-0 p-3">
-				<button class="btn btn-light btn-lg mx-3" type="button">LOG IN</button>
+				<a href="{% url 'login' %}"
+				   class="btn btn-light btn-lg mx-3"
+				   role="button" data-ajax="true">
+					LOG IN
+				</a>
 			</div>
 		</header>
 		<!-- {% endblock header %} -->
