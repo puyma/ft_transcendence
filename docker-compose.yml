@@ -1,3 +1,5 @@
+name: tr
+
 services:
 
   django:
@@ -7,7 +9,7 @@ services:
       dockerfile: django.dockerfile
     depends_on:
       database:
-        condition: service_started
+        condition: service_healthy
         restart: true
       redis:
         condition: service_started
@@ -53,6 +55,14 @@ services:
       POSTGRES_DB: tr-database
     expose:
       - 5432
+    healthcheck:
+      # pg_isready might be configured with more arguments (host, port, user)
+      test: ["CMD", "pg_isready", "-d", "$DB_NAME"]
+      interval: 1s
+      timeout: 8s
+      start_period: 4s
+      start_interval: 2s
+      retries: 4
     image: postgres:16.4-alpine3.20
     networks:
       - tr-network
