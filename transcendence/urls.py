@@ -2,15 +2,15 @@
 
 from django.contrib import admin
 from django.urls import path
-from django.urls import include
-
-from users import views
+from app import views
 
 urlpatterns = [
-    path( '', include( 'pong.urls' ) ),
-	path( 'user/', include( 'users.urls' ) ),
-    path( 'bmi/', views.bmi, name='bmi' ),
-	path( 'feed/', include( 'feed.urls' ) ),
-	path( 'chat/', include( 'chat.urls' ) ),
+	path( '', views.HomepageView.as_view(), name='home' ),
+	path( 'login/', views.LoginView.as_view(), name='login' ),
+	path( 'signup/', views.SignupView.as_view(), name='signup' ),
+	path( 'profile/', views.ProfileView.as_view(), name='profile' ),
     path( 'admin/', admin.site.urls ),
 ]
+
+#path( 'user/<username>', views.username, name='username' ),
+# handle404...
