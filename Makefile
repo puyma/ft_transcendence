@@ -13,15 +13,12 @@ SRC_DIR	:=	.
 all: up
 
 up:
-	docker compose -f $(SRC_DIR)/docker-compose.yml \
-		--env-file .env \
-		up --build --detach
+	docker compose -f $(SRC_DIR)/docker-compose.yml --env-file .env up --build --detach
 		
 clean:
 	docker compose -f $(SRC_DIR)/docker-compose.yml --env-file .env down
 
 fclean: clean
-	docker compose -f $(SRC_DIR)/docker-compose.yml --env-file .env down --volumes
 
 re: fclean up
 
