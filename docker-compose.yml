@@ -20,9 +20,9 @@ services:
       ALLOWED_HOSTS: localhost,dump-ubuntu-barcelona
       SECRET_KEY: tr-secret-key
       DB_ENGINE: django.db.backends.postgresql
-      DB_NAME: tr-database
-      DB_USER: tr-user
-      DB_PASSWORD: tr-password
+      DB_NAME: $(DB_NAME?err}
+      DB_USER: ${DB_USER?err}
+      DB_PASSWORD: ${DB_PASSWORD?err}
       DB_HOST: tr-database
       DB_PORT: 5432
       DOMAIN: localhost
@@ -50,18 +50,18 @@ services:
   database:
     container_name: tr-database
     environment:
-      POSTGRES_USER: tr-user
-      POSTGRES_PASSWORD: tr-password
-      POSTGRES_DB: tr-database
+      POSTGRES_USER: ${DB_USER?err}
+      POSTGRES_PASSWORD: ${DB_PASSWORD?err}
+      POSTGRES_DB: ${DB_NAME?err}
     expose:
       - 5432
     healthcheck:
       # pg_isready might be configured with more arguments (host, port, user)
-      test: ["CMD", "pg_isready", "-d", "$DB_NAME"]
+      test: ["CMD-SHELL", "pg_isready --dbname $${DB_NAME} --username $${DB_USER}"]
       interval: 1s
       timeout: 8s
       start_period: 4s
-      start_interval: 2s
+      start_interval: 1s
       retries: 4
     image: postgres:16.4-alpine3.20
     networks:
@@ -73,7 +73,7 @@ services:
     container_name: tr-redis
     depends_on:
       database:
-        condition: service_started
+        condition: service_healthy
         restart: true
     expose:
       - 6379
