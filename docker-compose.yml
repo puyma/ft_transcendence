@@ -121,7 +121,7 @@ services:
     working_dir: /usr/app/
 
   assets:
-    container_name: tr_assets
+    container_name: tr-util-assets
     entrypoint: ./assets-entrypoint.sh
     image: alpine:3.20
     volumes:
