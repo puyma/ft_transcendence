@@ -26,11 +26,20 @@
 		<!-- {% block header %} -->
 		<header>
 			<div class="position-absolute top-0 end-0 p-3">
+			{% if request.user.is_authenticated %}
+				<form action="{% url 'logout' %}" method="post">
+					<button class="btn btn-light btn-lg mx-3" type="submit">
+						Log out
+					</button>
+					{% csrf_token %}
+				</form>
+			{% else %}
 				<a href="{% url 'login' %}"
 				   class="btn btn-light btn-lg mx-3"
 				   role="button" data-ajax="true">
 					LOG IN
 				</a>
+			{% endif %}
 			</div>
 		</header>
 		<!-- {% endblock header %} -->

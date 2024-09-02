@@ -1,3 +1,42 @@
-<h1>
-	Profile <user>
-</h1>
+<h1>Profile</h1>
+
+{% if request.user.is_authenticated %}
+
+	<div class="avatar-container">
+		<img src="/static/thumbnail.png" class="img-thumbnail" alt="..." style="width: 64px;">
+	</div>
+
+	<form>
+		<fieldset disabled>
+			<div class="mb-3">
+				<label for="user" class="form-label">
+					Username
+				</label>
+				<input id="user"
+					   type="text"
+					   aria-label="Username"
+					   class="form-control"
+					   placeholder="{{ user.username }}">
+				<label for="date" class="form-label">
+					Date joined
+				</label>
+				<input id="date"
+					   type="text"
+					   aria-label="date-joined"
+					   class="form-control"
+					   placeholder="{{ user.date_joined }}">
+		</fieldset>
+		<fieldset>
+				<label for="avatar" class="form-label">
+					Avatar
+				</label>
+				<input id="avatar"
+					   type="file"
+					   aria-label="date-joined"
+					   class="form-control"
+					   placeholder="">
+			</div>
+		</fieldset>
+	</form>
+
+{% endif %}

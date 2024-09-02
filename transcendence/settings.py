@@ -139,3 +139,7 @@ CHANNEL_LAYERS = {
 		}
 
 ASGI_APPLICATION = 'transcendence.asgi.application'
+
+LOGIN_REDIRECT_URL = 'profile'
+LOGIN_URL = 'login'
+LOGOUT_URL = 'logout'

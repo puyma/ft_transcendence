@@ -165,3 +165,5 @@ docker/database/*
 src/data
 *_data
 static/admin
+*.swp
+*.swo
