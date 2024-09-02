@@ -165,5 +165,7 @@ docker/database/*
 src/data
 *_data
 static/admin
+static/css
 *.swp
 *.swo
+node_modules

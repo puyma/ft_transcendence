@@ -107,6 +107,17 @@ services:
     networks:
       - tr-network
 
+  sass:
+    container_name: tr-util-sass
+    environment:
+      DEBUG: "True"
+    entrypoint: ./sass-entrypoint.sh
+    image: node:22.7-alpine3.19
+
+    volumes:
+      - ./:/usr/app/
+    working_dir: /usr/app/
+
 networks:
   tr-network:
     name: tr-network
