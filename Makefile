@@ -19,6 +19,7 @@ clean:
 	docker compose -f $(SRC_DIR)/docker-compose.yml --env-file .env down
 
 fclean: clean
+	rm -rf node_modules
 
 re: fclean up
 
