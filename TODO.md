@@ -1,5 +1,6 @@
-coverage report
-continuous integration
-advanced django testing
-selenium testing
-unittest testing
+- [ ] python:coverage report
+- [ ] continuous integration
+- [ ] advanced django testing
+- [ ] selenium testing
+- [ ] unittest testing
+- [ ] compile js assets into single file (webpack)

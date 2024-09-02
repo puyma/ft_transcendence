@@ -166,6 +166,7 @@ src/data
 *_data
 static/admin
 static/css
+static/fonts
 *.swp
 *.swo
 node_modules
