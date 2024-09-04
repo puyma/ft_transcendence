@@ -8,18 +8,25 @@
 
 SRC_DIR	:=	.
 
-.PHONY: all up clean fclean re purgedb
+.PHONY: all up down clean fclean re purgedb
 
 all: up
 
 up:
 	docker compose -f $(SRC_DIR)/docker-compose.yml --env-file .env up --build --detach
 		
+down:
+	docker compose -f $(SRC_DIR)/docker-compose.yml --env-file .env down
+
+stop:
+	docker compose -f $(SRC_DIR)/docker-compose.yml --env-file .env stop
+
 clean:
 	docker compose -f $(SRC_DIR)/docker-compose.yml --env-file .env down
 
 fclean: clean
 	rm -rf node_modules
+	rm -rf static
 
 re: fclean up
 
