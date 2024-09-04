@@ -1,9 +1,11 @@
+{% load static %}
+
 <h1>Profile</h1>
 
 {% if request.user.is_authenticated %}
 
 	<div class="avatar-container">
-		<img src="/static/thumbnail.png" class="img-thumbnail" alt="..." style="width: 64px;">
+		<img src="{% static 'assets/thumbnail.png' %}" class="img-thumbnail" alt="..." style="width: 64px;">
 	</div>
 
 	<form>
