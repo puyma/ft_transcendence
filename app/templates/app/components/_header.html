@@ -1,23 +1,50 @@
-<header>
-	<div class="position-absolute top-0 end-0 p-3">
-		{% if request.user.is_authenticated %}
-		<form action="{% url 'logout' %}" method="post">
-			<button class="btn btn-primary btn-lg mx-3" type="submit">
-				Log out
-			</button>
-			{% csrf_token %}
-		</form>
-		{% else %}
-		<a href="{% url 'login' %}"
-		   class="btn btn-primary btn-lg mx-3 text-uppercase"
-		   role="button" data-ajax="true">
-			Log in
-		</a>
-		<a href="{% url 'signup' %}"
-		   class="btn btn-primary btn-lg mx-3 text-uppercase"
-		   role="button" data-ajax="true">
-			Sign up
-		</a>
-		{% endif %}
-	</div>
+{% load static %}
+
+<header class="p-3 mb-3 border-bottom">
+
+  <div class="container">
+    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+      <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 link-body-emphasis text-decoration-none">
+        <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap"><use xlink:href="#bootstrap"/></svg>
+      </a>
+
+      <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+        <li><a href="#" class="nav-link px-2 link-secondary">Overview</a></li>
+        <li><a href="#" class="nav-link px-2 link-body-emphasis">Inventory</a></li>
+        <li><a href="#" class="nav-link px-2 link-body-emphasis">Customers</a></li>
+        <li><a href="#" class="nav-link px-2 link-body-emphasis">Products</a></li>
+      </ul>
+
+      {% if request.user.is_authenticated %}
+
+      <div class="dropdown text-end">
+        <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+          <img src="{% static 'assets/thumbnail.png' %}" alt="mdo" width="32" height="32" class="rounded-circle">
+        </a>
+        <ul class="dropdown-menu text-small">
+          <li><a class="dropdown-item" href="{% url 'settings' %}">Settings</a></li>
+          <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="{% url 'logout' %}">Sign out</a></li>
+          <!--
+            <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button class="btn btn-primary btn-lg mx-3" type="submit">Log out</button>
+            </form>
+          -->
+        </ul>
+      </div>
+
+      {% else %}
+
+      <div class="text-end">
+        <a href="{% url 'login' %}" class="btn btn-outline-light me-2" role="button" data-ajax="true">Login</a>
+        <a href="{% url 'signup' %}" class="btn btn-outline-warning" role="button" data-ajax="true">Sign-up</a>
+        <!-- <button type="button" class="btn btn-warning">Sign-up</button> -->
+      </div>
+
+      {% endif %}
+
+    </div>
+  </div>
 </header>

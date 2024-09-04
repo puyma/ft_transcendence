@@ -4,69 +4,90 @@
 
 {% if request.user.is_authenticated %}
 
-	<div class="avatar-container">
-		<img src="{% static 'assets/thumbnail.png' %}" class="img-thumbnail" alt="..." style="width: 64px;">
-	</div>
+<div class="avatar-container">
+  <img src="{% static 'assets/thumbnail.png' %}" class="img-thumbnail" alt="..." style="width: 64px;">
+</div>
 
-	<form>
-		<fieldset disabled>
-			<div class="mb-3">
-				<label for="user" class="form-label">
-					Username
-				</label>
-				<input id="user"
-					   type="text"
-					   aria-label="Username"
-					   class="form-control"
-					   placeholder="{{ user.username }}">
-				<label for="date" class="form-label">
-					Date joined
-				</label>
-				<input id="date"
-					   type="text"
-					   aria-label="date-joined"
-					   class="form-control"
-					   placeholder="{{ user.date_joined }}">
-		</fieldset>
-		<fieldset>
-				<label for="firstname" class="form-label">
-					First name
-				</label>
-				<input id="firstname"
-					   type="text"
-					   aria-label="Username"
-					   class="form-control"
-					   placeholder="{{ user.username }}">
-				<label for="lastname" class="form-label">
-					Last name
-				</label>
-				<input id="lastname"
-					   type="text"
-					   aria-label="Username"
-					   class="form-control"
-					   placeholder="{{ user.username }}">
+<div class="mb-3 row">
+  <label for="staticEmail" class="col-sm-2 col-form-label">Email</label>
+  <div class="col-sm-10">
+    <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="email@example.com">
+  </div>
+</div>
+<div class="mb-3 row">
+  <label for="inputPassword" class="col-sm-2 col-form-label">Password</label>
+  <div class="col-sm-10">
+    <input type="password" class="form-control" id="inputPassword">
+  </div>
+</div>
 
-				<label for="avatar" class="form-label">
-					Avatar
-				</label>
-				<input id="avatar"
-					   type="file"
-					   aria-label="date-joined"
-					   class="form-control"
-					   placeholder="">
-			</div>
-		</fieldset>
+<form>
+  <fieldset disabled>
+    <div class="mb-3">
+      <label for="user" class="form-label">
+        Username
+      </label>
+      <input id="user"
+             type="text"
+             aria-label="Username"
+             class="form-control"
+             placeholder="{{ user.username }}">
+      <label for="date" class="form-label">
+        Date joined
+      </label>
+      <input id="date"
+             type="text"
+             aria-label="date-joined"
+             class="form-control"
+             placeholder="{{ user.date_joined }}">
+  </fieldset>
+  <fieldset>
+    <label for="firstname" class="form-label">
+      First name
+    </label>
+    <input id="firstname"
+           type="text"
+           aria-label="Username"
+           class="form-control"
+           placeholder="{{ user.username }}">
+    <label for="lastname" class="form-label">
+      Last name
+    </label>
+    <input id="lastname"
+           type="text"
+           aria-label="Username"
+           class="form-control"
+           placeholder="{{ user.username }}">
 
-	</form>
+    <label for="avatar" class="form-label">
+      Avatar
+    </label>
+    <input id="avatar"
+           type="file"
+           aria-label="date-joined"
+           class="form-control"
+           placeholder="">
+    <label for="email" class="form-label">
+      Email
+    </label>
+    <input id="email"
+           type="email"
+           aria-label="date-joined"
+           class="form-control"
+           placeholder="{{ user.email }}">
+    </div>
+  </fieldset>
 
-	{% if user.friends %}
-	<ul class="list-group">
-		<li class="list-group-item"></li>
-		<li class="list-group-item">A second item</li>
-		<li class="list-group-item">A third item</li>
-		<li class="list-group-item">A fourth item</li>
-		<li class="list-group-item">And a fifth one</li>
-	</ul>
-	{% endif %}
+</form>
+
+{% if user.friends %}
+<ul class="list-group">
+  <li class="list-group-item"></li>
+  <li class="list-group-item">A second item</li>
+  <li class="list-group-item">A third item</li>
+  <li class="list-group-item">A fourth item</li>
+  <li class="list-group-item">And a fifth one</li>
+</ul>
+{% endif %}
 
 {% endif %}
