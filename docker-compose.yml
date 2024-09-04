@@ -16,7 +16,7 @@ services:
         restart: true
       sass:
         condition: service_started
-        restart: true
+        restart: false
     entrypoint: ./django-entrypoint.sh
     environment:
       DEBUG: "True"
@@ -110,8 +110,22 @@ services:
     networks:
       - tr-network
 
+  npm:
+    container_name: tr-util-npm
+    command: npm install
+    environment:
+      DEBUG: "True"
+    image: node:22.7-alpine3.19
+    volumes:
+      - ./:/usr/app
+    working_dir: /usr/app/
+
   sass:
     container_name: tr-util-sass
+    depends_on:
+      npm:
+        condition: service_completed_successfully
+        restart: true
     environment:
       DEBUG: "True"
     entrypoint: ./sass-entrypoint.sh
@@ -124,6 +138,20 @@ services:
     container_name: tr-util-assets
     entrypoint: ./assets-entrypoint.sh
     image: alpine:3.20
+    volumes:
+      - ./:/usr/app/
+    working_dir: /usr/app/
+
+  webpack:
+    container_name: tr-util-webpack
+    command: npm run build
+    depends_on:
+      npm:
+        condition: service_completed_successfully
+        restart: true
+    environment:
+      DEBUG: "True"
+    image: node:22.7-alpine3.19
     volumes:
       - ./:/usr/app/
     working_dir: /usr/app/

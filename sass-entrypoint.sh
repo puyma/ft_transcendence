@@ -1,7 +1,6 @@
 #!/bin/sh
 
 alias sass="./node_modules/sass/sass.js" 
-
 IN="styles/main.scss"
 OUT="static/css/style.css"
 
