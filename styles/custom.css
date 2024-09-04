@@ -29,10 +29,6 @@ main {
     letter-spacing: var(--bs-letter-spacing);
 }
 
-.bg-dark {
-    background-color: var(--bs-dark-color) !important;
-}
-
 .vertical {
     border-left: 6px dashed rgb(255, 255, 255);
     height: 100%;
