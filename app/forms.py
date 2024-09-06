@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib import auth
+from .models import Profile
 
 class LoginForm ( forms.Form ):
 
@@ -40,3 +41,8 @@ class SignupForm ( forms.Form ):
 		if data['password'] != data['password_confirm']:
 			raise forms.ValidationError( "Passwords do not match" )
 		return ( data['password'] )
+
+class ProfileForm ( forms.Form ):
+	class Meta:
+		model = Profile
+		fields = ['avatar']

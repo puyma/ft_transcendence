@@ -8,6 +8,7 @@ from django.views import generic
 
 from .forms import LoginForm
 from .forms import SignupForm
+from .models import Profile
 
 class HomepageView ( generic.TemplateView ):
 	template_name = "app/base.html"
