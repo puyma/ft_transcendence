@@ -13,7 +13,7 @@ SRC_DIR	:=	.
 all: up
 
 debug:
-	DEBUG="true" docker compose -f $(SRC_DIR)/docker-compose.yml --env-file .env up --build
+	DEBUG=true docker compose -f $(SRC_DIR)/docker-compose.yml --env-file .env up --build
 
 up:
 	docker compose -f $(SRC_DIR)/docker-compose.yml --env-file .env up --build --detach
