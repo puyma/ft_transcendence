@@ -1,8 +1,9 @@
 from django.contrib.auth.decorators import login_required
-from django.contrib import auth
 from django.contrib.auth import views as auth_views
+from django.contrib import auth
 from django.http import HttpResponse
 from django.shortcuts import render
+from django import urls
 from django.views import generic
 
 from .forms import LoginForm
@@ -37,14 +38,23 @@ class LogoutView ( auth_views.LogoutView ):
 		context["page"] = "app/pages/logout.html"
 		return ( context )
 
-class SignupView ( generic.TemplateView ):
-	template_name = "app/base.html"
+	def get ( self, request, *args, **kwargs ):
+		auth.logout( request )
+		redirect_to = self.get_success_url()
+		if redirect_to != request.get_full_path():
+			return ( HttpResponseRedirect( redirect_to ) )
+		return ( super().get( request, *args, **kwargs ) )
 
-	def get_context_data ( self, **kwargs ):
-		context = super().get_context_data( **kwargs )
-		context["page"] = "app/pages/signup.html"
-		context["form"] = SignupForm()
-		return ( context )
+class SignupView ( generic.CreateView ):
+  form_class = auth.forms.UserCreationForm
+  success_url = urls.reverse_lazy( 'login' )
+  template_name = "app/base.html"
+
+  def get_context_data ( self, **kwargs ):
+	  context = super().get_context_data( **kwargs )
+	  context["page"] = "app/pages/signup.html"
+	  context["form"] = SignupForm()
+	  return ( context )
 
 @login_required
 def profile_dashboard ( request ):

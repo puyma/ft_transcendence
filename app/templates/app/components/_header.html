@@ -9,7 +9,7 @@
       </a>
 
       <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-        <li><a href="#" class="nav-link px-2 link-secondary">Overview</a></li>
+        <li><a href="/" class="nav-link px-2 link-secondary">Games</a></li>
         <li><a href="#" class="nav-link px-2 link-body-emphasis">Inventory</a></li>
         <li><a href="#" class="nav-link px-2 link-body-emphasis">Customers</a></li>
         <li><a href="#" class="nav-link px-2 link-body-emphasis">Products</a></li>
@@ -26,12 +26,6 @@
           <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
           <li><hr class="dropdown-divider"></li>
           <li><a class="dropdown-item" href="{% url 'logout' %}">Sign out</a></li>
-          <!--
-            <form action="{% url 'logout' %}" method="post">
-            {% csrf_token %}
-            <button class="btn btn-primary btn-lg mx-3" type="submit">Log out</button>
-            </form>
-          -->
         </ul>
       </div>
 
