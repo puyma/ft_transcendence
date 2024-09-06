@@ -15,6 +15,10 @@
 		</main>
 
 		{% include 'app/components/_footer.html' %}
+
+		{% if messages %}
+		{% include 'app/components/_messages.html' %}
+		{% endif %}
 	
 		<script defer src="{% static 'js/bundle.js' %}"></script>
 

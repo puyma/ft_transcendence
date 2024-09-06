@@ -6,7 +6,7 @@ OUT="static/css/style.css"
 
 npm install
 
-if test "$DEBUG" = "True"
+if test "$DEBUG" = "true"
 then
 	sass --watch "$IN" "$OUT"
 else

@@ -5,10 +5,13 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django import urls
 from django.views import generic
+from django.contrib import messages
 
 from .forms import LoginForm
 from .forms import SignupForm
 from .models import Profile
+
+# https://django-advanced-training.readthedocs.io/en/latest/features/class-based-views/
 
 class HomepageView ( generic.TemplateView ):
 	template_name = "app/base.html"

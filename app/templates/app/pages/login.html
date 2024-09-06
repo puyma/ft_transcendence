@@ -5,15 +5,15 @@
 	{% csrf_token %}
 
 	{% if form.errors %}
-		<p>Hey, errors</p>
+	<p>Hey, errors</p>
 	{% endif %}
 
-    {% if user_does_not_exist %}
-    	<h2>The user does not exist or the password is wrong.</h2>
-    {% endif %}
-    
+	{% if user_does_not_exist %}
+	<h2>The user does not exist or the password is wrong.</h2>
+	{% endif %}
+
 	{{ form }}
-    
+
 	<input type="submit" class="btn btn-light btn-lg mx-3" value="Log in">
 
 </form>
