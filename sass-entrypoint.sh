@@ -1,7 +1,7 @@
 #!/bin/sh
 
 alias sass="./node_modules/sass/sass.js" 
-IN="styles/main.scss"
+IN="style/main.scss"
 OUT="static/css/style.css"
 
 npm install
