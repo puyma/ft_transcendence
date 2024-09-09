@@ -9,19 +9,11 @@ DB_USER=
 DB_PASSWORD=
 ```
 
-In order to fully erase database's contents (stored by default in ./database/data) just run `make purgedb`
-
-<!--
-
-- [ ] Solve database data directory (./data/pgdata) permissions.
-The postgres startup script sets them (chown) to a user postgres that only exists inside the container and does not map with the host system.
-
-To delete the 'data' directory where the database is stored use `sudo` or, in case of not having the required permissions, remove it from inside a container where permissions properly map to those of the 'data' directory.
-
-Must be ran from the root of the repository.
+To enable 42.fr API also add these to ".env".
 
 ```
-docker run --tty --rm --mount type=bind,src=./docker/database,dst=/ft postgres:alpine ash -c "rm -vr /ft/data"
+42_API_UID=
+42_API_SECRET=
 ```
 
--->
+In order to fully erase database's contents (if postgres's user is not mapped on your system) `make purgedb` can be run.
