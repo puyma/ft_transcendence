@@ -1,11 +1,12 @@
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import views as auth_views
+from django import urls
 from django.contrib import auth
+from django.contrib import messages
+from django.contrib.auth import views as auth_views
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render
-from django import urls
+from django.shortcuts import redirect
 from django.views import generic
-from django.contrib import messages
 
 from .forms import LoginForm
 from .forms import SignupForm
@@ -26,12 +27,17 @@ class LoginView ( auth_views.LoginView ):
 	template_name = "app/base.html"
 	# settings.py: next_page = "/profile"
 
-
 	def get_context_data ( self, **kwargs ):
 		context = super().get_context_data( **kwargs )
 		context["page"] = "app/pages/login.html"
 		context["form"] = LoginForm()
 		return ( context )
+
+@login_required
+def do_logout ( request ):
+	auth.logout( request )
+	messages.success( request, "proper logout" )
+	return redirect( 'home' )
 
 class LogoutView ( auth_views.LogoutView ):
 	http_method_names = ["post", "get"]
