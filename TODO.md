@@ -6,3 +6,4 @@
 - [x] compile js assets into single file (webpack)
 - [ ] nginx -> maybe try nginx UNIT
 - [ ] resolve 80/443 8000/8443 CSRF_TRUSTED_ORIGINS
+- [ ] resolve daphne https / runserver NO DJANGO RELOAD
