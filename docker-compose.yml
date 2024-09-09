@@ -101,6 +101,7 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - ./:/usr/app/
+    working_dir: /usr/app/
 
   mailhog:
     container_name: tr-mail
