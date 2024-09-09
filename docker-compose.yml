@@ -74,8 +74,8 @@ services:
     volumes:
       - ./postgres_data:/var/lib/postgresql/data/
 
-    redis:
-      container_name: tr-redis
+  redis:
+    container_name: tr-redis
     depends_on:
       database:
         condition: service_healthy
@@ -86,8 +86,8 @@ services:
     networks:
       - tr-network
 
-    server:
-      container_name: tr-server
+  server:
+    container_name: tr-server
     image: nginx:1.26-alpine3.20
     depends_on:
       django:
@@ -102,25 +102,8 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - ./:/usr/app/
 
-        #  server:
-        #    container_name: tr-server
-        #    image: caddy:2.8-alpine
-        #    depends_on:
-        #      django:
-        #        condition: service_started
-        #        restart: true
-        #    networks:
-        #      - tr-network
-        #    ports:
-        #      - 8000:80
-        #      - 8443:443
-        #    volumes:
-        #      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-        #      - ./caddy_data:/data
-        #      - ./:/usr/app/
-
-    mailhog:
-      container_name: tr-mail
+  mailhog:
+    container_name: tr-mail
     expose:
       - 1025
       - 8025
@@ -128,8 +111,8 @@ services:
     networks:
       - tr-network
 
-    npm:
-      container_name: tr-util-npm
+  npm:
+    container_name: tr-util-npm
     command: npm install
     environment:
       DEBUG: ${DEBUG:-false}
@@ -138,8 +121,8 @@ services:
       - ./:/usr/app
     working_dir: /usr/app/
 
-    sass:
-      container_name: tr-util-sass
+  sass:
+    container_name: tr-util-sass
     depends_on:
       npm:
         condition: service_completed_successfully
@@ -152,16 +135,16 @@ services:
       - ./:/usr/app/
     working_dir: /usr/app/
 
-    assets:
-      container_name: tr-util-assets
+  assets:
+    container_name: tr-util-assets
     entrypoint: ./assets-entrypoint.sh
     image: alpine:3.20
     volumes:
       - ./:/usr/app/
     working_dir: /usr/app/
 
-    webpack:
-      container_name: tr-util-webpack
+  webpack:
+    container_name: tr-util-webpack
     command: npm run build
     depends_on:
       npm:
@@ -174,6 +157,6 @@ services:
       - ./:/usr/app/
     working_dir: /usr/app/
 
-    networks:
-      tr-network:
-        name: tr-network
+networks:
+  tr-network:
+    name: tr-network
