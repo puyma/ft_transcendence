@@ -26,8 +26,14 @@ all: up
 debug:
 	DEBUG=true docker compose -f $(SRC_DIR)/docker-compose.yml --env-file .env up --build
 
-up:
+up: crt.pem
 	docker compose -f $(SRC_DIR)/docker-compose.yml --env-file .env up --build --detach
+
+crt.pem: key.pem
+	openssl req -x509 -key $< -out $@ -subj "/C=ES/ST=Catalunya/O=PINGpongMOJOdojoCASAhouse/"
+
+key.pem:
+	openssl genrsa -out $@
 		
 down:
 	docker compose -f $(SRC_DIR)/docker-compose.yml --env-file .env down
