@@ -10,6 +10,17 @@ SRC_DIR	:=	.
 
 .PHONY: all up down clean fclean re purgedb debug
 
+# https://serverfault.com/questions/1108735/how-to-allow-a-docker-container-to-bind-a-privileged-port-as-another-user
+# sysctl:
+#   net.ipv4.ip_unprivileged_port_start: 0
+
+HOST=$(shell hostname)
+
+ifneq (,$(findstring 42barcelona.co.comm, $(HOST) ))
+export HTTP_PORT=8000
+export HTTPS_PORT=8443
+endif
+
 all: up
 
 debug:
