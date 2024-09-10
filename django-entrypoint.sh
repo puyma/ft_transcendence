@@ -8,7 +8,8 @@ python3 manage.py migrate
 
 if test "$DEBUG" = "true"
 then
-	python3 manage.py runserver '0.0.0.0:80'
+	python3 manage.py runserver '0.0.0.0:80' &
+	python3 manage.py runsslserver '0.0.0.0:443'
 else
 	daphne -e ssl:443:privateKey=key.pem:certKey=crt.pem transcendence.asgi:application -b '0.0.0.0' -p 80
 fi
