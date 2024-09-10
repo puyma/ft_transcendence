@@ -16,7 +16,7 @@ SRC_DIR	:=	.
 
 HOST=$(shell hostname)
 
-ifneq (,$(findstring 42barcelona.co.comm, $(HOST) ))
+ifneq (,$(findstring 42barcelona.com, $(HOST) ))
 export HTTP_PORT=8000
 export HTTPS_PORT=8443
 endif
