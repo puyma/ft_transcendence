@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "bootstrap": "^5.3.3",
+    "sass": "^1.78.0",
     "terser-webpack-plugin": "^5.3.10"
   },
   "devDependencies": {

@@ -14,6 +14,9 @@ services:
       redis:
         condition: service_started
         restart: true
+      sass:
+        condition: service_started
+        restart: false
     entrypoint: ./django-entrypoint.sh
     environment:
       DEBUG: ${DEBUG:-false}
@@ -117,6 +120,20 @@ services:
     image: node:22.7-alpine3.19
     volumes:
       - ./:/usr/app
+    working_dir: /usr/app/
+
+  sass:
+    container_name: tr-util-sass
+    depends_on:
+      npm:
+        condition: service_completed_successfully
+        restart: true
+    environment:
+      DEBUG: ${DEBUG:-false}
+    entrypoint: ./sass-entrypoint.sh
+    image: node:22.7-alpine3.19
+    volumes:
+      - ./:/usr/app/
     working_dir: /usr/app/
 
   webpack:
