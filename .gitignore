@@ -161,7 +161,10 @@ cython_debug/
 
 # Project specific
 
-docker/database/*
-src/data
+package-lock.json
 *_data
-static/admin
+*.swp
+*.swo
+node_modules
+static/
+media/
