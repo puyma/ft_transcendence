@@ -3,39 +3,24 @@
 <!doctype html>
 <html lang="{{ lang | default:'en' }}">
 
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport"
-			  content="width=device-width, user-scalable=no,
-					   initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-		<title>{{ title | default:"FUcking POng@!" }}</title>
-		<link rel="stylesheet" href="{% static 'css/style.css' %}"/>
-	</head>
+	{% include 'app/components/_head.html' %}
 
 	<body data-host="{{ request.get_host }}" data-scheme="{{ request.scheme }}"
-		class="bg-dark text-while">
-	
-		<!-- {% block header %} -->
-		<header>
-			<div class="position-absolute top-0 end-0 p-3">
-				<button class="btn btn-light btn-lg mx-3" type="button">LOG IN</button>
-			</div>
-		</header>
-		<!-- {% endblock header %} -->
-		
-		<main id="main"
-			  class="bg-dark text-white d-flex flex-column justify-content-center align-items-center"
-			  style="min-height: 100vh">
+		data-bs-theme="dark">
+
+		{% include 'app/components/_header.html' %}
+
+		<main id="main">
 			{% include page %}
 		</main>
-		
-		<!-- {% block main %}{% endblock main %} -->
-		<!-- {% block footer %}{% endblock footer %} -->
-	
-		<footer>
-			Endl
-		</footer>
 
+		{% include 'app/components/_footer.html' %}
+
+		{% if messages %}
+		{% include 'app/components/_messages.html' %}
+		{% endif %}
+	
 		<script defer src="{% static 'js/bundle.js' %}"></script>
+
 	</body>
 </html>
