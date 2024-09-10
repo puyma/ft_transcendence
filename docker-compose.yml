@@ -109,6 +109,30 @@ services:
     networks:
       - tr-network
 
+  npm:
+    container_name: tr-util-npm
+    command: npm install
+    environment:
+      DEBUG: ${DEBUG:-false}
+    image: node:22.7-alpine3.19
+    volumes:
+      - ./:/usr/app
+    working_dir: /usr/app/
+
+  webpack:
+    container_name: tr-util-webpack
+    command: npm run build
+    depends_on:
+      npm:
+        condition: service_completed_successfully
+        restart: true
+    environment:
+      DEBUG: ${DEBUG:-false}
+    image: node:22.7-alpine3.19
+    volumes:
+      - ./:/usr/app/
+    working_dir: /usr/app/
+
 networks:
   tr-network:
     name: tr-network
