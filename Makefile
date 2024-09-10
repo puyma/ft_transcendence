@@ -23,7 +23,7 @@ endif
 
 all: up
 
-debug:
+debug: crt.pem
 	DEBUG=true docker compose -f $(SRC_DIR)/docker-compose.yml --env-file .env up --build
 
 up: crt.pem
