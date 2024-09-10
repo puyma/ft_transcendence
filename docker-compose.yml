@@ -16,31 +16,33 @@ services:
         restart: true
     entrypoint: ./django-entrypoint.sh
     environment:
-      DEBUG: "True"
+      DEBUG: ${DEBUG:-false}
+      42_API_ENDPOINT: https://api.intra.42.fr
       ALLOWED_HOSTS: localhost,dump-ubuntu-barcelona
       SECRET_KEY: tr-secret-key
       DB_ENGINE: django.db.backends.postgresql
-      DB_NAME: $(DB_NAME?err}
+      DB_NAME: ${DB_NAME?err}
       DB_USER: ${DB_USER?err}
       DB_PASSWORD: ${DB_PASSWORD?err}
-      DB_HOST: tr-database
+      DB_HOST: database
       DB_PORT: 5432
       DOMAIN: localhost
       DOMAIN_URL: http://localhost
-      REDIS_HOST: tr-redis
+      REDIS_HOST: redis
       REDIS_PORT: 6379
       DEFAULT_FROM_EMAIL: no-reply@dump-ubuntu-barcelona
       STATIC_URL: /static/
       STATIC_ROOT: static
       MEDIA_URL: /media/
-      EMAIL_HOST: tr-mail
+      EMAIL_HOST: mailhog
       EMAIL_USE_TLS: "False"
       EMAIL_USE_SSL: "False"
       EMAIL_PORT: 1025
       EMAIL_USER: tr-mail@tr.mail
       EMAIL_PASSWORD: tr-password
     expose:
-      - 8000
+      - 80
+      - 443
     image: python:3.12-alpine3.20-django
     networks:
       - tr-network
@@ -57,7 +59,7 @@ services:
       - 5432
     healthcheck:
       # pg_isready might be configured with more arguments (host, port, user)
-      test: ["CMD-SHELL", "pg_isready --dbname $${DB_NAME} --username $${DB_USER}"]
+      test: ["CMD-SHELL", "pg_isready --dbname ${DB_NAME} --username ${DB_USER}"]
       interval: 1s
       timeout: 8s
       start_period: 4s
@@ -83,7 +85,7 @@ services:
 
   server:
     container_name: tr-server
-    image: caddy:2.8-alpine
+    image: nginx:1.26-alpine3.20
     depends_on:
       django:
         condition: service_started
@@ -91,12 +93,12 @@ services:
     networks:
       - tr-network
     ports:
-      - 8000:80
-      #- 443:443
+      - ${HTTP_PORT:-80}:80
+      - ${HTTPS_PORT:-443}:443
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - ./caddy_data:/data
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - ./:/usr/app/
+    working_dir: /usr/app/
 
   mailhog:
     container_name: tr-mail

@@ -14,7 +14,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get( "SECRET_KEY" )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get( "DEBUG", "True" ) == "True"
+DEBUG = os.environ.get( "DEBUG", "true" ) == "true"
 
 ALLOWED_HOSTS = os.environ.get( "ALLOWED_HOSTS" ).split( "," )
 
@@ -112,7 +112,7 @@ MEDIA_URL = os.environ.get( "MEDIA_URL" )
 
 DOMAIN = os.environ.get( "DOMAIN" )
 DOMAIN_URL = os.environ.get( "DOMAIN_URL" )
-CSRF_TRUSTED_ORIGINS = [DOMAIN_URL]
+CSRF_TRUSTED_ORIGINS = [DOMAIN_URL, "https://localhost", "https://dump-ubuntu-barcelona:8443"]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -139,3 +139,7 @@ CHANNEL_LAYERS = {
 		}
 
 ASGI_APPLICATION = 'transcendence.asgi.application'
+
+LOGIN_REDIRECT_URL = 'profile'
+LOGIN_URL = 'login'
+LOGOUT_URL = 'logout'
