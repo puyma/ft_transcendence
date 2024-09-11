@@ -20,7 +20,9 @@ services:
     entrypoint: ./django-entrypoint.sh
     environment:
       DEBUG: ${DEBUG:-false}
-      42_API_ENDPOINT: https://api.intra.42.fr
+      API_42_ENDPOINT: https://api.intra.42.fr
+      API_42_UID: ${API_42_UID}
+      API_42_SECRET: ${API_42_SECRET}
       ALLOWED_HOSTS: localhost,dump-ubuntu-barcelona
       SECRET_KEY: tr-secret-key
       DB_ENGINE: django.db.backends.postgresql
