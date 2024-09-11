@@ -9,9 +9,9 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from django.views import generic
 
-from .forms import LoginForm
-from .forms import SignupForm
-from .models import Profile
+from . import forms
+from . import models
+from . import providers
 
 # https://django-advanced-training.readthedocs.io/en/latest/features/class-based-views/
 
@@ -31,12 +31,8 @@ class LoginView ( auth_views.LoginView ):
 	def get_context_data ( self, **kwargs ):
 		context = super().get_context_data( **kwargs )
 		context["page"] = "app/pages/login.html"
-		context["form"] = LoginForm()
-		context['api_42_login'] = os.environ.get( 'API_42_ENDPOINT' )
-		context['api_42_login'] += '/oauth/authorize?'
-		context['api_42_login'] += 'client_id=' + 'u-s4t2ud-ac08f24e61169be949c293f130605f9be310bd8983bd0bdf9477f6992b80b230'
-		context['api_42_login'] += '&redirect_uri=' + 'https%3A%2F%2Fexample.org'
-		context['api_42_login'] += "&response_type=code&scope=public"
+		context["form"] = forms.LoginForm()
+		context['provider_42_login'] = providers.get_login_url( self.request, "42" )
 		return ( context )
 
 @login_required
@@ -69,7 +65,7 @@ class SignupView ( generic.CreateView ):
   def get_context_data ( self, **kwargs ):
 	  context = super().get_context_data( **kwargs )
 	  context["page"] = "app/pages/signup.html"
-	  context["form"] = SignupForm()
+	  context["form"] = forms.SignupForm()
 	  return ( context )
 
 @login_required

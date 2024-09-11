@@ -31,8 +31,8 @@ services:
       DB_PASSWORD: ${DB_PASSWORD?err}
       DB_HOST: database
       DB_PORT: 5432
-      DOMAIN: localhost
-      DOMAIN_URL: http://localhost
+      DOMAIN: ${DOMAIN?err}
+      DOMAIN_URL: ${DOMAIN_URL?err}
       REDIS_HOST: redis
       REDIS_PORT: 6379
       DEFAULT_FROM_EMAIL: no-reply@dump-ubuntu-barcelona

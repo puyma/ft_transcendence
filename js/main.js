@@ -7,16 +7,17 @@ const host = document.body.dataset.host;
 
 // functions
 
-// @fn		set_login_providers
+// @fn		setup_login_providers
 // @return	{void}
 
-function set_login_providers ()
+function setup_login_providers ()
 {
-	const elements = document.querySelectorAll( '[data-login-id]' );
+	const elements = document.querySelectorAll( '[data-login-provider=true]' );
 	elements.forEach( (element) => {
+		const url = element.getAttribute( 'data-login-provider-url' );
 		element.addEventListener( 'click', (event) => {
 			event.preventDefault();
-			console.log( element );
+			window.open( url, "_self" );
 		} );
 	} );
 	return ;
@@ -55,6 +56,7 @@ function fetch_page ( url, push_to_history )
 			document.querySelector( 'main' ).innerHTML = main_tag;
 			// Reassign anchor's click events
 			setup_ajax_anchors();
+			setup_login_providers();
 			// Push to history
 			if ( push_to_history === true ) {
 				window.history.pushState( { url: url }, '', url );
@@ -71,8 +73,9 @@ function fetch_page ( url, push_to_history )
 
 document.addEventListener( 'DOMContentLoaded', () => {
 	setup_ajax_anchors();
+	setup_login_providers();
 	// Maneja los eventos de popstate para la navegación con las flechas
-	window.addEventListener( 'onpopstate', (event) => {
+	window.addEventListener( 'popstate', (event) => {
 		var url = event.state?.url;
 		if ( ! url ) {
 			url = window.location.href;
