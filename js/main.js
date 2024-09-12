@@ -1,3 +1,5 @@
+import bootstrap from 'bootstrap';
+
 document.addEventListener('DOMContentLoaded', function() {
 	// Guarda la URL de la página de inicio
 	const homeUrl = window.location.href;
