@@ -1,9 +1,11 @@
 import os
-from urllib.parse import quote
 from django.conf import settings
+from urllib import parse
+from urllib import request
+from urllib import error
 
 @staticmethod
-def compose_url ( endpoint: str, queries: dict ):
+def compose_url ( endpoint: str, queries: dict = {} ) -> str:
 	url = f"{endpoint}?"
 	for name, value in queries.items():
 		if ( url[-1] != '?' ):
@@ -11,15 +13,36 @@ def compose_url ( endpoint: str, queries: dict ):
 		url += f"{name}={value}"
 	return ( url )
 
-def get_login_url ( request, provider ):
+#replace request, not needed
+def get_login_url ( provider, queries: dict = {} ) -> str:
 	match provider:
 		case "42":
 			endpoint = f"{os.environ.get( 'API_42_ENDPOINT' )}/oauth/authorize"
-			queries = {
-					"client_id": os.environ.get( 'API_42_UID' ),
-					"redirect_uri": quote( f"{settings.DOMAIN_URL}/oauth/callback/", '' ),
-					"scope": 'public',
-					"response_type": 'code'
-					}
-			return ( compose_url ( endpoint, queries ) )
+			queries["client_id"] = os.environ.get( 'API_42_UID' )
+			queries["redirect_uri"] = parse.quote( f"{settings.DOMAIN_URL}/oauth/callback/", '' )
+			queries["scope"] = 'public'
+			queries["response_type"] = 'code'
+			return ( compose_url( endpoint, queries ) )
+	return ( None )
+
+def get_token ( provider: str, queries: dict = {} ) -> str:
+	match provider:
+		case "42":
+			endpoint = f"{os.environ.get( 'API_42_ENDPOINT' )}/oauth/token"
+			#queries["grant_type"] = queries.get( 'code' )
+			queries["grant_type"] = 'authorization_code'
+			queries["client_id"] = os.environ.get( 'API_42_UID' )
+			queries["client_secret"] = os.environ.get( 'API_42_SECRET' )
+			queries["redirect_uri"] = parse.quote( f"{settings.DOMAIN_URL}/oauth/callback/", '' )
+			url = compose_url( endpoint, queries )
+			req = request.Request( url, parse.urlencode( {} ).encode( 'ascii' ) )
+			try:
+				resp = request.urlopen( req )
+			except error.URLError as e:
+				print( e )
+				print( e.url )
+				print( e.reason )
+				print( e.headers )
+			token = ""
+			return ( token )
 	return ( None )

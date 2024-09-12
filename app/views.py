@@ -32,8 +32,26 @@ class LoginView ( auth_views.LoginView ):
 		context = super().get_context_data( **kwargs )
 		context["page"] = "app/pages/login.html"
 		context["form"] = forms.LoginForm()
-		context['provider_42_login'] = providers.get_login_url( self.request, "42" )
+		context['provider_42_login'] = providers.get_login_url( "42", 
+				{"state": self.request.COOKIES.get( 'csrftoken' ) } )
 		return ( context )
+
+def do_provider_login ( request ):
+	csrf = request.COOKIES.get( 'csrftoken', None )
+	# if csrf is None... abort
+	state = request.GET.get( 'state', None )
+	# if state is None... abort
+	code = request.GET.get( 'code', None )
+
+	# If the states don't match the process should be aborted.
+	if csrf != state:
+		return ( redirect( 'login' ) )
+
+	# auth logic here...
+	print( f"code: {code}" )
+	token = providers.get_token( "42", { "code": code, "state": csrf } )
+	print( f"token: {token}" )
+	return ( LoginView.as_view()( request ) )
 
 @login_required
 def do_logout ( request ):

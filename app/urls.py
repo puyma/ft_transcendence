@@ -14,5 +14,6 @@ urlpatterns = [
     path( 'solo_play/play/', views.play_view, name='play' ),
     path( 'solo_play/play/pong/', views.pong_view, name='pong' ),
     path( 'pong/play/solo', views.GameView.as_view() ),
+	path( 'oauth/callback/', views.do_provider_login ),
 ]
 # handle404...
