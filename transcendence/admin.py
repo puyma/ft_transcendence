@@ -1,7 +1,8 @@
 from django.contrib import admin
-from .models import Profile
 
-@admin.register( Profile )
+from . import models
+
+@admin.register( models.Profile )
 class ProfileAdmin ( admin.ModelAdmin ):
 	list_display = ['user', 'avatar']
 	raw_id_fields = ['user']

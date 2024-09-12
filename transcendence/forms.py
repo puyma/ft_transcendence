@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib import auth
-from .models import Profile
+
+from . import models
 
 class LoginForm ( forms.Form ):
 
@@ -44,5 +45,5 @@ class SignupForm ( forms.Form ):
 
 class ProfileForm ( forms.Form ):
 	class Meta:
-		model = Profile
+		model = models.Profile
 		fields = ['avatar']

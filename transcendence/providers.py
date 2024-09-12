@@ -1,8 +1,8 @@
-import os
-from django.conf import settings
 from urllib import parse
 from urllib import request
 from urllib import error
+
+from django.conf import settings
 
 @staticmethod
 def compose_url ( endpoint: str, queries: dict = {} ) -> str:
@@ -17,8 +17,8 @@ def compose_url ( endpoint: str, queries: dict = {} ) -> str:
 def get_login_url ( provider, queries: dict = {} ) -> str:
 	match provider:
 		case "42":
-			endpoint = f"{os.environ.get( 'API_42_ENDPOINT' )}/oauth/authorize"
-			queries["client_id"] = os.environ.get( 'API_42_UID' )
+			endpoint = f"{settings.API_42_ENDPOINT}/oauth/authorize"
+			queries["client_id"] = settings.API_42_UID
 			queries["redirect_uri"] = parse.quote( f"{settings.DOMAIN_URL}/oauth/callback/", '' )
 			queries["scope"] = 'public'
 			queries["response_type"] = 'code'
@@ -28,11 +28,10 @@ def get_login_url ( provider, queries: dict = {} ) -> str:
 def get_token ( provider: str, queries: dict = {} ) -> str:
 	match provider:
 		case "42":
-			endpoint = f"{os.environ.get( 'API_42_ENDPOINT' )}/oauth/token"
-			#queries["grant_type"] = queries.get( 'code' )
+			endpoint = f"{settings.API_42_ENDPOINT}/oauth/token"
 			queries["grant_type"] = 'authorization_code'
-			queries["client_id"] = os.environ.get( 'API_42_UID' )
-			queries["client_secret"] = os.environ.get( 'API_42_SECRET' )
+			queries["client_id"] = settings.API_42_UID
+			queries["client_secret"] = settings.API_42_SECRET
 			queries["redirect_uri"] = parse.quote( f"{settings.DOMAIN_URL}/oauth/callback/", '' )
 			url = compose_url( endpoint, queries )
 			req = request.Request( url, parse.urlencode( {} ).encode( 'ascii' ) )

@@ -1,11 +1,9 @@
-# Django settings for transcendence project.
-
 import os
+
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -17,7 +15,6 @@ SECRET_KEY = os.environ.get( "SECRET_KEY" )
 DEBUG = os.environ.get( "DEBUG", "true" ) == "true"
 
 ALLOWED_HOSTS = os.environ.get( "ALLOWED_HOSTS" ).split( "," )
-
 
 # Application definition
 
@@ -31,7 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 	'channels',
-	'app',
+	'transcendence'
 ]
 
 MIDDLEWARE = [
@@ -78,7 +75,6 @@ DATABASES = {
     }
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
@@ -96,7 +92,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -150,3 +145,7 @@ ASGI_APPLICATION = 'transcendence.asgi.application'
 LOGIN_REDIRECT_URL = 'profile'
 LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
+
+API_42_ENDPOINT = os.environ.get( 'API_42_ENDPOINT' )
+API_42_UID = os.environ.get( 'API_42_UID' )
+API_42_SECRET = os.environ.get( 'API_42_SECRET' )

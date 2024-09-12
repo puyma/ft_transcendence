@@ -3,7 +3,7 @@
 #TODO: https://docs.python.org/3/tutorial/venv.html
 
 python3 manage.py collectstatic --noinput
-python3 manage.py makemigrations app --noinput
+python3 manage.py makemigrations --noinput
 python3 manage.py migrate
 
 if test "$DEBUG" = "true"
