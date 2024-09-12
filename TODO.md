@@ -3,7 +3,9 @@
 - [ ] advanced django testing
 - [ ] selenium testing
 - [ ] unittest testing
-- [x] compile js assets into single file (webpack)
+- [ ] merge webpack + sass + assets container(s)
+- [ ] setup prettier and eslinter
 - [ ] nginx -> maybe try nginx UNIT
-- [ ] resolve 80/443 8000/8443 CSRF_TRUSTED_ORIGINS
-- [ ] resolve daphne https / runserver NO DJANGO RELOAD
+- [x] compile js assets into single file (webpack)
+- [x] resolve 80/443 8000/8443 CSRF_TRUSTED_ORIGINS
+- [x] resolve daphne https / runserver NO DJANGO RELOAD
