@@ -10,7 +10,7 @@ from django.views import generic
 
 from . import forms
 from . import models
-from . import providers
+from .providers import fortytwo
 
 # https://django-advanced-training.readthedocs.io/en/latest/features/class-based-views/
 
@@ -31,7 +31,7 @@ class LoginView ( auth_views.LoginView ):
 		context = super().get_context_data( **kwargs )
 		context["page"] = "app/pages/login.html"
 		context["form"] = forms.LoginForm()
-		context['provider_42_login'] = providers.get_login_url( "42", 
+		context['provider_42_login'] = fortytwo.get_login_url( "42", 
 				{"state": self.request.COOKIES.get( 'csrftoken' ) } )
 		return ( context )
 
@@ -48,7 +48,7 @@ def do_provider_login ( request ):
 
 	# auth logic here...
 	print( f"code: {code}" )
-	token = providers.get_token( "42", { "code": code, "state": csrf } )
+	token = fortytwo.get_token( "42", { "code": code, "state": csrf } )
 	print( f"token: {token}" )
 	return ( LoginView.as_view()( request ) )
 

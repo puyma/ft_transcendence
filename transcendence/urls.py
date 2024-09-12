@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.urls import path
 
 from . import views
+from .providers import fortytwo
 
 urlpatterns = [
     path( '', views.HomepageView.as_view(), name='home' ),
@@ -16,7 +17,7 @@ urlpatterns = [
     path( 'solo_play/play/', views.play_view, name='play' ),
     path( 'solo_play/play/pong/', views.pong_view, name='pong' ),
     path( 'pong/play/solo', views.GameView.as_view() ),
-	path( 'oauth/callback/', views.do_provider_login ),
+	path( 'oauth/callback/', fortytwo.do_oauth ),
 	path( 'admin/', admin.site.urls ),
 ]
 
