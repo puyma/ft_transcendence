@@ -17,6 +17,9 @@ services:
       sass:
         condition: service_started
         restart: false
+      webpack:
+        condition: service_started
+        restart: false
     entrypoint: ./django-entrypoint.sh
     environment:
       DEBUG: ${DEBUG:-false}
@@ -93,6 +96,9 @@ services:
     image: nginx:1.26-alpine3.20
     depends_on:
       django:
+        condition: service_started
+        restart: true
+      mailhog:
         condition: service_started
         restart: true
     networks:
