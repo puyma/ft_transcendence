@@ -14,7 +14,7 @@ def do_oauth ( request ):
 	code = request.GET.get( 'code' )
 	state = request.COOKIES.get( 'csrftoken' )
 
-	token = oauth.get_token ( code )
+	token = oauth.get_token ( code, state )
 	print( f"token: {token}" )
 
 	return ( redirect( 'profile' ) )
