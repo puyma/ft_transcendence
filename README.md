@@ -11,7 +11,7 @@ DB_USER=
 DB_PASSWORD=
 ```
 
-Also add these. DOMAIN_URL consists of scheme + domain + port
+Also add these. DOMAIN_URL consists of scheme + domain + port (if not the default ones; 80/443 )
 ```
 DOMAIN=
 DOMAIN_URL=
