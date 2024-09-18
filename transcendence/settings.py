@@ -71,9 +71,15 @@ DATABASES = {
 		'USER': os.environ.get( "DB_USER" ),
 		'PASSWORD': os.environ.get( "DB_PASSWORD" ),
 		'HOST': os.environ.get( "DB_HOST" ),
-		'PORT': os.environ.get( "PORT" ),
+		'PORT': os.environ.get( "DB_PORT" ),
     }
 }
+
+AUTH_USER_MODEL = 'auth.User'
+AUTHENTICATION_BACKENDS = [
+		'transcendence.providers.fortytwo.AuthBackend42',
+		'django.contrib.auth.backends.ModelBackend'
+		]
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

@@ -35,23 +35,6 @@ class LoginView ( auth_views.LoginView ):
 				{"state": self.request.COOKIES.get( 'csrftoken' ) } )
 		return ( context )
 
-def do_provider_login ( request ):
-	csrf = request.COOKIES.get( 'csrftoken', None )
-	# if csrf is None... abort
-	state = request.GET.get( 'state', None )
-	# if state is None... abort
-	code = request.GET.get( 'code', None )
-
-	# If the states don't match the process should be aborted.
-	if csrf != state:
-		return ( redirect( 'login' ) )
-
-	# auth logic here...
-	print( f"code: {code}" )
-	token = fortytwo.get_token( "42", { "code": code, "state": csrf } )
-	print( f"token: {token}" )
-	return ( LoginView.as_view()( request ) )
-
 @login_required
 def do_logout ( request ):
 	auth.logout( request )

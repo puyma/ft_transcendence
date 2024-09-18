@@ -17,7 +17,7 @@ urlpatterns = [
     path( 'solo_play/play/', views.play_view, name='play' ),
     path( 'solo_play/play/pong/', views.pong_view, name='pong' ),
     path( 'pong/play/solo', views.GameView.as_view() ),
-	path( 'oauth/callback/', fortytwo.do_oauth ),
+	path( 'oauth/callback/', fortytwo.do_provider_login ),
 	path( 'admin/', admin.site.urls ),
 ]
 
