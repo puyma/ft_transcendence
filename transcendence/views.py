@@ -80,6 +80,15 @@ class ProfileView ( generic.TemplateView ):
 		context["page"] = "tr/pages/profile.html"
 		return ( context )
 
+@login_required
+def profile_delete ( request ):
+	user_pk = request.user.pk
+	auth.logout( request )
+	User = auth.get_user_model()
+	User.objects.filter( pk=user_pk ).delete()
+	messages.success( request, "account delete successfully" )
+	return ( redirect( 'home' ) )
+
 class TournamentView ( generic.TemplateView ):
 	template_name = "tr/base.html"
 

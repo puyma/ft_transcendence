@@ -10,6 +10,7 @@ urlpatterns = [
     path( 'logout/', views.do_logout, name='logout' ),
     path( 'signup/', views.SignupView.as_view(), name='signup' ),
     path( 'profile/', views.ProfileView.as_view(), name='profile' ),
+	path( 'profile/delete/', views.profile_delete, name='del_account' ),
     path( 'settings/', views.ProfileView.as_view(), name='settings' ),
     path( 'tournament/', views.TournamentView.as_view(), name='tournament' ),
     path( 'double_play/', views.double_play_view, name='double_play' ),
@@ -21,7 +22,7 @@ urlpatterns = [
 	path( 'admin/', admin.site.urls ),
 	#the following will use list views
 	path( 'users/<str:username>/', views.HomepageView.as_view() ),
-	path( 'pong/users/<str:username>/', views.HomepageView.as_view() )
+	path( 'pong/users/<str:username>/', views.HomepageView.as_view() ),
 ]
 
 # handle404...

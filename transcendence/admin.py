@@ -10,13 +10,17 @@ from .models import Profile
 #	raw_id_fields = ['user']
 
 class ProfileInline ( admin.StackedInline ):
-	model = User
 	can_delete = False
+	fields = ['kind', 'avatar']
+	model = Profile
 	verbose_name = 'profile'
 	verbose_name_plural = 'profiles'
 
 class UserAdmin ( BaseUserAdmin ):
-	inline = [ProfileInline]
+	inline = [
+			ProfileInline
+			]
 
 admin.site.unregister( User )
 admin.site.register( User, UserAdmin )
+admin.site.register( Profile )

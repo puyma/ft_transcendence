@@ -72,8 +72,27 @@
            class="form-control"
            placeholder="{{ user.email }}">
     </div>
+
   </fieldset>
 
+  <hr>
+  <p>date joined: {{ user.date_joined }}</p>
+  <p>username: {{ user.username }}</p>
+  <p>first name: {{ user.first_name }}</p>
+  <p>last name: {{ user.last_name }}</p>
+  <p>email: {{ user.email }}</p>
+  <p>avatar: <img src="{{ user.profile.avatar_url }}" height="200" width="auto"></p>
+  <p>campus: {{ user.profile.campus_name }}</p>
+  <p>display name: {{ user.profile.display_name }}</p>
+  <p>kind: {{ user.profile.kind }}</p>
+  <p>language: {{ user.profile.language }}:{{ user.profile.language_id }}</p>
+  <p>time zone: {{ user.profile.time_zone }}</p>
+
+</form>
+
+<form method="post" action="{% url 'del_account' %}">
+    {% csrf_token %}
+    <button type="submit">delete account</button>
 </form>
 
 {% if user.friends %}

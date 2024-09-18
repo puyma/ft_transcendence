@@ -1,5 +1,9 @@
 import urllib
 import requests
+import json
+
+from io import BytesIO
+from PIL import Image
 
 from django.conf import settings
 from django.contrib.auth import authenticate
@@ -9,6 +13,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import redirect
 
 from . import oauth
+
 
 class ProviderException ( BaseException ):
 	pass
@@ -55,8 +60,20 @@ class AuthBackend42 ( BaseBackend ):
 			user = User.objects.get( username=username )
 		except User.DoesNotExist:
 			user = User( username=username )
-			#user.profile.kind = me.get( 'kind' )
+			user.email = me.get( 'email' )
+			user.first_name = me.get( 'first_name' )
+			user.last_name = me.get( 'last_name' )
 			user.save()
+			user.profile.avatar_url = me.get( 'image' ).get( 'link' )
+			user.profile.display_name = me.get( 'displayname' )
+			user.profile.kind = me.get( 'kind' )
+			campus = me.get( 'campus' )[0]
+			user.profile.campus_name = campus.get( 'name' )
+			user.profile.time_zone = campus.get( 'time_zone' )
+			language = campus.get( 'language' )
+			user.profile.language_id = language.get( 'id' )
+			user.profile.language = language.get( 'identifier' )
+			user.profile.save()
 			return ( user )
 		return ( user )
 
