@@ -19,6 +19,9 @@ urlpatterns = [
     path( 'pong/play/solo', views.GameView.as_view() ),
 	path( 'oauth/callback/', fortytwo.do_provider_login ),
 	path( 'admin/', admin.site.urls ),
+	#the following will use list views
+	path( 'users/<str:username>/', views.HomepageView.as_view() ),
+	path( 'pong/users/<str:username>/', views.HomepageView.as_view() )
 ]
 
 # handle404...
