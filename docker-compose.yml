@@ -91,7 +91,7 @@ services:
     networks:
       - tr-network
 
-  server:
+  nginx:
     container_name: tr-server
     image: nginx:1.26-alpine3.20
     depends_on:
