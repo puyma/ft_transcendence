@@ -8,16 +8,16 @@
 	<body data-host="{{ request.get_host }}" data-scheme="{{ request.scheme }}"
 		data-bs-theme="dark">
 
-		{% include 'app/components/_header.html' %}
+		{% include 'tr/components/_header.html' %}
 
 		<main id="main">
 			{% include page %}
 		</main>
 
-		{% include 'app/components/_footer.html' %}
+		{% include 'tr/components/_footer.html' %}
 
 		{% if messages %}
-		{% include 'app/components/_messages.html' %}
+		{% include 'tr/components/_messages.html' %}
 		{% endif %}
 	
 		<script defer src="{% static 'js/bundle.js' %}"></script>
