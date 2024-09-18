@@ -15,21 +15,21 @@ from .providers import fortytwo
 # https://django-advanced-training.readthedocs.io/en/latest/features/class-based-views/
 
 class HomepageView ( generic.TemplateView ):
-	template_name = "app/base.html"
+	template_name = "tr/base.html"
 
 	def get_context_data ( self, **kwargs ):
 		context = super().get_context_data( **kwargs )
-		context["page"] = "app/pages/home.html"
+		context["page"] = "tr/pages/home.html"
 		return ( context )
 
 class LoginView ( auth_views.LoginView ):
 	redirect_authenticated_user = True
-	template_name = "app/base.html"
+	template_name = "tr/base.html"
 	# settings.py: next_page = "/profile"
 
 	def get_context_data ( self, **kwargs ):
 		context = super().get_context_data( **kwargs )
-		context["page"] = "app/pages/login.html"
+		context["page"] = "tr/pages/login.html"
 		context["form"] = forms.LoginForm()
 		context['provider_42_login'] = fortytwo.get_login_url( "42", 
 				{"state": self.request.COOKIES.get( 'csrftoken' ) } )
@@ -43,11 +43,11 @@ def do_logout ( request ):
 
 class LogoutView ( auth_views.LogoutView ):
 	http_method_names = ["post", "get"]
-	template_name = "app/base.html"
+	template_name = "tr/base.html"
 
 	def get_context_data ( self, **kwargs ):
 		context = super().get_context_data( **kwargs )
-		context["page"] = "app/pages/logout.html"
+		context["page"] = "tr/pages/logout.html"
 		return ( context )
 
 	def get ( self, request, *args, **kwargs ):
@@ -60,48 +60,48 @@ class LogoutView ( auth_views.LogoutView ):
 class SignupView ( generic.CreateView ):
   form_class = auth.forms.UserCreationForm
   success_url = urls.reverse_lazy( 'login' )
-  template_name = "app/base.html"
+  template_name = "tr/base.html"
 
   def get_context_data ( self, **kwargs ):
 	  context = super().get_context_data( **kwargs )
-	  context["page"] = "app/pages/signup.html"
+	  context["page"] = "tr/pages/signup.html"
 	  context["form"] = forms.SignupForm()
 	  return ( context )
 
 @login_required
 def profile_dashboard ( request ):
-	return ( render( request, 'app/pages/base.html', {'page': 'app/pages/profile.html'} ) )
+	return ( render( request, 'tr/pages/base.html', {'page': 'tr/pages/profile.html'} ) )
 
 class ProfileView ( generic.TemplateView ):
-	template_name = "app/base.html"
+	template_name = "tr/base.html"
 
 	def get_context_data ( self, **kwargs ):
 		context = super().get_context_data( **kwargs )
-		context["page"] = "app/pages/profile.html"
+		context["page"] = "tr/pages/profile.html"
 		return ( context )
 
 class TournamentView ( generic.TemplateView ):
-	template_name = "app/base.html"
+	template_name = "tr/base.html"
 
 	def get_context_data ( self, **kwargs ):
 		context = super().get_context_data( **kwargs )
-		context["page"] = "app/pages/tournament.html"
+		context["page"] = "tr/pages/tournament.html"
 		return ( context )
 
 class PlayView ( generic.TemplateView ):
-	template_name = "app/base.html"
+	template_name = "tr/base.html"
 
 	def get_context_data ( self, **kwargs ):
 		context = super().get_context_data( **kwargs )
-		context["page"] = "app/pages/tournament.html"
+		context["page"] = "tr/pages/tournament.html"
 		return ( context )
 
 class GameView ( generic.TemplateView ):
-	template_name = "app/pages/pong.html"
+	template_name = "tr/pages/pong.html"
 	
 	def get_context_data ( self, **kwargs ):
 		context = super().get_context_data( **kwargs )
-		context["page"] = "app/pages/pong.html"
+		context["page"] = "tr/pages/pong.html"
 		return ( context )
 
 ##
@@ -111,9 +111,9 @@ def double_play_view ( request ):
 		"title":"P4ngP2ong",
 		"lang":"en",
         "username": "clara",
-		"page": "app/pages/double_play.html",
+		"page": "tr/pages/double_play.html",
     }
-    return ( render( request, 'app/base.html', context) )
+    return ( render( request, 'tr/base.html', context) )
 
 def solo_play_view ( request ):
 
@@ -121,24 +121,24 @@ def solo_play_view ( request ):
 		"title":"P4ngP2ong",
 		"lang":"en",
         "username": "clara",
-		"page": "app/pages/solo_play.html",
+		"page": "tr/pages/solo_play.html",
     }
-	return ( render( request, 'app/base.html', context ) )
+	return ( render( request, 'tr/base.html', context ) )
 
 def play_view ( request ):
     context = {
 		"title":"P4ngP2ong",
 		"lang":"en",
         "username": "clara",
-		"page": "app/pages/play.html",
+		"page": "tr/pages/play.html",
     }
-    return ( render ( request, 'app/base.html', context ) )
+    return ( render ( request, 'tr/base.html', context ) )
 
 def pong_view ( request ):
     context = {
 		"title":"P4ngP2ong",
 		"lang":"en",
         "username": "clara",
-		"page": "app/pages/pong.html",
+		"page": "tr/pages/pong.html",
     }
-    return ( render( request, 'app/base.html', context ) )
+    return ( render( request, 'tr/base.html', context ) )
