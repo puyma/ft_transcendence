@@ -58,7 +58,7 @@ class PlayView ( generic.TemplateView ):
 		return ( context )
 
 class GameView ( generic.TemplateView ):
-	template_name = "app/pages/pong.html"
+	template_name = "app/base.html"
 	
 	def get_context_data ( self, **kwargs ):
 		context = super().get_context_data( **kwargs )
