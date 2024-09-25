@@ -12,14 +12,23 @@ class Game {
         };
         this.initialSpeed = this.difficultySettings[this.difficulty];
 
+        // Ajustar dificultad de la máquina
+        this.aiDifficulty = 'medium'; // 'easy', 'medium', 'hard'
+        this.aiDifficultySettings = {
+            easy: 0.5,   // velocidad de la máquina
+            medium: 1,   // velocidad de la máquina
+            hard: 1.5    // velocidad de la máquina
+        };
+        this.aiSpeed = this.aiDifficultySettings[this.aiDifficulty];
+
         // Dimensiones y propiedades del campo
         this.ballHeight = 2;
         this.wallHeight = this.ballHeight * 2;
         this.wallThickness = 1;
         this.screenWidth = window.innerWidth;
         this.screenHeight = window.innerHeight;
-        this.fieldWidth = 100;
-        this.fieldHeight = 50;
+        this.fieldWidth = 120;
+        this.fieldHeight = 60;
 
         // Estado del juego
         this.scene = null;
@@ -45,9 +54,7 @@ class Game {
 
         this.isGameStarted = false; // Nuevo estado para saber si el juego ha comenzado
 
-        // Inicializar el juego
-        //this.init();
-
+        this.winScore = 1; // Goles necesarios para ganar
     }
     
     exitGame() {
@@ -66,6 +73,9 @@ class Game {
         this.createLights();
         this.createObjects();
 
+        // Crear el marcador
+        this.createScoreboard();
+
         // Configurar los event listeners
         window.addEventListener('resize', this.resizeCanvas.bind(this));
         window.addEventListener('keydown', this.handleKeydown.bind(this));
@@ -80,11 +90,11 @@ class Game {
         const startMessage = document.createElement('div');
         startMessage.id = "startMessage";
         startMessage.style.position = 'absolute';
-        startMessage.style.top = '50%';
+        startMessage.style.top = '30%';
         startMessage.style.left = '50%';
         startMessage.style.transform = 'translate(-50%, -50%)';
         startMessage.style.fontSize = '24px';
-        startMessage.style.color = '#ffffff';
+        startMessage.style.color = '#0000FF';
         startMessage.innerHTML = "Presiona cualquier tecla para comenzar";
         document.body.appendChild(startMessage);
 
@@ -207,22 +217,41 @@ class Game {
     }
 
     handleKeydown(event) {
-        switch (event.key) {
-            case 'ArrowUp':
-                this.upKey.isPressed = true;
-                break;
-            case 'ArrowDown':
-                this.downKey.isPressed = true;
-                break;
-            case 'w':
-                this.wKey.isPressed = true;
-                break;
-            case 's':
-                this.sKey.isPressed = true;
-                break;
-            case 'Escape': // Detectar si se presiona 'ESC'
-                this.exitGame();  // Llamar a la función para salir del juego
-                break;
+        if (!this.isGameStarted) {
+            // Si el juego no ha comenzado, permite iniciar el juego
+            if (event.key === 'Escape') {
+                this.exitGame(); // Salir del juego
+            } else 
+                this.startGame(); // Iniciar el juego
+            
+        } else {
+            switch (event.key) {
+                case 'ArrowUp':
+                    this.upKey.isPressed = true;
+                    event.preventDefault(); // Evitar el scroll de la pantalla
+                    break;
+                case 'ArrowDown':
+                    this.downKey.isPressed = true;
+                    event.preventDefault(); // Evitar el scroll de la pantalla
+                    break;
+                case 'w':
+                    this.wKey.isPressed = true;
+                    event.preventDefault(); // Evitar el scroll de la pantalla
+                    break;
+                case 's':
+                    this.sKey.isPressed = true;
+                    event.preventDefault(); // Evitar el scroll de la pantalla
+                    break;
+                case 'Escape': // Detectar si se presiona 'ESC'
+                    this.exitGame();  // Llamar a la función para salir del juego
+                    break;
+                default:
+                    // Reiniciar el juego si se presiona cualquier otra tecla
+                    if (!this.isGameStarted) {
+                        this.resetGame(); // Reiniciar el juego
+                    }
+                    break;
+            }
         }
     }
 
@@ -241,6 +270,30 @@ class Game {
                 this.sKey.isPressed = false;
                 break;
         }
+    }
+
+    createScoreboard() {
+        // Crear el contenedor del marcador
+        this.scoreboard = document.createElement('div');
+        this.scoreboard.id = 'scoreboard';
+        this.scoreboard.style.position = 'absolute';
+        this.scoreboard.style.top = '10px';
+        this.scoreboard.style.left = '50%';
+        this.scoreboard.style.transform = 'translateX(-50%)';
+        this.scoreboard.style.fontSize = '24px';
+        this.scoreboard.style.color = '#FFFFFF';
+        this.scoreboard.style.backgroundColor = 'rgba(0, 0, 0, 0.5)'; // Fondo semi-transparente
+        this.scoreboard.style.padding = '10px';
+        this.scoreboard.style.borderRadius = '5px';
+        document.body.appendChild(this.scoreboard);
+    
+        // Inicializar el marcador
+        this.updateScoreboard();
+    }
+
+    updateScoreboard() {
+        // Actualizar el marcador con los puntajes actuales
+        this.scoreboard.innerHTML = `Jugador 1: ${this.paddle1.score} | Jugador 2: ${this.paddle2.score}`;
     }
 
     collision(ball, paddle) {
@@ -293,12 +346,21 @@ class Game {
             if (!this.collision(this.ball, this.paddle1)) {
                 this.ball.resetPosition();
                 this.paddle2.score++;
+                this.updateScoreboard(); // Actualizar el marcador
             }
         } else if (this.ball.mesh.position.x + ballRadius >= this.fieldWidth / 2 + this.boundaryMargin) {
             if (!this.collision(this.ball, this.paddle2)) {
                 this.ball.resetPosition();
                 this.paddle1.score++;
+                this.updateScoreboard(); // Actualizar el marcador
             }
+        }
+
+        // Verificar si algún jugador ha alcanzado el puntaje de victoria
+        if (this.paddle1.score >= this.winScore) {
+            this.endGame('Jugador 1 gana!');
+        } else if (this.paddle2.score >= this.winScore) {
+            this.endGame('Jugador 2 gana!');
         }
 
         // Mover las palas
@@ -310,15 +372,69 @@ class Game {
         }
     }
 
+    endGame(winnerMessage) {
+        this.isGameStarted = false;
+    
+        // Mostrar mensaje de fin de juego
+        const endMessage = document.createElement('div');
+        endMessage.id = "endMessage";
+        endMessage.style.position = 'absolute';
+        endMessage.style.top = '30%';
+        endMessage.style.left = '50%';
+        endMessage.style.transform = 'translate(-50%, -50%)';
+        endMessage.style.fontSize = '24px';
+        endMessage.style.color = '#FF0000';
+        endMessage.innerHTML = `${winnerMessage}<br>Presiona 'R' para volver a jugar o ESC para salir.`;
+        document.body.appendChild(endMessage);
+    
+        // Limpiar event listeners existentes
+        window.removeEventListener('keydown', this.handleKeydown.bind(this));
+        window.removeEventListener('keyup', this.handleKeyup.bind(this));
+    
+        // Agregar un listener solo para la terminación del juego
+        window.addEventListener('keydown', this.handleEndGameKey.bind(this));
+    }
+
+    // Manejar la tecla presionada para reiniciar o salir
+    handleEndGameKey(event) {
+        // Al presionar la tecla R, reinicia el juego
+        if (event.key === 'R' || event.key === 'r')
+            this.resetGame(); // Reiniciar el juego
+    }
+
+    resetGame() {
+        // Limpiar el mensaje de fin de juego
+        const endMessage = document.getElementById("endMessage");
+        if (endMessage) {
+            endMessage.remove(); // Asegúrate de eliminar el mensaje
+        }
+    
+        // Reiniciar puntajes y estado del juego
+        this.paddle1.score = 0;
+        this.paddle2.score = 0;
+        this.updateScoreboard(); // Asegurarte de que el marcador se reinicie
+        this.ball.resetPosition(); // Reiniciar la posición de la pelota
+        this.isGameStarted = true; // Marcar el juego como iniciado
+        this.gameLoop(); // Iniciar el bucle del juego
+    
+        // Volver a agregar los listeners de teclado
+        this.setupEventListeners(); // Esto volverá a agregar los listeners correctamente
+    }
+
     updateComPaddle() {
         const distanceToBall = this.ball.mesh.position.z - this.paddle2.mesh.position.z;
-        const aiSpeed = 0.5 * this.initialSpeed;
 
+        // Aquí se calcula la velocidad de la pala de la máquina
+        const aiSpeed = this.aiSpeed; 
+
+        // Lógica para seguir la pelota
         if (distanceToBall > 0) {
             this.paddle2.moveUp(aiSpeed);
         } else {
             this.paddle2.moveDown(aiSpeed);
         }
+
+        // Lógica de limitación de posición
         this.paddle2.limitPosition(-this.fieldHeight / 2, this.fieldHeight / 2);
     }
 
@@ -439,4 +555,3 @@ document.getElementById("pong-play-btn")?.addEventListener("click", (event) => {
     document.getElementById('main').innerHTML = "";
     game.init();  
 });
-
