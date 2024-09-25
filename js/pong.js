@@ -1,6 +1,14 @@
 document.addEventListener("DOMContentLoaded", function() {
     const canvas = document.getElementById('canvas');
+    if (!canvas) {
+        console.error("Canvas element not found!");
+        return;
+    }
     const ctx = canvas.getContext('2d');
+    if (!ctx) {
+        console.error("Canvas context not found!");
+        return;
+    }
 
     //sessionStorage para guardar el modo de juego
     const modoJuego = sessionStorage.getItem('modoJuego');
@@ -212,8 +220,13 @@ document.addEventListener("DOMContentLoaded", function() {
     function game() {
         update();
         render();
+        requestAnimationFrame(game);
     }
 
-    const framePerSecond = 50;
-    setInterval(game, 1000 / framePerSecond);
+    // const framePerSecond = 50;
+    // setInterval(game, 1000 / framePerSecond);
 });
+
+export function game() {
+    console.log("game started");
+}

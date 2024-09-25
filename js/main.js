@@ -1,4 +1,5 @@
 import bootstrap from 'bootstrap';
+import {game} from './pong.js';
 
 document.addEventListener('DOMContentLoaded', function() {
 	// Guarda la URL de la página de inicio
@@ -52,3 +53,5 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 	};
 });
+
+game();
