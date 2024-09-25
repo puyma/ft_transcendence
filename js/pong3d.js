@@ -43,9 +43,20 @@ class Game {
         this.speedIncrement = 0.05; // Incremento de velocidad de la pelota en cada colisión
         this.boundaryMargin = 5; // Margen para detectar cuando la pelota sale del campo
 
+        this.isGameStarted = false; // Nuevo estado para saber si el juego ha comenzado
+
         // Inicializar el juego
-        this.init();
-        this.gameLoop();
+        //this.init();
+
+    }
+    
+    exitGame() {
+        // Función para salir del juego y volver al menú anterior
+        const exitMessage = confirm("¿Estás seguro de que quieres salir del juego?");
+        if (exitMessage) {
+            // Aquí puedes redirigir al menú anterior, por ejemplo:
+            window.location.href = "menu.html";  // Cambiar la URL al menú o página anterior
+        }
     }
 
     init() {
@@ -59,21 +70,64 @@ class Game {
         window.addEventListener('resize', this.resizeCanvas.bind(this));
         window.addEventListener('keydown', this.handleKeydown.bind(this));
         window.addEventListener('keyup', this.handleKeyup.bind(this));
+
+        this.showStartMessage();
+        this.gameLoop();
+    }
+
+    showStartMessage() {
+        // Crear y mostrar un mensaje de inicio con HTML
+        const startMessage = document.createElement('div');
+        startMessage.id = "startMessage";
+        startMessage.style.position = 'absolute';
+        startMessage.style.top = '50%';
+        startMessage.style.left = '50%';
+        startMessage.style.transform = 'translate(-50%, -50%)';
+        startMessage.style.fontSize = '24px';
+        startMessage.style.color = '#ffffff';
+        startMessage.innerHTML = "Presiona cualquier tecla para comenzar";
+        document.body.appendChild(startMessage);
+
+        // Esperar a que el jugador presione una tecla para iniciar
+        window.addEventListener('keydown', this.startGame.bind(this));
+    }
+
+    startGame() {
+        if (!this.isGameStarted) {
+            this.isGameStarted = true;  // Marcar que el juego ha comenzado
+            this.ball.resetPosition();  // Poner la pelota en movimiento
+            this.hideStartMessage();    // Ocultar el mensaje de inicio
+            this.gameLoop();            // Iniciar el bucle del juego
+        }
+    }
+
+    exitGame() {
+        // Función para salir del juego y volver al menú anterior
+        const exitMessage = confirm("¿Estás seguro de que quieres salir del juego?");
+        if (exitMessage) {
+            // Aquí puedes redirigir al menú anterior, por ejemplo:
+            window.location.href = "/";  // Cambiar la URL al menú o página anterior
+        }
+    }
+
+    hideStartMessage() {
+        const startMessage = document.getElementById("startMessage");
+        if (startMessage) {
+            startMessage.remove();  // Eliminar el mensaje de inicio
+        }
     }
 
     createCamera() {
-        this.camera = new THREE.OrthographicCamera(
-            -this.fieldWidth / 1.2,
-            this.fieldWidth / 1.2,
-            this.fieldHeight / 1.2,
-            -this.fieldHeight / 1.2,
-            0.1,
-            1000
+        this.camera = new THREE.PerspectiveCamera(
+            75, // Campo de visión (FOV)
+            this.screenWidth / this.screenHeight, // Relación de aspecto
+            0.1, // Plano cercano
+            1000 // Plano lejano
         );
-
-        this.camera.position.set(75, 100, 180);
-        this.camera.rotation.set(-Math.PI / 2, 0, 0);
-        this.camera.lookAt(0, 0, 0);
+    
+        // Ajustar la posición de la cámara
+        this.camera.position.set(20, 70, 70); // Colocarla en una posición elevada
+        this.camera.lookAt(0, 0, 0); // Mirar hacia el centro del campo
     }
 
     createRenderer() {
@@ -82,6 +136,7 @@ class Game {
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.domElement.style.width = '100%';
         this.renderer.domElement.style.height = '100%';
+        this.renderer.setClearColor(0xfaf0e6);
 
         const main = document.getElementById("main");
         if (main) {
@@ -130,7 +185,7 @@ class Game {
             0, 0, -this.fieldHeight / 2
         ]);
         lineGeometry.setAttribute('position', new THREE.BufferAttribute(lineVertices, 3));
-        const lineMaterial = new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 2 });
+        const lineMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 2 });
         const centerLine = new THREE.Line(lineGeometry, lineMaterial);
         this.scene.add(centerLine);
     }
@@ -138,14 +193,17 @@ class Game {
     resizeCanvas() {
         this.screenWidth = window.innerWidth;
         this.screenHeight = window.innerHeight;
-        this.renderer.setSize(this.screenWidth, this.screenHeight);
-
-        this.camera.left = -this.fieldWidth / 1.7;
-        this.camera.right = this.fieldWidth / 1.7;
-        this.camera.top = this.fieldHeight / 1.7;
-        this.camera.bottom = -this.fieldHeight / 1.7;
-        this.camera.aspect = this.screenWidth / this.screenHeight;
+        
+        // Ajustar la cámara para que mantenga el tamaño del campo
+        const aspectRatio = this.screenWidth / this.screenHeight;
+        
+        this.camera.left = -this.fieldWidth / 2;
+        this.camera.right = this.fieldWidth / 2;
+        this.camera.top = this.fieldHeight / 2;
+        this.camera.bottom = -this.fieldHeight / 2;
+        
         this.camera.updateProjectionMatrix();
+        this.renderer.setSize(this.screenWidth, this.screenHeight);
     }
 
     handleKeydown(event) {
@@ -161,6 +219,9 @@ class Game {
                 break;
             case 's':
                 this.sKey.isPressed = true;
+                break;
+            case 'Escape': // Detectar si se presiona 'ESC'
+                this.exitGame();  // Llamar a la función para salir del juego
                 break;
         }
     }
@@ -268,7 +329,9 @@ class Game {
     gameLoop() {
         this.update();
         this.render();
-        requestAnimationFrame(this.gameLoop.bind(this));
+        if (this.isGameStarted) {
+            requestAnimationFrame(this.gameLoop.bind(this));  // Solo seguir el bucle si el juego ha comenzado
+        }
     }
 }
 
@@ -306,7 +369,7 @@ class Ball {
     constructor(initialSpeed) {
         const ballRadius = 0.5;
         const ballGeometry = new THREE.SphereGeometry(ballRadius, 32, 32);
-        const ballMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+        const ballMaterial = new THREE.MeshStandardMaterial({ color: 0xffff00 });
         this.mesh = new THREE.Mesh(ballGeometry, ballMaterial);
         this.initialSpeed = initialSpeed;
         this.speed = initialSpeed;
@@ -344,9 +407,11 @@ class Ball {
 class Field {
     constructor(width, height) {
         const geometry = new THREE.PlaneGeometry(width, height);
-        const material = new THREE.MeshStandardMaterial({ color: 0x00ff00, side: THREE.DoubleSide });
+        const material = new THREE.MeshStandardMaterial({ color: 0x000000, side: THREE.DoubleSide });
         this.mesh = new THREE.Mesh(geometry, material);
-        this.mesh.rotation.x = -Math.PI / 2;
+        
+        // Rotar el campo para que esté alineado con la vista
+        this.mesh.rotation.x = -Math.PI / 2; // Girar el campo para que esté recto
     }
 }
 
@@ -367,5 +432,11 @@ class Walls {
     }
 }
 
-// Iniciar el juego
-const game = new Game();
+document.getElementById("pong-play-btn")?.addEventListener("click", (event) => {
+    event.preventDefault();
+    // Iniciar el juego
+    const game = new Game();
+    document.getElementById('main').innerHTML = "";
+    game.init();  
+});
+
