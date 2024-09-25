@@ -1,0 +1,26 @@
+{% load static %}
+
+<!doctype html>
+<html lang="{{ lang | default:'en' }}">
+
+	{% include 'tr/components/_head.html' %}
+
+	<body data-host="{{ request.get_host }}" data-scheme="{{ request.scheme }}"
+		data-bs-theme="dark">
+
+		{% include 'tr/components/_header.html' %}
+
+		<main id="main">
+			{% include page %}
+		</main>
+
+		{% include 'tr/components/_footer.html' %}
+
+		{% if messages %}
+		{% include 'tr/components/_messages.html' %}
+		{% endif %}
+	
+		<script defer src="{% static 'js/bundle.js' %}"></script>
+
+	</body>
+</html>
