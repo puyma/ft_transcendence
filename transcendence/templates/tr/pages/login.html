@@ -1,0 +1,26 @@
+<h1>Login</h1>
+
+<form id="login-form" method="post">
+
+	{% csrf_token %}
+
+	{% if form.errors %}
+	<p>Hey, errors</p>
+	{% endif %}
+
+	{% if user_does_not_exist %}
+	<h2>The user does not exist or the password is wrong.</h2>
+	{% endif %}
+
+	{{ form }}
+
+	<input type="submit" class="btn btn-light btn-lg" value="Log in">
+	
+	<button type="button"
+			class="btn btn-light btn-lg"
+			data-login-provider=true
+			data-login-provider-url="{{ provider_42_login }}">
+		Log in with 42
+	</button>
+
+</form>
