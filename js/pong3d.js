@@ -67,6 +67,9 @@ class Game {
     }
 
     init() {
+
+        console.log( this );
+
         this.scene = new THREE.Scene();
         this.createCamera();
         this.createRenderer();
@@ -85,24 +88,11 @@ class Game {
         this.gameLoop();
     }
 
-    showStartMessage() {
-        // Crear y mostrar un mensaje de inicio con HTML
-        const startMessage = document.createElement('div');
-        startMessage.id = "startMessage";
-        startMessage.style.position = 'absolute';
-        startMessage.style.top = '30%';
-        startMessage.style.left = '50%';
-        startMessage.style.transform = 'translate(-50%, -50%)';
-        startMessage.style.fontSize = '24px';
-        startMessage.style.color = '#0000FF';
-        startMessage.innerHTML = "Presiona cualquier tecla para comenzar";
-        document.body.appendChild(startMessage);
-
-        // Esperar a que el jugador presione una tecla para iniciar
-        window.addEventListener('keydown', this.startGame.bind(this));
-    }
-
     startGame() {
+
+        // TEMP
+        document.getElementsByTagName( 'header' )?.[0].setAttribute( "style", "display:none;" );
+
         if (!this.isGameStarted) {
             this.isGameStarted = true;  // Marcar que el juego ha comenzado
             this.ball.resetPosition();  // Poner la pelota en movimiento
@@ -120,10 +110,28 @@ class Game {
         }
     }
 
+    showStartMessage() {
+        // Crear y mostrar un mensaje de inicio con HTML
+        const startMessage = document.createElement('div');
+        startMessage.id = "pong-message";
+        startMessage.style.position = 'absolute';
+        startMessage.style.top = '30%';
+        startMessage.style.left = '50%';
+        startMessage.style.transform = 'translate(-50%, -50%)';
+        startMessage.style.fontSize = '24px';
+        startMessage.style.color = '#0000FF';
+        startMessage.style.display = '';
+        startMessage.innerHTML = "Presiona cualquier tecla para comenzar";
+        document.getElementById( 'main' ).insertAdjacentElement( 'afterbegin', startMessage );
+
+        // Esperar a que el jugador presione una tecla para iniciar
+        window.addEventListener('keydown', this.startGame.bind(this));
+    }
+
     hideStartMessage() {
-        const startMessage = document.getElementById("startMessage");
+        const startMessage = document.getElementById("pong-message");
         if (startMessage) {
-            startMessage.remove();  // Eliminar el mensaje de inicio
+            startMessage.style.display = "none";
         }
     }
 
@@ -217,13 +225,16 @@ class Game {
     }
 
     handleKeydown(event) {
+        console.log( event.key );
         if (!this.isGameStarted) {
             // Si el juego no ha comenzado, permite iniciar el juego
-            if (event.key === 'Escape') {
+            if (event.key === 'Escape')
                 this.exitGame(); // Salir del juego
-            } else 
+            else if ( event.key === 'r' )
+                this.resetGame(); // Reiniciar el juego
+            else 
                 this.startGame(); // Iniciar el juego
-            
+
         } else {
             switch (event.key) {
                 case 'ArrowUp':
@@ -245,12 +256,7 @@ class Game {
                 case 'Escape': // Detectar si se presiona 'ESC'
                     this.exitGame();  // Llamar a la función para salir del juego
                     break;
-                default:
-                    // Reiniciar el juego si se presiona cualquier otra tecla
-                    if (!this.isGameStarted) {
-                        this.resetGame(); // Reiniciar el juego
-                    }
-                    break;
+
             }
         }
     }
@@ -376,38 +382,27 @@ class Game {
         this.isGameStarted = false;
     
         // Mostrar mensaje de fin de juego
-        const endMessage = document.createElement('div');
-        endMessage.id = "endMessage";
-        endMessage.style.position = 'absolute';
-        endMessage.style.top = '30%';
-        endMessage.style.left = '50%';
-        endMessage.style.transform = 'translate(-50%, -50%)';
-        endMessage.style.fontSize = '24px';
+        const endMessage = document.getElementById( 'pong-message' );
+        // endMessage.style.position = 'absolute';
+        // endMessage.style.top = '30%';
+        // endMessage.style.left = '50%';
+        // endMessage.style.transform = 'translate(-50%, -50%)';
+        // endMessage.style.fontSize = '24px';
         endMessage.style.color = '#FF0000';
+        endMessage.style.display = '';
         endMessage.innerHTML = `${winnerMessage}<br>Presiona 'R' para volver a jugar o ESC para salir.`;
-        document.body.appendChild(endMessage);
     
         // Limpiar event listeners existentes
-        window.removeEventListener('keydown', this.handleKeydown.bind(this));
-        window.removeEventListener('keyup', this.handleKeyup.bind(this));
-    
-        // Agregar un listener solo para la terminación del juego
-        window.addEventListener('keydown', this.handleEndGameKey.bind(this));
-    }
-
-    // Manejar la tecla presionada para reiniciar o salir
-    handleEndGameKey(event) {
-        // Al presionar la tecla R, reinicia el juego
-        if (event.key === 'R' || event.key === 'r')
-            this.resetGame(); // Reiniciar el juego
+        //window.removeEventListener('keydown', this.handleKeydown.bind(this));
+        //window.removeEventListener('keyup', this.handleKeyup.bind(this));
     }
 
     resetGame() {
+
+        console.log( this );
+        
         // Limpiar el mensaje de fin de juego
-        const endMessage = document.getElementById("endMessage");
-        if (endMessage) {
-            endMessage.remove(); // Asegúrate de eliminar el mensaje
-        }
+        document.getElementById("pong-message").innerHTML = ''; // Asegúrate de eliminar el mensaje
     
         // Reiniciar puntajes y estado del juego
         this.paddle1.score = 0;
@@ -417,8 +412,13 @@ class Game {
         this.isGameStarted = true; // Marcar el juego como iniciado
         this.gameLoop(); // Iniciar el bucle del juego
     
-        // Volver a agregar los listeners de teclado
-        this.setupEventListeners(); // Esto volverá a agregar los listeners correctamente
+        // Limpiar los event listeners de fin de juego
+        //window.removeEventListener('keydown', this.handleEndGameKey.bind(this)); // Eliminar el listener
+
+        // Volver a agregar los listeners de teclado para el juego
+        //this.setupEventListeners(); // Esto volverá a agregar los listeners correctamente
+
+        //this.gameLoop(); // Iniciar el bucle del juego
     }
 
     updateComPaddle() {
@@ -449,6 +449,7 @@ class Game {
             requestAnimationFrame(this.gameLoop.bind(this));  // Solo seguir el bucle si el juego ha comenzado
         }
     }
+
 }
 
 // Clase para las palas
