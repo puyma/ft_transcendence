@@ -17,10 +17,15 @@ services:
       sass:
         condition: service_started
         restart: false
+      webpack:
+        condition: service_started
+        restart: false
     entrypoint: ./django-entrypoint.sh
     environment:
       DEBUG: ${DEBUG:-false}
-      42_API_ENDPOINT: https://api.intra.42.fr
+      API_42_ENDPOINT: https://api.intra.42.fr
+      API_42_UID: ${API_42_UID}
+      API_42_SECRET: ${API_42_SECRET}
       ALLOWED_HOSTS: localhost,dump-ubuntu-barcelona
       SECRET_KEY: tr-secret-key
       DB_ENGINE: django.db.backends.postgresql
@@ -29,8 +34,8 @@ services:
       DB_PASSWORD: ${DB_PASSWORD?err}
       DB_HOST: database
       DB_PORT: 5432
-      DOMAIN: localhost
-      DOMAIN_URL: http://localhost
+      DOMAIN: ${DOMAIN?err}
+      DOMAIN_URL: ${DOMAIN_URL?err}
       REDIS_HOST: redis
       REDIS_PORT: 6379
       DEFAULT_FROM_EMAIL: no-reply@dump-ubuntu-barcelona
@@ -86,11 +91,14 @@ services:
     networks:
       - tr-network
 
-  server:
+  nginx:
     container_name: tr-server
     image: nginx:1.26-alpine3.20
     depends_on:
       django:
+        condition: service_started
+        restart: true
+      mailhog:
         condition: service_started
         restart: true
     networks:

@@ -1,11 +1,9 @@
-# Django settings for transcendence project.
-
 import os
+
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -17,7 +15,6 @@ SECRET_KEY = os.environ.get( "SECRET_KEY" )
 DEBUG = os.environ.get( "DEBUG", "true" ) == "true"
 
 ALLOWED_HOSTS = os.environ.get( "ALLOWED_HOSTS" ).split( "," )
-
 
 # Application definition
 
@@ -31,7 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 	'channels',
-	'app',
+	'transcendence'
 ]
 
 MIDDLEWARE = [
@@ -74,10 +71,15 @@ DATABASES = {
 		'USER': os.environ.get( "DB_USER" ),
 		'PASSWORD': os.environ.get( "DB_PASSWORD" ),
 		'HOST': os.environ.get( "DB_HOST" ),
-		'PORT': os.environ.get( "PORT" ),
+		'PORT': os.environ.get( "DB_PORT" ),
     }
 }
 
+AUTH_USER_MODEL = 'auth.User'
+AUTHENTICATION_BACKENDS = [
+		'transcendence.providers.fortytwo.AuthBackend42',
+		'django.contrib.auth.backends.ModelBackend'
+		]
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -97,7 +99,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -113,7 +114,13 @@ MEDIA_URL = os.environ.get( "MEDIA_URL" )
 
 DOMAIN = os.environ.get( "DOMAIN" )
 DOMAIN_URL = os.environ.get( "DOMAIN_URL" )
-CSRF_TRUSTED_ORIGINS = [DOMAIN_URL, "https://localhost", "https://dump-ubuntu-barcelona:8443"]
+CSRF_TRUSTED_ORIGINS = [DOMAIN_URL]
+
+if DEBUG:
+	CSRF_TRUSTED_ORIGINS.append( "https://localhost" )
+	CSRF_TRUSTED_ORIGINS.append( "https://localhost:8443" )
+	CSRF_TRUSTED_ORIGINS.append( "https://dump-ubuntu-barcelona" )
+	CSRF_TRUSTED_ORIGINS.append( "https://dump-ubuntu-barcelona:8443" )
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -144,3 +151,7 @@ ASGI_APPLICATION = 'transcendence.asgi.application'
 LOGIN_REDIRECT_URL = 'profile'
 LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
+
+API_42_ENDPOINT = os.environ.get( 'API_42_ENDPOINT' )
+API_42_UID = os.environ.get( 'API_42_UID' )
+API_42_SECRET = os.environ.get( 'API_42_SECRET' )
