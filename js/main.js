@@ -83,5 +83,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
 		}
 		fetch_page( url, false );
 	} );
+	game();
 	return ;
 } );
