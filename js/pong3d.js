@@ -1,8 +1,45 @@
 import * as THREE from 'three';
 
+class MessageManager {
+    constructor() {
+        this.messageElement = null; // Elemento del mensaje en el DOM
+    }
+
+    createMessageElement() {
+        // Crear el contenedor del mensaje
+        this.messageElement = document.createElement('div');
+        this.messageElement.id = "pong-message";
+        this.messageElement.style.position = 'absolute';
+        this.messageElement.style.top = '30%';
+        this.messageElement.style.left = '50%';
+        this.messageElement.style.transform = 'translate(-50%, -50%)';
+        this.messageElement.style.fontSize = '24px';
+        this.messageElement.style.color = '#0000FF';
+        document.getElementById('main').insertAdjacentElement('afterbegin', this.messageElement);
+    }
+
+    showMessage(text, color = '#0000FF') {
+        if (!this.messageElement) {
+            this.createMessageElement(); // Crear el elemento si no existe
+        }
+        this.messageElement.style.color = color;
+        this.messageElement.style.display = '';
+        this.messageElement.innerHTML = text;
+    }
+
+    hideMessage() {
+        if (this.messageElement) {
+            this.messageElement.style.display = "none";
+        }
+    }
+}
+
 // Clase principal del juego
 class Game {
     constructor() {
+
+        this.messageManager = new MessageManager();
+
         // Configuración de dificultad
         this.difficulty = 'easy'; // Puedes ajustar esto para 'easy', 'medium', 'hard'
         this.difficultySettings = {
@@ -111,28 +148,13 @@ class Game {
     }
 
     showStartMessage() {
-        // Crear y mostrar un mensaje de inicio con HTML
-        const startMessage = document.createElement('div');
-        startMessage.id = "pong-message";
-        startMessage.style.position = 'absolute';
-        startMessage.style.top = '30%';
-        startMessage.style.left = '50%';
-        startMessage.style.transform = 'translate(-50%, -50%)';
-        startMessage.style.fontSize = '24px';
-        startMessage.style.color = '#0000FF';
-        startMessage.style.display = '';
-        startMessage.innerHTML = "Presiona cualquier tecla para comenzar";
-        document.getElementById( 'main' ).insertAdjacentElement( 'afterbegin', startMessage );
-
+        this.messageManager.showMessage("Presiona cualquier tecla para comenzar");
         // Esperar a que el jugador presione una tecla para iniciar
         window.addEventListener('keydown', this.startGame.bind(this));
     }
 
     hideStartMessage() {
-        const startMessage = document.getElementById("pong-message");
-        if (startMessage) {
-            startMessage.style.display = "none";
-        }
+        this.messageManager.hideMessage();
     }
 
     createCamera() {
@@ -382,25 +404,11 @@ class Game {
         this.isGameStarted = false;
     
         // Mostrar mensaje de fin de juego
-        const endMessage = document.getElementById( 'pong-message' );
-        // endMessage.style.position = 'absolute';
-        // endMessage.style.top = '30%';
-        // endMessage.style.left = '50%';
-        // endMessage.style.transform = 'translate(-50%, -50%)';
-        // endMessage.style.fontSize = '24px';
-        endMessage.style.color = '#FF0000';
-        endMessage.style.display = '';
-        endMessage.innerHTML = `${winnerMessage}<br>Presiona 'R' para volver a jugar o ESC para salir.`;
-    
-        // Limpiar event listeners existentes
-        //window.removeEventListener('keydown', this.handleKeydown.bind(this));
-        //window.removeEventListener('keyup', this.handleKeyup.bind(this));
+        this.messageManager.showMessage(`${winnerMessage}<br>Presiona 'R' para volver a jugar o ESC para salir.`, '#FF0000');
     }
 
     resetGame() {
 
-        console.log( this );
-        
         // Limpiar el mensaje de fin de juego
         document.getElementById("pong-message").innerHTML = ''; // Asegúrate de eliminar el mensaje
     
@@ -411,15 +419,7 @@ class Game {
         this.ball.resetPosition(); // Reiniciar la posición de la pelota
         this.isGameStarted = true; // Marcar el juego como iniciado
         this.gameLoop(); // Iniciar el bucle del juego
-    
-        // Limpiar los event listeners de fin de juego
-        //window.removeEventListener('keydown', this.handleEndGameKey.bind(this)); // Eliminar el listener
-
-        // Volver a agregar los listeners de teclado para el juego
-        //this.setupEventListeners(); // Esto volverá a agregar los listeners correctamente
-
-        //this.gameLoop(); // Iniciar el bucle del juego
-    }
+     }
 
     updateComPaddle() {
         const distanceToBall = this.ball.mesh.position.z - this.paddle2.mesh.position.z;
