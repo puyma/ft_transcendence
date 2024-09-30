@@ -64,8 +64,8 @@ class Game {
         this.wallThickness = 1;
         this.screenWidth = window.innerWidth;
         this.screenHeight = window.innerHeight;
-        this.fieldWidth = 120;
-        this.fieldHeight = 60;
+        this.fieldWidth = 150;
+        this.fieldHeight = 75;
 
         // Estado del juego
         this.scene = null;
@@ -96,13 +96,11 @@ class Game {
     
     start() {
         // Aquí puedes inicializar el juego
-        this.messageManager.showMessage("Cargando el juego..."); // Mostrar un mensaje de carga, si lo deseas
         this.init(); // Llamar al método init para configurar el juego
-    
-        // También puedes poner aquí otras configuraciones iniciales si es necesario
     }
 
     exitGame() {
+        this.isGameStarted = false;
         // Función para salir del juego y volver al menú anterior
         const exitMessage = confirm("¿Estás seguro de que quieres salir del juego?");
         if (exitMessage) {
@@ -178,8 +176,8 @@ class Game {
     createCamera() {
         this.camera = new THREE.PerspectiveCamera(
             75, // Campo de visión (FOV)
-            this.screenWidth / this.screenHeight, // Relación de aspecto
-            0.1, // Plano cercano
+            window.innerWidth / window.innerHeight, // Relación de aspecto
+            1, // Plano cercano
             1000 // Plano lejano
         );
     
@@ -195,6 +193,9 @@ class Game {
         this.renderer.domElement.style.width = '100%';
         this.renderer.domElement.style.height = '100%';
         this.renderer.setClearColor(0xfaf0e6);
+
+        // Establecer el color de fondo del body
+        document.body.style.backgroundColor = '#faf0e6';
 
         const main = document.getElementById("main");
         if (main) {
@@ -249,19 +250,22 @@ class Game {
     }
 
     resizeCanvas() {
+        // Obtener el nuevo ancho y alto de la ventana
         this.screenWidth = window.innerWidth;
         this.screenHeight = window.innerHeight;
-        
-        // Ajustar la cámara para que mantenga el tamaño del campo
-        const aspectRatio = this.screenWidth / this.screenHeight;
-        
-        this.camera.left = -this.fieldWidth / 2;
-        this.camera.right = this.fieldWidth / 2;
-        this.camera.top = this.fieldHeight / 2;
-        this.camera.bottom = -this.fieldHeight / 2;
-        
-        this.camera.updateProjectionMatrix();
+    
+        // Ajustar el tamaño del renderizador
         this.renderer.setSize(this.screenWidth, this.screenHeight);
+        this.renderer.setPixelRatio(window.devicePixelRatio);
+    
+        // Calcular la nueva relación de aspecto
+        const aspectRatio = this.screenWidth / this.screenHeight;
+    
+        // Ajustar la cámara con la nueva relación de aspecto
+        this.camera.aspect = aspectRatio;
+    
+        // Actualizar la matriz de proyección de la cámara
+        this.camera.updateProjectionMatrix();
     }
 
     handleKeydown(event) {
@@ -440,9 +444,9 @@ class Game {
     }
 
     gameLoop() {
-        this.update();
-        this.render();
         if (this.isGameStarted) {
+            this.update();
+            this.render();
             requestAnimationFrame(this.gameLoop.bind(this));  // Solo seguir el bucle si el juego ha comenzado
         }
     }
@@ -526,6 +530,7 @@ class Field {
         
         // Rotar el campo para que esté alineado con la vista
         this.mesh.rotation.x = -Math.PI / 2; // Girar el campo para que esté recto
+        this.mesh.position.y = 0;
     }
 }
 
