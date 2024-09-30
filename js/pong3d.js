@@ -10,7 +10,7 @@ class MessageManager {
         this.messageElement = document.createElement('div');
         this.messageElement.id = "pong-message";
         this.messageElement.style.position = 'absolute';
-        this.messageElement.style.top = '30%';
+        this.messageElement.style.top = '20%';
         this.messageElement.style.left = '50%';
         this.messageElement.style.transform = 'translate(-50%, -50%)';
         this.messageElement.style.fontSize = '24px';
@@ -105,8 +105,6 @@ class Game {
 
     init() {
 
-        console.log( this );
-
         this.scene = new THREE.Scene();
         this.createCamera();
         this.createRenderer();
@@ -121,7 +119,7 @@ class Game {
         window.addEventListener('keydown', this.handleKeydown.bind(this));
         window.addEventListener('keyup', this.handleKeyup.bind(this));
 
-        this.showStartMessage();
+        this.messageManager.showMessage("Presiona cualquier tecla para comenzar");
         this.gameLoop();
     }
 
@@ -133,7 +131,7 @@ class Game {
         if (!this.isGameStarted) {
             this.isGameStarted = true;  // Marcar que el juego ha comenzado
             this.ball.resetPosition();  // Poner la pelota en movimiento
-            this.hideStartMessage();    // Ocultar el mensaje de inicio
+            this.messageManager.hideMessage(); // Ocultar el mensaje de inicio
             this.gameLoop();            // Iniciar el bucle del juego
         }
     }
@@ -147,15 +145,27 @@ class Game {
         }
     }
 
-    showStartMessage() {
-        this.messageManager.showMessage("Presiona cualquier tecla para comenzar");
-        // Esperar a que el jugador presione una tecla para iniciar
-        window.addEventListener('keydown', this.startGame.bind(this));
+    endGame(winnerMessage) {
+        this.isGameStarted = false;
+    
+        // Mostrar mensaje de fin de juego
+        this.messageManager.showMessage(`${winnerMessage}<br>Presiona 'R' para volver a jugar o ESC para salir.`, '#FF0000');
     }
 
-    hideStartMessage() {
-        this.messageManager.hideMessage();
-    }
+    resetGame() {
+
+        // Limpiar el mensaje de fin de juego
+        document.getElementById("pong-message").innerHTML = ''; // Asegúrate de eliminar el mensaje
+    
+        // Reiniciar puntajes y estado del juego
+        this.paddle1.score = 0;
+        this.paddle2.score = 0;
+        this.updateScoreboard(); // Asegurarte de que el marcador se reinicie
+        this.ball.resetPosition(); // Reiniciar la posición de la pelota
+        this.isGameStarted = false; // Marcar el juego como no iniciado
+        // Mostrar el mensaje de inicio
+        this.messageManager.showMessage("Presiona cualquier tecla para comenzar");
+     }
 
     createCamera() {
         this.camera = new THREE.PerspectiveCamera(
@@ -399,27 +409,6 @@ class Game {
             this.movePaddle(this.paddle2, this.wKey.isPressed, this.sKey.isPressed);
         }
     }
-
-    endGame(winnerMessage) {
-        this.isGameStarted = false;
-    
-        // Mostrar mensaje de fin de juego
-        this.messageManager.showMessage(`${winnerMessage}<br>Presiona 'R' para volver a jugar o ESC para salir.`, '#FF0000');
-    }
-
-    resetGame() {
-
-        // Limpiar el mensaje de fin de juego
-        document.getElementById("pong-message").innerHTML = ''; // Asegúrate de eliminar el mensaje
-    
-        // Reiniciar puntajes y estado del juego
-        this.paddle1.score = 0;
-        this.paddle2.score = 0;
-        this.updateScoreboard(); // Asegurarte de que el marcador se reinicie
-        this.ball.resetPosition(); // Reiniciar la posición de la pelota
-        this.isGameStarted = true; // Marcar el juego como iniciado
-        this.gameLoop(); // Iniciar el bucle del juego
-     }
 
     updateComPaddle() {
         const distanceToBall = this.ball.mesh.position.z - this.paddle2.mesh.position.z;
