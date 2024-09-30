@@ -94,6 +94,14 @@ class Game {
         this.winScore = 1; // Goles necesarios para ganar
     }
     
+    start() {
+        // Aquí puedes inicializar el juego
+        this.messageManager.showMessage("Cargando el juego..."); // Mostrar un mensaje de carga, si lo deseas
+        this.init(); // Llamar al método init para configurar el juego
+    
+        // También puedes poner aquí otras configuraciones iniciales si es necesario
+    }
+
     exitGame() {
         // Función para salir del juego y volver al menú anterior
         const exitMessage = confirm("¿Estás seguro de que quieres salir del juego?");
@@ -538,10 +546,11 @@ class Walls {
     }
 }
 
+// Modificar el listener del botón para que llame a esta función
 document.getElementById("pong-play-btn")?.addEventListener("click", (event) => {
     event.preventDefault();
     // Iniciar el juego
     const game = new Game();
-    document.getElementById('main').innerHTML = "";
-    game.init();  
+    document.getElementById('main').innerHTML = ""; // Limpiar el contenedor principal
+    game.start();  // Llamar al nuevo método start
 });
