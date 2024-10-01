@@ -446,9 +446,9 @@ class Game {
     gameLoop() {
         if (this.isGameStarted) {
             this.update();
-            this.render();
-            requestAnimationFrame(this.gameLoop.bind(this));  // Solo seguir el bucle si el juego ha comenzado
         }
+        this.render();  // Asegúrate de seguir renderizando aunque el juego no haya comenzado
+        requestAnimationFrame(this.gameLoop.bind(this));
     }
 
 }
