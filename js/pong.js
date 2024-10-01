@@ -277,6 +277,7 @@ export class Game {
     }
 
     init() {
+        document.getElementsByTagName( 'header' )?.[0].setAttribute( "style", "display:none;" );
         this.resizeCanvas();
         window.addEventListener('resize', () => this.resizeCanvas());
         this.user.y = this.canvas.height / 2 / this.dpr - this.user.height / 2;
@@ -316,12 +317,6 @@ export class Game {
         this.ctx.fillText(text, x, y);
     }
 
-    // drawNet() {
-    //     console.log("w: ", this.canvas.width);
-    //     for (let i = 0; i <= this.canvas.height / this.dpr; i += 15 * this.scaleFactor) {
-    //         this.drawRectangle(this.net.x, this.net.y + i, this.net.width, this.net.height, this.net.color);
-    //     }
-    // }
     drawNet() {
         const canvasWidth = this.canvas.width / this.dpr;
         const canvasHeight = this.canvas.height / this.dpr;
@@ -343,51 +338,27 @@ export class Game {
         this.drawCircle(this.ball.x, this.ball.y, this.ball.radius, this.ball.color);
     }
 
-    // move(evt) {
-    //     const paddleSpeed = 40;
-
-    //     if (evt.key === "w") {
-    //         if (this.user.y > 0) {
-    //             this.user.y -= paddleSpeed;
-    //         }
-    //     } else if (evt.key === "s") {
-    //         if (this.user.y + this.user.height < this.canvas.height / this.dpr) {
-    //             this.user.y += paddleSpeed;
-    //         }
-    //     }
-
-    //     if (!this.soloPlay) {
-    //         if (evt.key === "ArrowUp") {
-    //             if (this.com.y > 0) {
-    //                 this.com.y -= paddleSpeed;
-    //             }
-    //         } else if (evt.key === "ArrowDown") {
-    //             if (this.com.y + this.com.height < this.canvas.height / this.dpr) {
-    //                 this.com.y += paddleSpeed;
-    //             }
-    //         }
-    //     }
-    // }
-
     move(evt) {
         const paddleSpeed = 40;
+        const canvasHeight = this.canvas.height / this.dpr;
     
-        // usr
+        // Movimiento del usuario
         if (evt.key === "w") {
-            this.user.y = Math.max(this.user.y - paddleSpeed, 0);
+            this.user.y = Math.max(this.user.y - paddleSpeed, 0); // No pasa del borde superior
         } else if (evt.key === "s") {
-            this.user.y = Math.min(this.user.y + paddleSpeed, this.canvas.height / this.dpr - this.user.height);
+            this.user.y = Math.min(this.user.y + paddleSpeed, canvasHeight - this.user.height); // No pasa del borde inferior
         }
     
-        // ia
+        // Movimiento del segundo jugador (o computadora)
         if (!this.soloPlay) {
             if (evt.key === "ArrowUp") {
-                this.com.y = Math.max(this.com.y - paddleSpeed, 0);
+                this.com.y = Math.max(this.com.y - paddleSpeed, 0); // No pasa del borde superior
             } else if (evt.key === "ArrowDown") {
-                this.com.y = Math.min(this.com.y + paddleSpeed, this.canvas.height / this.dpr - this.com.height);
+                this.com.y = Math.min(this.com.y + paddleSpeed, canvasHeight - this.com.height); // No pasa del borde inferior
             }
         }
-    }     
+    }
+    
 
     collision(ball, player) {
         ball.top = ball.y - ball.radius;
