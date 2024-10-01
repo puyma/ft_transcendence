@@ -89,6 +89,10 @@ class Game {
         this.speedIncrement = 0.05; // Incremento de velocidad de la pelota en cada colisión
         this.boundaryMargin = 5; // Margen para detectar cuando la pelota sale del campo
 
+        // Inicializa las palas
+        this.paddle1 = new Paddle(-10, 20); // Ejemplo de posición x para la pala 1
+        this.paddle2 = new Paddle(10, 20);   // Ejemplo de posición x para la pala 2
+
         this.isGameStarted = false; // Nuevo estado para saber si el juego ha comenzado
 
         this.winScore = 1; // Goles necesarios para ganar
@@ -111,6 +115,9 @@ class Game {
 
     init() {
 
+        // TEMP
+        document.getElementsByTagName( 'header' )?.[0].setAttribute( "style", "display:none;" );
+
         this.scene = new THREE.Scene();
         this.createCamera();
         this.createRenderer();
@@ -131,12 +138,12 @@ class Game {
 
     startGame() {
 
-        // TEMP
-        document.getElementsByTagName( 'header' )?.[0].setAttribute( "style", "display:none;" );
-
         if (!this.isGameStarted) {
             this.isGameStarted = true;  // Marcar que el juego ha comenzado
-            this.ball.resetPosition();  // Poner la pelota en movimiento
+            // Restablecer posiciones de las palas
+            this.paddle1.resetPosition();
+            this.paddle2.resetPosition();
+            his.initialSpeed = this.difficultySettings[this.difficulty];
             this.messageManager.hideMessage(); // Ocultar el mensaje de inicio
             this.gameLoop();            // Iniciar el bucle del juego
         }
@@ -167,7 +174,6 @@ class Game {
         this.paddle1.score = 0;
         this.paddle2.score = 0;
         this.updateScoreboard(); // Asegurarte de que el marcador se reinicie
-        this.ball.resetPosition(); // Reiniciar la posición de la pelota
         this.isGameStarted = false; // Marcar el juego como no iniciado
         // Mostrar el mensaje de inicio
         this.messageManager.showMessage("Presiona cualquier tecla para comenzar");
@@ -464,6 +470,9 @@ class Paddle {
         this.depth = paddleGeometry.parameters.depth;
         this.fieldHeight = fieldHeight;
         this.score = 0;
+
+        // Guardar la posición inicial
+        this.initialPosition = this.mesh.position.clone(); // Clonar la posición inicial
     }
 
     moveUp(speed) {
@@ -479,6 +488,10 @@ class Paddle {
             Math.min(this.mesh.position.z, maxZ - this.depth / 2),
             minZ + this.depth / 2
         );
+    }
+
+    resetPosition() {
+        this.mesh.position.copy(this.initialPosition); // Restablecer la posición inicial
     }
 }
 
