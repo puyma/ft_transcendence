@@ -139,12 +139,12 @@ class Game {
     startGame() {
 
         if (!this.isGameStarted) {
+            this.messageManager.hideMessage(); // Ocultar el mensaje de inicio
             this.isGameStarted = true;  // Marcar que el juego ha comenzado
             // Restablecer posiciones de las palas
             this.paddle1.resetPosition();
             this.paddle2.resetPosition();
             his.initialSpeed = this.difficultySettings[this.difficulty];
-            this.messageManager.hideMessage(); // Ocultar el mensaje de inicio
             this.gameLoop();            // Iniciar el bucle del juego
         }
     }
