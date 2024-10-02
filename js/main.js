@@ -1,4 +1,6 @@
 import bootstrap from 'bootstrap';
+// import {game} from './pong.js';
+import {Game} from './pong';
 
 // variables
 
@@ -82,5 +84,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 		}
 		fetch_page( url, false );
 	} );
+	// game();
+	const game = new Game('canvas');
 	return ;
 } );
