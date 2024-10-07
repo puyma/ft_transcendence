@@ -1,9 +1,14 @@
-import bootstrap from 'bootstrap';
+import { Button } from 'bootstrap';
+import { Collapse } from 'bootstrap';
+import { Dropdown } from 'bootstrap';
+import { Toast } from 'bootstrap';
+import { Router } from './router.js';
 
 // variables
 
 const scheme = document.body.dataset.scheme === 'http' ? 'ws' : 'wss';
 const host = document.body.dataset.host;
+const ws = new WebSocket( `${scheme}://${host}/ws/router/` )
 
 // functions
 
