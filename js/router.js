@@ -1,0 +1,4 @@
+class Router
+{}
+
+export { Router };
