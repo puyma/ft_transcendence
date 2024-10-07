@@ -1,108 +1,79 @@
 {% load static %}
 
-<h1>Profile</h1>
-
 {% if request.user.is_authenticated %}
 
-<div class="mb-3 row">
-  <label for="staticEmail" class="col-sm-2 col-form-label">Email</label>
-  <div class="col-sm-10">
-    <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="email@example.com">
-  </div>
-</div>
-<div class="mb-3 row">
-  <label for="inputPassword" class="col-sm-2 col-form-label">Password</label>
-  <div class="col-sm-10">
-    <input type="password" class="form-control" id="inputPassword">
-  </div>
-</div>
-
-<form>
-  <fieldset disabled>
-    <div class="mb-3">
-      <label for="user" class="form-label">
-        Username
-      </label>
-      <input id="user"
-             type="text"
-             aria-label="Username"
-             class="form-control"
-             placeholder="{{ user.username }}">
-      <label for="date" class="form-label">
-        Date joined
-      </label>
-      <input id="date"
-             type="text"
-             aria-label="date-joined"
-             class="form-control"
-             placeholder="{{ user.date_joined }}">
-  </fieldset>
-  <fieldset>
-    <label for="firstname" class="form-label">
-      First name
-    </label>
-    <input id="firstname"
-           type="text"
-           aria-label="Username"
-           class="form-control"
-           placeholder="{{ user.username }}">
-    <label for="lastname" class="form-label">
-      Last name
-    </label>
-    <input id="lastname"
-           type="text"
-           aria-label="Username"
-           class="form-control"
-           placeholder="{{ user.username }}">
-
-    <label for="avatar" class="form-label">
-      Avatar
-    </label>
-    <input id="avatar"
-           type="file"
-           aria-label="date-joined"
-           class="form-control"
-		   placeholder="{{ user.profile.avatar }}">
-    <label for="email" class="form-label">
-      Email
-    </label>
-    <input id="email"
-           type="email"
-           aria-label="date-joined"
-           class="form-control"
-           placeholder="{{ user.email }}">
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <h1 class="mb-4 text-center">My Profile</h1>
     </div>
+  </div>
 
-  </fieldset>
+  <div class="row justify-content-center">
+    <div class="col-md-4 text-center">
+      <img src="{{ user.profile.avatar_url }}" alt="User Avatar" class="img-fluid rounded-circle" style="height: 200px; width: 200px; object-fit: cover;">
+    </div>
+  </div>
 
-  <hr>
-  <p>date joined: {{ user.date_joined }}</p>
-  <p>username: {{ user.username }}</p>
-  <p>first name: {{ user.first_name }}</p>
-  <p>last name: {{ user.last_name }}</p>
-  <p>email: {{ user.email }}</p>
-  <p>avatar: <img src="{{ user.profile.avatar_url }}" height="200" width="auto"></p>
-  <p>campus: {{ user.profile.campus_name }}</p>
-  <p>display name: {{ user.profile.display_name }}</p>
-  <p>kind: {{ user.profile.kind }}</p>
-  <p>language: {{ user.profile.language }}:{{ user.profile.language_id }}</p>
-  <p>time zone: {{ user.profile.time_zone }}</p>
+  <!-- Form Fields -->
+  <div class="row justify-content-center mt-2">
+    <div class="col-md-8">
+        <form >
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="user" class="form-label">Username</label>
+            <input id="user" type="text" name="username" aria-label="Username" class="form-control" value="{{ user.username }}" disabled>
+          </div>
+          <div class="col-md-6">
+            <label for="date" class="form-label">Date Joined</label>
+            <input id="date" type="text" aria-label="Date Joined" class="form-control" value="{{ user.date_joined }}" disabled>
+          </div>
+        </div>
 
-</form>
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label for="firstname" class="form-label">First Name</label>
+            <input id="firstname" type="text" name="first_name" aria-label="Firstname" class="form-control" value="{{ user.first_name }}">
+          </div>
+          <div class="col-md-6">
+            <label for="lastname" class="form-label">Last Name</label>
+            <input id="lastname" type="text" name="last_name" aria-label="Lastname" class="form-control" value="{{ user.last_name }}">
+          </div>
+        </div>
 
-<form method="post" action="{% url 'del_account' %}">
-    {% csrf_token %}
-    <button type="submit">delete account</button>
-</form>
+        <div class="row mb-3">
+          <div class="col-md-12">
+            <label for="email" class="form-label">Email</label>
+            <input id="email" type="email" name="email" aria-label="Email" class="form-control" value="{{ user.email }}">
+          </div>
+        </div>
+
+        <!-- Save Button does not do anything-->
+        <div class="row justify-content-center mt-4">
+          <div class="col-md-4 text-center">
+            <button type="submit" class="btn btn-primary">Save</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
 {% if user.friends %}
-<ul class="list-group">
-  <li class="list-group-item"></li>
-  <li class="list-group-item">A second item</li>
-  <li class="list-group-item">A third item</li>
-  <li class="list-group-item">A fourth item</li>
-  <li class="list-group-item">And a fifth one</li>
-</ul>
+<div class="container mt-4">
+  <ul class="list-group">
+    <li class="list-group-item">A first item</li>
+    <li class="list-group-item">A second item</li>
+    <li class="list-group-item">A third item</li>
+    <li class="list-group-item">A fourth item</li>
+    <li class="list-group-item">And a fifth one</li>
+  </ul>
+</div>
 {% endif %}
-
+{% else %}
+  <!-- Message to display if user is not authenticated -->
+  <div class="container mt-5 text-center">
+    <h1>Welcome to Our App</h1>
+    <p class="lead">Please <a href="{% url 'login' %}">login</a> to access your profile and other features.</p>
+  </div>
 {% endif %}
