@@ -57,16 +57,16 @@ class LogoutView ( auth_views.LogoutView ):
 			return ( HttpResponseRedirect( redirect_to ) )
 		return ( super().get( request, *args, **kwargs ) )
 
-class SignupView ( generic.CreateView ):
-  form_class = auth.forms.UserCreationForm
-  success_url = urls.reverse_lazy( 'login' )
-  template_name = "tr/base.html"
+class SignupView(generic.CreateView):
+    form_class = auth.forms.UserCreationForm
+    success_url = urls.reverse_lazy('login')
+    template_name = "tr/base.html"
 
-  def get_context_data ( self, **kwargs ):
-	  context = super().get_context_data( **kwargs )
-	  context["page"] = "tr/pages/signup.html"
-	  context["form"] = forms.SignupForm()
-	  return ( context )
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page"] = "tr/pages/signup.html"
+        context["form"] = forms.SignupForm()
+        return context
 
 @login_required
 def profile_dashboard ( request ):
