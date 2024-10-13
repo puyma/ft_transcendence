@@ -20,17 +20,17 @@ class SignupForm ( forms.Form ):
 	username = forms.CharField(
 			label="Username",
 			max_length=255,
-			widget=forms.TextInput(attrs={"class": "form-control"}),
+			widget=forms.TextInput(attrs={"class": "form-control uniform-input"}),
 			)
 
 	password = forms.CharField(
 			label='Password',
-			widget=forms.PasswordInput
+			widget=forms.PasswordInput(attrs={"class": "form-control uniform-input"}),
 			)
 
 	password_confirm = forms.CharField(
 			label='Repeat password',
-			widget=forms.PasswordInput
+			widget=forms.PasswordInput(attrs={"class": "form-control uniform-input"}),
 			)
 
 	class Meta:
