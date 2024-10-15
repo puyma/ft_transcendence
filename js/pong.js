@@ -19,7 +19,8 @@ export class Game {
             color: "WHITE"
         };
 
-        this.comLevel = 0.7;
+        // this.comLevel = 0.7;
+        this.comLevel = 1.2;
         this.lastUpdate = Date.now();
         this.updateInterval = 16;
         this.init();
@@ -37,13 +38,19 @@ export class Game {
     }
 
     createBall(x, y, color) {
+        let angleRad = Math.random() * Math.PI / 4;  // Ángulo aleatorio en la salida
+        let direction = Math.random() > 0.5 ? 1 : -1;  // Dirección aleatoria
+        let initialSpeed = 7;  // Velocidad inicial más baja
         return {
             x: x,
             y: y,
             radius: 5 * this.scaleFactor,
-            speed: 7,
-            velocityX: 7,
-            velocityY: 7,
+            // speed: 7,
+            // velocityX: 7,
+            // velocityY: 7,
+            speed: initialSpeed,  // Establece la velocidad inicial baja
+            velocityX: initialSpeed * Math.cos(angleRad) * direction,  // Inicializa la velocidad X
+            velocityY: initialSpeed * Math.sin(angleRad),
             color: color
         };
     }
@@ -147,19 +154,57 @@ export class Game {
     }
 
     resetBall() {
+        // this.ball.x = this.canvas.width / 2 / this.dpr;
+        // this.ball.y = this.canvas.height / 2 / this.dpr;
+        // this.ball.speed = this.ball.velocityX = this.ball.velocityY = 7;
         this.ball.x = this.canvas.width / 2 / this.dpr;
         this.ball.y = this.canvas.height / 2 / this.dpr;
-        this.ball.speed = this.ball.velocityX = this.ball.velocityY = 7;
+        this.ball.speed = 7;  // Asegúrate de que la velocidad se restablezca correctamente
+
+        let angleRad = Math.random() * Math.PI / 4;  // Genera un nuevo ángulo de rebote
+        let direction = Math.random() > 0.5 ? 1 : -1;  // Elige una dirección aleatoria
+
+        // Calcula las velocidades iniciales basadas en la velocidad total
+        this.ball.velocityX = this.ball.speed * Math.cos(angleRad) * direction;
+        this.ball.velocityY = this.ball.speed * Math.sin(angleRad);
     }
 
+    // updateComPaddle() {
+    //     let now = Date.now();
+    //     if (now - this.lastUpdate > this.updateInterval) {
+    //         this.lastUpdate = now;
+    //         let targetY = this.ball.y - (this.com.y + this.com.height / 2);
+    //         if (Math.abs(targetY) > 5) {
+    //             this.com.y += this.comLevel * Math.sign(targetY) * Math.min(10, Math.abs(targetY));
+    //         }
+    //         if (this.com.y < 0) {
+    //             this.com.y = 0;
+    //         } else if (this.com.y + this.com.height > this.canvas.height / this.dpr) {
+    //             this.com.y = (this.canvas.height / this.dpr) - this.com.height;
+    //         }
+    //     }
+    // }
     updateComPaddle() {
         let now = Date.now();
         if (now - this.lastUpdate > this.updateInterval) {
             this.lastUpdate = now;
-            let targetY = this.ball.y - (this.com.y + this.com.height / 2);
-            if (Math.abs(targetY) > 10) {
-                this.com.y += this.comLevel * Math.sign(targetY) * Math.min(10, Math.abs(targetY));
+    
+            // Duración del tiempo para mantener el error constante
+            if (!this.errorTime || now - this.errorTime > 1000) {  // Cambia el margen de error cada segundo
+                this.errorFactor = Math.min(this.ball.speed / 10, 1.5);  // Ajusta este factor según la velocidad
+                this.errorOffset = (Math.random() - 0.5) * 100 * this.errorFactor;  // Genera un nuevo error
+                this.errorTime = now;  // Marca el momento en que se generó el nuevo error
             }
+    
+            // El targetY ahora incluye el error aleatorio, pero este error se actualiza cada 1 segundo
+            let targetY = (this.ball.y + this.errorOffset) - (this.com.y + this.com.height / 2);
+    
+            // Si el error es pequeño (para evitar movimientos bruscos), ajusta el paddle
+            if (Math.abs(targetY) > 10) {
+                this.com.y += this.comLevel * Math.sign(targetY) * Math.min(8, Math.abs(targetY));
+            }
+    
+            // Limita el paddle dentro de los bordes del canvas
             if (this.com.y < 0) {
                 this.com.y = 0;
             } else if (this.com.y + this.com.height > this.canvas.height / this.dpr) {
@@ -180,13 +225,21 @@ export class Game {
         this.ball.x += this.ball.velocityX;
         this.ball.y += this.ball.velocityY;
 
+        if (this.ball.y + this.ball.radius > this.canvas.height / this.dpr) {
+            this.ball.y = this.canvas.height / this.dpr - this.ball.radius;  // Corrige la posición
+            this.ball.velocityY = -this.ball.velocityY;  // Cambia la dirección
+        } else if (this.ball.y - this.ball.radius < 0) {
+            this.ball.y = this.ball.radius;  // Corrige la posición
+            this.ball.velocityY = -this.ball.velocityY;  // Cambia la dirección
+        }
+
         if (this.soloPlay) {
             this.updateComPaddle();
         }
 
-        if (this.ball.y + this.ball.radius > this.canvas.height / this.dpr || this.ball.y - this.ball.radius < 0) {
-            this.ball.velocityY = -this.ball.velocityY;
-        }
+        // if (this.ball.y + this.ball.radius > this.canvas.height / this.dpr || this.ball.y - this.ball.radius < 0) {
+        //     this.ball.velocityY = -this.ball.velocityY;
+        // }
 
         let player = (this.ball.x < this.canvas.width / 2 / this.dpr) ? this.user : this.com;
         if (this.collision(this.ball, player)) {
