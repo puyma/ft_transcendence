@@ -1,7 +1,5 @@
 #!/bin/sh
 
-#TODO: https://docs.python.org/3/tutorial/venv.html
-
 python3 -m venv .venv
 source .venv/bin/activate
 
