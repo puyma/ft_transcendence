@@ -1,9 +1,15 @@
+//TODO: if 1 pl -> 1 vs com
+//      if 2 pl -> double play
+//      if >= 3 -> tournament all_vs_all / knockout
+import {Game} from './pong';
+
 export class Tournament {
     constructor(players) {
         this.players = players;
         this.matches = [];
         this.winners = [];
-        this.mode = players.length === 3 ? 'all_vs_all' : 'knockout';
+        // this.mode = players.length === 3 ? 'all_vs_all' : 'knockout';
+        this.mode = this.setMode();
         this.winCounts = {};
 
         this.players.forEach(player => {
@@ -11,16 +17,58 @@ export class Tournament {
         });
     }
 
-    startTournament() {
-        if (this.mode === 'knockout') {
-            if (this.players.length < 3) {
-                console.log("Necesita 3 o + jugadores");
-                return;
-            }
-            this.knockoutMatches();
+    setMode() {
+        const players = this.players.length;
+
+        if (players === 1) {
+            return 'solo_play';
+        } else if (players === 2) {
+            return 'double_play';
+        } else if (players === 3) {
+            return 'all_vs_all';
         } else {
-            this.allVsAllMatches();
+            return 'knockout';
         }
+    }
+
+    startTournament() {
+        switch (this.mode) {
+            case 'solo_play':
+                console.log("Modo 1 jugador vs computadora.");
+                this.soloPlayGame();
+                break;
+            case 'double_play':
+                console.log("Modo 1 vs 1.");
+                doublePlayGame();
+                break;
+            case 'all_vs_all':
+                console.log("Modo todos contra todos.");
+                this.allVsAllMatches();
+                break;
+            case 'knockout':
+                console.log("Modo eliminatorio.");
+                this.knockoutMatches();
+                break;
+    }
+}
+    // startTournament() {
+    //     if (this.mode === 'knockout') {
+    //         if (this.players.length < 3) {
+    //             console.log("Necesita 3 o + jugadores");
+    //             return;
+    //         }
+    //         this.knockoutMatches();
+    //     } else {
+    //         this.allVsAllMatches();
+    //     }
+    // }
+    soloPlayGame() {
+        console.log(this.mode);
+        const game = new Game('canvas', this.mode);
+    }
+
+    doublePlayGame() {
+        const game = new Game('canvas', this.mode);
     }
 
     allVsAllMatches() {

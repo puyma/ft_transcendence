@@ -89,7 +89,10 @@ function initEvents() {
                 console.error('<main> element not found.');
                 return;
             }
-            const game = new Game('canvas');
+            // const game = new Game('canvas');
+			const players = ['Player 1'];
+			const tournament = new Tournament(players);
+			tournament.startTournament();
         });
     }
 	const tournamentMode = document.getElementById('tournamentMode');

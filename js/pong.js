@@ -1,11 +1,12 @@
 export class Game {
-    constructor(canvasId) {
+    constructor(canvasId, mode) {
         this.canvas = document.getElementById(canvasId);
         this.ctx = this.canvas ? this.canvas.getContext('2d') : null;
 
         this.dpr = window.devicePixelRatio || 1;
-        this.modoJuego = sessionStorage.getItem('modoJuego');
-        this.soloPlay = this.modoJuego === 'solo';
+        // this.modoJuego = sessionStorage.getItem('modoJuego');
+        // this.soloPlay = this.modoJuego === 'solo';
+        this.gameMode = mode;
         this.scaleFactor = 1.5;
         this.user = this.createPaddle(0, this.canvas.height / 2 / this.dpr - 50 * this.scaleFactor, "RED");
         this.com = this.createPaddle(this.canvas.width / this.dpr - 10 * this.scaleFactor, this.canvas.height / 2 / this.dpr - 50 * this.scaleFactor, "RED");
@@ -122,7 +123,8 @@ export class Game {
         }
     
         // 2do player / computer
-        if (!this.soloPlay) {
+        // if (!this.soloPlay) {
+        if (this.gameMode != 'solo_play') {
             if (evt.key === "ArrowUp") {
                 this.com.y = Math.max(this.com.y - paddleSpeed, 0);
             } else if (evt.key === "ArrowDown") {
@@ -180,7 +182,8 @@ export class Game {
         this.ball.x += this.ball.velocityX;
         this.ball.y += this.ball.velocityY;
 
-        if (this.soloPlay) {
+        if (this.gameMode === 'solo_play') {
+        // if (this.soloPlay) {
             this.updateComPaddle();
         }
 
