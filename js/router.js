@@ -8,6 +8,7 @@ function fetch_page ( url )
 			const main_tag = doc.querySelector( 'main' ).innerHTML;
 			document.querySelector( 'main' ).innerHTML = main_tag;
 		} )
+		.then( () => { window.router.bind_events( [ 'a[data-ajax=true]' ] ); } )
 		.catch ( (error) => {
 			console.log( "Error loading context: ", error );
 		} );
@@ -29,27 +30,39 @@ class Router
 
 	init ()
 	{
-		this.bind_events();
+		//this.bind_events();
 		this.post_reload();
 	}
 
 	notify ( url )
 	{
 		console.log( `notify: ${url}` );
-		if ( url === this.url )
-			return ;
+		// Don't reload if already on that url?? Maybe yes...
+		//if ( url === this.url )
+		//	return ;
 		this.url = url;
+		if ( !url.startsWith('https://') && !url.startsWith( 'http://' ) )
+			this.url = `${window.dataset.scheme}://${window.dataset.host}/${url}`;
 		this.reload_content();
 		return ;
 	}
 
-	bind_events ()
+	default_event ( ev )
 	{
-		// Reaccionar al canvi de url,
-		// ja sigui per part d'un boto,
-		// enllac o per part de l'historial...
+		ev.preventDefault();
+		window.router.notify( ev.target.getAttribute( 'href' ) );
+		return ;
+	}
 
-		// set url
+	bind_events ( selectors )
+	{
+		console.log( 'bind_events' );
+		selectors.forEach( (sel) => {
+			let elements = window.document.querySelectorAll( sel );
+			elements.forEach( (el) => {
+				el.addEventListener( 'click', this.default_event );
+			});
+		});
 		return ;
 	}
 
@@ -59,7 +72,7 @@ class Router
 		// if relative url...
 		// items are being repeated when relative
 		// else ...
-		window.history.pushState( {}, '', url );
+		//window.history.pushState( {}, '', url );
 		return ;
 	}
 
@@ -67,6 +80,7 @@ class Router
 	{
 		this.pre_reload();
 		console.log( `reload_content: ${this.url}` );
+		fetch_page( this.url );
 		//let content = this.fetch_content();
 		//window.document.getElementsByTagName( 'main' )[0]
 		//	.innerHTML = content;
@@ -79,8 +93,8 @@ class Router
 		return ;
 	}
 
-
-	post_reload () {
+	post_reload ()
+	{
 		this.things_to_reset.forEach( (fn) => {
 			try { fn(); }
 			catch ( err ) { console.log( err ); }
@@ -98,6 +112,22 @@ class Router
 	add_post_events ( fn_array )
 	{
 		fn_array.forEach( (fn) => { this.add_post_event( fn ); });
+		return ;
+	}
+
+	// @fn		setupAjaxLinks
+	//			Replaces click events on anchors with data-ajax=true attr.
+	// @return	{void}
+
+	setup_ajax_anchors ()
+	{
+		const anchors = document.querySelectorAll( 'a[data-ajax=true]' );
+		anchors.forEach( (element) => {
+			element.addEventListener( 'click', (event) => {
+				event.preventDefault();
+				window.router.notify( element.getAttribute( 'href' ) );
+			} )
+		} );
 		return ;
 	}
 }
