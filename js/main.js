@@ -84,7 +84,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
 		}
 		fetch_page( url, false );
 	} );
-	// game();
 	const game = new Game('canvas');
 	return ;
 } );
