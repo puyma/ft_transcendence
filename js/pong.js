@@ -1,11 +1,13 @@
+// TODO: space para empezar el juego
+//     set players, 1 y 2, si no hay 2 -> computer
+//     teclas para empezar a jugar y reset game
+
 export class Game {
     constructor(canvasId, mode) {
         this.canvas = document.getElementById(canvasId);
         this.ctx = this.canvas ? this.canvas.getContext('2d') : null;
 
         this.dpr = window.devicePixelRatio || 1;
-        // this.modoJuego = sessionStorage.getItem('modoJuego');
-        // this.soloPlay = this.modoJuego === 'solo';
         this.gameMode = mode;
         this.scaleFactor = 1.5;
         this.user = this.createPaddle(0, this.canvas.height / 2 / this.dpr - 50 * this.scaleFactor, "RED");
@@ -23,7 +25,9 @@ export class Game {
         this.comLevel = 0.7;
         this.lastUpdate = Date.now();
         this.updateInterval = 16;
-        this.init();
+        this.isGameOver = false;
+        this.gameStarted = false;
+        // this.init();
     }
 
     createPaddle(x, y, color) {
@@ -60,11 +64,25 @@ export class Game {
         this.ball.y = this.canvas.height / 2 / this.dpr;
         this.canvas.setAttribute('tabindex', 0);
         this.canvas.focus();
-        this.canvas.addEventListener("keydown", (evt) => this.move(evt));
-
-        this.gameLoop();
+        // this.canvas.addEventListener("keydown", (evt) => this.move(evt));
+        // ------ probando
+        document.addEventListener("keydown", (evt) => {
+            if (evt.code === "Space" && !this.gameStarted) {
+                this.startGame(); // Inicia el juego al presionar "Space"
+            } else {
+                this.move(evt); // Mueve el paddle si el juego ha comenzado
+            }
+        });
+        this.render(); // Dibuja la escena inicial
+        // ------- fin prueba
+        // this.gameLoop();
     }
 
+    startGame() {
+        this.gameStarted = true; // Marca que el juego ha comenzado
+        this.gameLoop(); // Inicia el bucle del juego
+    }
+    
     resizeCanvas() {
         this.canvas.width = window.innerWidth * this.dpr;
         this.canvas.height = window.innerHeight * this.dpr;
@@ -123,7 +141,6 @@ export class Game {
         }
     
         // 2do player / computer
-        // if (!this.soloPlay) {
         if (this.gameMode != 'solo_play') {
             if (evt.key === "ArrowUp") {
                 this.com.y = Math.max(this.com.y - paddleSpeed, 0);
@@ -171,6 +188,11 @@ export class Game {
     }
 
     update() {
+        if (this.user.score >= 2 || this.com.score >= 2) {
+            this.endGame();
+            return;
+        }
+
         if (this.ball.x - this.ball.radius < 0) {
             this.com.score++;
             this.resetBall();
@@ -206,9 +228,32 @@ export class Game {
         }
     }
 
+    endGame(onFinish) {
+        this.isGameOver = true;
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.fillStyle = "BLACK"; // O un color con transparencia
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        // this.drawRectangle(0, 0, this.canvas.width / this.dpr, this.canvas.height / this.dpr, "BLACK");
+        let winner = this.user.score >= 2 ? "User" : "Computer";
+        this.drawText(`${winner} wins!`, this.canvas.width / 3 / this.dpr, this.canvas.height / 2 / this.dpr, "WHITE");
+        // cancelAnimationFrame(this.animationFrame);
+        console.log("DESDE PONG.JS, ganador:", winner);
+    
+        // Llamar al callback con el ganador
+        if (onFinish) {
+            onFinish(winner);
+        }
+    }
+
     gameLoop() {
-        this.update();
-        this.render();
-        requestAnimationFrame(() => this.gameLoop());
+        if (!this.isGameOver) {
+            this.update();
+            this.render();
+            this.animationFrame = requestAnimationFrame(() => this.gameLoop());
+        }
+        // this.update();
+        // this.render();
+        // // requestAnimationFrame(() => this.gameLoop());
+        // this.animationFrame = requestAnimationFrame(() => this.gameLoop());
     }
 }
