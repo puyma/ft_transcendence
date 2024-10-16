@@ -12,6 +12,8 @@ export class Tournament {
         this.mode = this.setMode();
         this.winCounts = {};
 
+        let gameFinished = false;
+
         this.players.forEach(player => {
             this.winCounts[player] = 0;
         });
@@ -39,7 +41,7 @@ export class Tournament {
                 break;
             case 'double_play':
                 console.log("Modo 1 vs 1.");
-                doublePlayGame();
+                this.doublePlayGame();
                 break;
             case 'all_vs_all':
                 console.log("Modo todos contra todos.");
@@ -65,6 +67,7 @@ export class Tournament {
     soloPlayGame() {
         console.log(this.mode);
         const game = new Game('canvas', this.mode);
+        game.init();
     }
 
     doublePlayGame() {
@@ -75,6 +78,7 @@ export class Tournament {
         for (let i = 0; i < this.players.length; i++) {
             for (let j = i + 1; j < this.players.length; j++) {
                 this.matches.push([this.players[i], this.players[j]]);
+                console.log(`Partido programado: ${this.players[i]} vs ${this.players[j]}`);
             }
         }
         this.playNextMatch();
@@ -82,6 +86,7 @@ export class Tournament {
 
     knockoutMatches() {
         let round = [...this.players];
+        console.log("rounds: ", round);
         while (round.length > 1) {
             let nextRound = [];
             this.matches = [];
@@ -101,7 +106,7 @@ export class Tournament {
                 if (round[i + 1]) {
                     // Crear partido si hay un segundo jugador
                     this.matches.push([round[i], round[i + 1]]);
-                    console.log(`Partido: ${round[i]} vs ${round[i + 1]}`);
+                    // console.log(`Partido: ${round[i]} vs ${round[i + 1]}`);
                 }
             }
 
@@ -136,7 +141,7 @@ export class Tournament {
         }
 
         const [player1, player2] = this.matches.shift();
-        console.log(`Partido entre ${player1} y ${player2}`);
+        // console.log(`Partido entre ${player1} y ${player2}`);
         this.playMatch(player1, player2, (winner) => {
             console.log(`Ganador entre ${player1} y ${player2} es ${winner}`);
             this.winners.push(winner);
@@ -152,13 +157,30 @@ export class Tournament {
     // }
 
     playMatch(player1, player2, onFinish) {
-        // Simula ganador aleatorio
-        const winner = Math.random() < 0.5 ? player1 : player2; // 50% de probabilidad
-        
-        //agregar la partida ganada
-        this.winCounts[winner]++;
+    //     // // Simula ganador aleatorio
+    //     // const winner = Math.random() < 0.5 ? player1 : player2; // 50% de probabilidad
+    //     // //agregar la partida ganada
+    //     // this.winCounts[winner]++;
+    //     // onFinish(winner);
 
-        onFinish(winner);
+    //     // PRUEBA
+        const game = new Game('canvas', this.mode); // Asegúrate de que 'canvasId' sea el ID correcto de tu canvas
+    //     // game.player1Name = player1; // Asigna los nombres de los jugadores
+    //     // game.player2Name = player2; // Asigna los nombres de los jugadores
+        game.init();
+
+        // Esperar a que el juego termine
+        const checkGameOver = setInterval(() => {
+            if (game.isGameOver) {
+                clearInterval(checkGameOver); // Detener el chequeo
+                // Llamar a endGame y pasar el callback para manejar el ganador
+                game.endGame((winner) => {
+                    console.log(`Ganador entre ${player1} y ${player2} es ${winner}`);
+                    this.winCounts[winner]++; // Agregar la partida ganada
+                    onFinish(winner); // Llamar a la función de callback con el ganador
+                });
+            }
+        }, 100); // Verificar cada 100ms si el juego ha terminado
     }
 
     
