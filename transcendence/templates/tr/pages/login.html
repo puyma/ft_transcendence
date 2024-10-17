@@ -15,7 +15,7 @@
 	{{ form }}
 
 	<input type="submit" class="btn btn-light btn-lg" value="Log in">
-	
+
 	<button type="button"
 			class="btn btn-light btn-lg"
 			data-login-provider=true
@@ -24,3 +24,9 @@
 	</button>
 
 </form>
+
+<p>
+<a href="{% url "password_reset" %}">
+	Forgotten your password?
+</a>
+</p>
