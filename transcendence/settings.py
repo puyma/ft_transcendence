@@ -109,8 +109,8 @@ USE_TZ = True
 
 STATIC_ROOT = os.environ.get( "STATIC_ROOT" )
 STATIC_URL = os.environ.get( "STATIC_URL" )
-MEDIA_ROOT = os.path.join( BASE_DIR, "media" )
-MEDIA_URL = os.environ.get( "MEDIA_URL" )
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")  # Directory to store uploaded files
+MEDIA_URL = '/media/'  # URL endpoint for media files
 
 DOMAIN = os.environ.get( "DOMAIN" )
 DOMAIN_URL = os.environ.get( "DOMAIN_URL" )

@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib import auth
-
-from . import models
+from django.contrib.auth.models import User
+from .models import Profile
 
 class LoginForm ( forms.Form ):
 
@@ -43,7 +43,28 @@ class SignupForm ( forms.Form ):
 			raise forms.ValidationError( "Passwords do not match" )
 		return ( data['password'] )
 
-class ProfileForm ( forms.Form ):
-	class Meta:
-		model = models.Profile
-		fields = ['avatar']
+class UpdateUserForm(forms.ModelForm):
+    first_name = forms.CharField(max_length=100,
+                                  required=False,
+                                  widget=forms.TextInput(attrs={'class': 'form-control'}))
+    last_name = forms.CharField(max_length=100,
+                                 required=False,
+                                 widget=forms.TextInput(attrs={'class': 'form-control'}))
+    username = forms.CharField(max_length=100,
+                               required=True,
+                               widget=forms.TextInput(attrs={'class': 'form-control'}))
+    email = forms.EmailField(required=True,
+                             widget=forms.EmailInput(attrs={'class': 'form-control'}))
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'username', 'email']
+
+
+class UpdateProfileForm(forms.ModelForm):
+    avatar = forms.ImageField(widget=forms.FileInput(attrs={'class': 'form-control-file'}), required=False)
+    avatar_url = forms.URLField(widget=forms.TextInput(attrs={'class': 'form-control'}), required=False)
+    bio = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 5}), required=False)
+
+    class Meta:
+        model = Profile
+        fields = ['avatar', 'avatar_url','bio']

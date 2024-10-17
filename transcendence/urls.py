@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 
 from . import views
 from .providers import fortytwo
@@ -23,6 +25,6 @@ urlpatterns = [
 	#the following will use list views
 	path( 'users/<str:username>/', views.HomepageView.as_view() ),
 	path( 'pong/users/<str:username>/', views.HomepageView.as_view() ),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # handle404...

@@ -8,56 +8,74 @@
       <h1 class="mb-4 text-center">My Profile</h1>
     </div>
   </div>
-
   <div class="row justify-content-center">
-    <div class="col-md-4 text-center">
-      <img src="{{ user.profile.avatar_url }}" alt="User Avatar" class="img-fluid rounded-circle" style="height: 200px; width: 200px; object-fit: cover;">
-    </div>
-  </div>
-
-  <!-- Form Fields -->
-  <div class="row justify-content-center mt-2">
-    <div class="col-md-8">
-        <form >
-        <div class="row mb-3">
-          <div class="col-md-6">
-            <label for="user" class="form-label">Username</label>
-            <input id="user" type="text" name="username" aria-label="Username" class="form-control" value="{{ user.username }}" disabled>
-          </div>
-          <div class="col-md-6">
-            <label for="date" class="form-label">Date Joined</label>
-            <input id="date" type="text" aria-label="Date Joined" class="form-control" value="{{ user.date_joined }}" disabled>
-          </div>
-        </div>
-
-        <div class="row mb-3">
-          <div class="col-md-6">
-            <label for="firstname" class="form-label">First Name</label>
-            <input id="firstname" type="text" name="first_name" aria-label="Firstname" class="form-control" value="{{ user.first_name }}">
-          </div>
-          <div class="col-md-6">
-            <label for="lastname" class="form-label">Last Name</label>
-            <input id="lastname" type="text" name="last_name" aria-label="Lastname" class="form-control" value="{{ user.last_name }}">
-          </div>
-        </div>
-
-        <div class="row mb-3">
-          <div class="col-md-12">
-            <label for="email" class="form-label">Email</label>
-            <input id="email" type="email" name="email" aria-label="Email" class="form-control" value="{{ user.email }}">
-          </div>
-        </div>
-
-        <!-- Save Button does not do anything-->
-        <div class="row justify-content-center mt-4">
-          <div class="col-md-4 text-center">
-            <button type="submit" class="btn btn-primary">Save</button>
-          </div>
-        </div>
-      </form>
-    </div>
+       
+<div class="row justify-content-center">
+  <div class="col-md-4 text-center">
+      <img class="rounded-circle account-img"
+      src="{{ request.user.profile.avatar_image }}"
+           alt="User Avatar" 
+           style="height: 200px; width: 200px; object-fit: cover; cursor: pointer;">
   </div>
 </div>
+
+<div class="form-content">
+  <div class="row justify-content-center mt-2">
+      <div class="col-md-8">
+          <form method="post" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="form-group">
+                <input type="file" name="avatar" id="id_avatar" class="d-none" onchange="updateFileName(this)">
+                <div class="d-flex align-items-center">
+                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('id_avatar').click();">
+                        <i class="fas fa-upload"></i>
+                    </button>
+                </div>
+            </div>
+            
+              <div class="row mb-3">
+                  <div class="col-md-6">
+                      <label for="username" class="form-label">Username</label>
+                      <input type="text" class="form-control" value="{{ user_form.username.value }}" name="username">
+
+                  </div>
+                  <div class="col-md-6">
+                      <label for="date" class="form-label">Date Joined</label>
+                      <input id="date" type="text" aria-label="Date Joined" class="form-control" value="{{ user.date_joined }}" disabled>
+                  </div>
+              </div>
+
+              <div class="row mb-3">
+                  <div class="col-md-6">
+                      <label for="firstname" class="form-label">First Name</label>
+                      <input id="firstname" type="text" name="first_name" aria-label="Firstname" class="form-control" value="{{ user_form.first_name.value }}">
+                  </div>
+                  <div class="col-md-6">
+                      <label for="lastname" class="form-label">Last Name</label>
+                      <input id="lastname" type="text" name="last_name" aria-label="Lastname" class="form-control" value="{{ user_form.last_name.value }}">
+                  </div>
+              </div>
+
+              <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="email" class="form-label">Email</label>
+                    <input id="email" type="text" name="email" aria-label="email" class="form-control" value="{{ user_form.email.value }}">
+                </div>
+                <div class="col-md-6">
+                    <label for="bio" class="form-label">Bio</label>
+                    <input id="bio" type="text" name="bio" aria-label="bio" class="form-control" value="{{ profile_form.bio.value }}">
+                </div>
+            </div>
+              <div class="row justify-content-center mt-4">
+                  <div class="col-md-4 text-center">
+                      <button type="submit" class="btn btn-dark btn-lg">Save Changes</button>
+                  </div>
+              </div>
+          </form>
+      </div>
+  </div>
+</div>
+
 
 {% if user.friends %}
 <div class="container mt-4">
@@ -71,7 +89,6 @@
 </div>
 {% endif %}
 {% else %}
-  <!-- Message to display if user is not authenticated -->
   <div class="container mt-5 text-center">
     <h1>Welcome to Our App</h1>
     <p class="lead">Please <a href="{% url 'login' %}">login</a> to access your profile and other features.</p>
