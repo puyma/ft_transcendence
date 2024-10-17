@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import signals
 from django.dispatch import receiver
+from django.utils import timezone 
 
 # Extends django.contrib.auth User
 class Profile ( models.Model ):
@@ -73,3 +74,13 @@ def create_profile__profile ( sender, instance, created, update_fields, **kwargs
 @receiver( signals.post_save, sender=Profile )
 def save_profile__profile ( sender, instance, update_fields, **kwargs ):
 	return
+
+
+class Match ( models.Model ):
+
+    id = models.AutoField(primary_key=True)
+    winner_username = models.ForeignKey(User, on_delete=models.CASCADE, related_name='won_matches', null=True)
+    loser_username = models.ForeignKey(User, on_delete=models.CASCADE, related_name='lost_matches', null=True)
+    winner_points = models.IntegerField(default=0)
+    loser_points = models.IntegerField(default=0)
+    created_at = models.DateTimeField(default=timezone.now)

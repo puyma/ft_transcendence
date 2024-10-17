@@ -4,6 +4,7 @@ import { Dropdown } from 'bootstrap';
 import { Toast } from 'bootstrap';
 
 import { Router } from './router.js';
+import { Game } from './pong';
 
 // variables
 
@@ -55,5 +56,7 @@ document.addEventListener( 'DOMContentLoaded', () => {
 	router = window.router = new Router();
 	router.bind_events( [ setup_ajax_anchors, setup_login_providers ] );
 	router.init();
+
+	const game = new Game( 'canvas' );
 	return ;
 } );
