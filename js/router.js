@@ -1,136 +1,116 @@
-function fetch_page ( url )
-{
-	fetch( url, { method: "GET" } )
-		.then( (response) => response.text() )
-		.then( (data) => {
-			const parser = new DOMParser();
-			const doc = parser.parseFromString( data, 'text/html' );
-			const main_tag = doc.querySelector( 'main' ).innerHTML;
-			document.querySelector( 'main' ).innerHTML = main_tag;
-		} )
-		.then( () => { window.router.bind_events( [ 'a[data-ajax=true]' ] ); } )
-		.catch ( (error) => {
-			console.log( "Error loading context: ", error );
-		} );
-	return ;
-}
-
 class Router
 {
-
-	// array of functions to execute every time a page is (re)loaded.
-	url;
-	things_to_reset = [];
-
 	constructor ()
 	{
-		this.url = window.location.href;
+		window.router = this;
+		this.pre_load_events = [];
+		this.post_load_events = [ window.router.bind_history ];
+		this.href = window.location.href;
 		return ;
 	}
 
 	init ()
 	{
 		//this.bind_events();
-		this.post_reload();
+		this.post_load();
+	}
+	
+	bind_pre_event ( fn )
+	{
+		this.pre_load_events.push( fn );
+		return ;
 	}
 
+	bind_post_event ( fn )
+	{
+		this.post_load_events.push( fn );
+		return ;
+	}
+
+	bind_events ( fn_array, when='post' )
+	{
+		if ( ! fn_array )
+			return ;
+		if ( when === 'pre' )
+			fn_array.forEach( (fn) => { this.bind_pre_event( fn ); });
+		else if ( when === 'post' )
+			fn_array.forEach( (fn) => { this.bind_post_event( fn ); });
+		return ;
+	}
+
+	bind_history ()
+	{
+		window.addEventListener( 'popstate', window.router.default_history_event );
+		return ;
+	}
+	
 	notify ( url )
 	{
-		console.log( `notify: ${url}` );
-		// Don't reload if already on that url?? Maybe yes...
-		//if ( url === this.url )
-		//	return ;
-		this.url = url;
-		if ( !url.startsWith('https://') && !url.startsWith( 'http://' ) )
-			this.url = `${window.dataset.scheme}://${window.dataset.host}/${url}`;
-		this.reload_content();
+		if ( url.startsWith( '/' ) )
+			this.href = `${window.location.origin}${url}`;
+		else if ( url.startsWith( 'https://' ) || url.startswith( 'http://' ) )
+			this.href = url;
+		this.load_content();
 		return ;
 	}
 
 	default_event ( ev )
 	{
 		ev.preventDefault();
-		window.router.notify( ev.target.getAttribute( 'href' ) );
+		let href = ev.target?.getAttribute( 'href' );
+		window.router.notify( href );
+		return ;
+	}
+	
+	default_history_event ()
+	{
+		let href = window.location.href;
+		window.router.notify( href );
 		return ;
 	}
 
-	bind_events ( selectors )
+	history_update ()
 	{
-		console.log( 'bind_events' );
-		selectors.forEach( (sel) => {
-			let elements = window.document.querySelectorAll( sel );
-			elements.forEach( (el) => {
-				el.addEventListener( 'click', this.default_event );
-			});
-		});
+		try { window.history.pushState( {}, '', this.href ); }
+		catch ( err ) { console.log( err ); }
 		return ;
 	}
 
-	update_history ( url )
+	pre_load ()
 	{
-		console.log( url );
-		// if relative url...
-		// items are being repeated when relative
-		// else ...
-		//window.history.pushState( {}, '', url );
+		if ( this.pre_load_events.length === 0 )
+			return ;
 		return ;
 	}
 
-	reload_content ()
+	post_load ()
 	{
-		this.pre_reload();
-		console.log( `reload_content: ${this.url}` );
-		fetch_page( this.url );
-		//let content = this.fetch_content();
-		//window.document.getElementsByTagName( 'main' )[0]
-		//	.innerHTML = content;
-		this.post_reload();
-		return ;
-	}
-
-	pre_reload ()
-	{
-		return ;
-	}
-
-	post_reload ()
-	{
-		this.things_to_reset.forEach( (fn) => {
+		if ( this.post_load_events.length === 0 )
+			return ;
+		this.post_load_events.forEach( (fn) => {
 			try { fn(); }
 			catch ( err ) { console.log( err ); }
 		});
-		this.update_history( this.url );
+		this.history_update( this.url );
 		return ;
 	}
 
-	add_post_event ( fn )
+	load_content ()
 	{
-		this.things_to_reset.push( fn )
-		return ;
-	}
-
-	add_post_events ( fn_array )
-	{
-		fn_array.forEach( (fn) => { this.add_post_event( fn ); });
-		return ;
-	}
-
-	// @fn		setupAjaxLinks
-	//			Replaces click events on anchors with data-ajax=true attr.
-	// @return	{void}
-
-	setup_ajax_anchors ()
-	{
-		const anchors = document.querySelectorAll( 'a[data-ajax=true]' );
-		anchors.forEach( (element) => {
-			element.addEventListener( 'click', (event) => {
-				event.preventDefault();
-				window.router.notify( element.getAttribute( 'href' ) );
+		this.pre_load();
+		fetch( this.href, { method: "GET" } )
+			.then( (response) => response.text() )
+			.then( (data) => {
+				const parser = new DOMParser();
+				const doc = parser.parseFromString( data, 'text/html' );
+				const main_tag = doc.querySelector( 'main' ).innerHTML;
+				document.querySelector( 'main' ).innerHTML = main_tag;
 			} )
-		} );
+			.then( () => { this.post_load(); } )
+			.catch ( (err) => { console.log( err ) } );
 		return ;
 	}
+
 }
 
-export { fetch_page };
 export { Router };

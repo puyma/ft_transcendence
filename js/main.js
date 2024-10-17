@@ -3,7 +3,6 @@ import { Collapse } from 'bootstrap';
 import { Dropdown } from 'bootstrap';
 import { Toast } from 'bootstrap';
 
-import { fetch_page } from './router.js';
 import { Router } from './router.js';
 
 // variables
@@ -24,6 +23,7 @@ window.dataset.host = document.body.dataset.host;
 function setup_login_providers ()
 {
 	const elements = document.querySelectorAll( '[data-login-provider=true]' );
+	if ( ! elements ) { return ; }
 	elements.forEach( (element) => {
 		const url = element.getAttribute( 'data-login-provider-url' );
 		element.addEventListener( 'click', (event) => {
@@ -34,13 +34,26 @@ function setup_login_providers ()
 	return ;
 }
 
+// @fn		setupAjaxLinks
+//			Replaces click events on anchors with data-ajax=true attr.
+// @return	{void}
+
+function setup_ajax_anchors ()
+{
+	const anchors = document.querySelectorAll( 'a[data-ajax=true]' );
+	if ( ! anchors ) { return ; }
+	anchors.forEach( (element) => {
+		element.addEventListener( 'click', window.router.default_event );
+	} );
+	return ;
+}
+
 // __main__
 // Execute once DOM is loaded
 
 document.addEventListener( 'DOMContentLoaded', () => {
 	router = window.router = new Router();
-	router.add_post_events( [ setup_login_providers ] );
-	router.bind_events( [ 'a[data-ajax=true]' ] );
+	router.bind_events( [ setup_ajax_anchors, setup_login_providers ] );
 	router.init();
 	return ;
 } );
