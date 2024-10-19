@@ -1,11 +1,20 @@
-import bootstrap from 'bootstrap';
-import Game from './pong3d.js';
+import { Button } from 'bootstrap';
+import { Collapse } from 'bootstrap';
+import { Dropdown } from 'bootstrap';
+import { Toast } from 'bootstrap';
+
+import { Router } from './router.js';
+import { Game } from './pong';
 
 // variables
 
 const scheme = document.body.dataset.scheme === 'http' ? 'ws' : 'wss';
 const host = document.body.dataset.host;
-let modoJuego = '';
+//const ws = new WebSocket( `${scheme}://${host}/ws/router/` )
+
+window.dataset = {};
+window.dataset.scheme = document.body.dataset.scheme;
+window.dataset.host = document.body.dataset.host;
 
 // functions
 
@@ -16,6 +25,7 @@ let modoJuego = '';
 function setup_login_providers ()
 {
 	const elements = document.querySelectorAll( '[data-login-provider=true]' );
+	if ( ! elements ) { return ; }
 	elements.forEach( (element) => {
 		const url = element.getAttribute( 'data-login-provider-url' );
 		element.addEventListener( 'click', (event) => {
@@ -36,50 +46,13 @@ function setModoJuego(modo) {
 	localStorage.setItem('modoJuego', modo);
 }
 
-// Función para obtener el modo de juego almacenado
-function getModoJuego() {
-	return localStorage.getItem('modoJuego') || 'default'; // Puedes cambiar 'default' a un modo específico si es necesario
-}
-
-function setup_ajax_anchors() {
-    const anchors = document.querySelectorAll('a[data-ajax=true]');
-    anchors.forEach((element) => {
-        element.addEventListener('click', (event) => {
-            event.preventDefault();
-            const modo = element.textContent.trim(); // Obtener el texto del botón
-            setModoJuego(modo); // Almacenar el modo de juego seleccionado
-            fetch_page(element.getAttribute('href'), true);
-        });
-    });
-}
-
-// @fn		fetch_page
-//			Fetches and replaces content (main tag)
-// @param	{string}	url
-// @param	{bool}		push_to_history
-// @return	{void}
-
-
-function fetch_page ( url, push_to_history )
+function setup_ajax_anchors ()
 {
-	fetch( url, { method: "GET" } )
-		.then( (response) => response.text() )
-		.then( (data) => {
-			const parser = new DOMParser();
-			const doc = parser.parseFromString( data, 'text/html' );
-			const main_tag = doc.querySelector( 'main' ).innerHTML;
-			document.querySelector( 'main' ).innerHTML = main_tag;
-			// Reassign anchor's click events
-			setup_ajax_anchors();
-			setup_login_providers();
-			// Push to history
-			if ( push_to_history === true ) {
-				window.history.pushState( { url: url }, '', url );
-			}
-		} )
-		.catch ( (error) => {
-			console.log( "Error loading context: ", error );
-		} );
+	const anchors = document.querySelectorAll( 'a[data-ajax=true]' );
+	if ( ! anchors ) { return ; }
+	anchors.forEach( (element) => {
+		element.addEventListener( 'click', window.router.default_event );
+	} );
 	return ;
 }
 
@@ -87,23 +60,10 @@ function fetch_page ( url, push_to_history )
 // Execute once DOM is loaded
 
 document.addEventListener( 'DOMContentLoaded', () => {
-	setup_ajax_anchors();
-	setup_login_providers();
-	// Maneja los eventos de popstate para la navegación con las flechas
-	window.addEventListener( 'popstate', (event) => {
-		var url = event.state?.url;
-		if ( ! url ) {
-			url = window.location.href;
-		}
-		fetch_page( url, false );
-	} );
+	router = window.router = new Router();
+	router.bind_events( [ setup_ajax_anchors, setup_login_providers ] );
+	router.init();
 
-    return;
-	} );
-
-function initGame() {
-	// Iniciar el juego si se ha seleccionado un modo
-    const modoJuegoSeleccionado = getModoJuego();
-    const game = new Game();
-    game.start(); // Inicia el juego
-}
+	const game = new Game( 'canvas' );
+	return ;
+} );
