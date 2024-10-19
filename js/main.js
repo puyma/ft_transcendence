@@ -4,7 +4,8 @@ import { Dropdown } from 'bootstrap';
 import { Toast } from 'bootstrap';
 
 import { Router } from './router.js';
-import { Game } from './pong';
+import { Game } from './pong.js';
+import { Game as Game3D } from './pong3d.js';  
 
 // variables
 
@@ -40,12 +41,6 @@ function setup_login_providers ()
 //			Replaces click events on anchors with data-ajax=true attr.
 // @return	{void}
 			
-			
-// Función para establecer el modo de juego
-function setModoJuego(modo) {
-	localStorage.setItem('modoJuego', modo);
-}
-
 function setup_ajax_anchors ()
 {
 	const anchors = document.querySelectorAll( 'a[data-ajax=true]' );
@@ -56,14 +51,25 @@ function setup_ajax_anchors ()
 	return ;
 }
 
+function setup_game_buttons ()
+{
+	const button = window.document.getElementById('pong-play-btn');
+	if ( button != null	 )
+		button.addEventListener( 'click', window.game.start.bind( window.game ) );
+	return ;
+}
+
 // __main__
 // Execute once DOM is loaded
 
 document.addEventListener( 'DOMContentLoaded', () => {
+	const game = window.game = new Game3D();
 	router = window.router = new Router();
-	router.bind_events( [ setup_ajax_anchors, setup_login_providers ] );
+	router.bind_events([
+		setup_ajax_anchors,
+		setup_login_providers,
+		setup_game_buttons,
+	]);
 	router.init();
-
-	const game = new Game( 'canvas' );
 	return ;
 } );

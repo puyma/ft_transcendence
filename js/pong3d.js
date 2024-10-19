@@ -1,5 +1,15 @@
 import * as THREE from 'three';
 
+// Función para establecer el modo de juego
+function setModoJuego(modo) {
+	localStorage.setItem('modoJuego', modo);
+}
+
+// Función para obtener el modo de juego almacenado
+function getModoJuego() {
+	return localStorage.getItem('modoJuego') || 'default'; // Puedes cambiar 'default' a un modo específico si es necesario
+}
+
 class MessageManager {
     constructor() {
         this.messageElement = null; // Elemento del mensaje en el DOM
@@ -495,7 +505,7 @@ class Paddle {
     resetPosition() {
         this.mesh.position.copy(this.initialPosition); // Restablecer la posición inicial
     }
-}
+    }
 
 // Clase para la pelota
 class Ball {
@@ -566,18 +576,4 @@ class Walls {
     }
 }
 
-// Función para obtener el modo de juego desde localStorage
-function getModoJuego() {
-    return localStorage.getItem('modoJuego');
-}
-
-export default Game;
-
-// // Modificar el listener del botón para que llame a esta función
-// document.getElementById("pong-play-btn")?.addEventListener("click", (event) => {
-//     event.preventDefault();
-//     // Iniciar el juego
-//     const game = new Game();
-//     document.getElementById('main').innerHTML = ""; // Limpiar el contenedor principal
-//     game.start();  // Llamar al nuevo método start
-// });
+export { Game };
