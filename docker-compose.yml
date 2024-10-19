@@ -177,21 +177,24 @@ services:
     ports:
       - "9200:9200"
     volumes:
-      - ./:/usr/share/elasticsearch/data
+      - elasticsearch-data:/usr/share/elasticsearch/data 
     networks:
       - tr-network
   logstash:
     container_name: tr-logstash
     image: docker.elastic.co/logstash/logstash:8.15.2
     volumes:
-      - ./logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml:ro
-      - ./logstash/pipeline:/usr/share/logstash/pipeline:ro
+      - ./logstash/config:/usr/share/logstash/config
+      - ./logstash/pipeline:/usr/share/logstash/pipeline
     ports:
       - "5044:5044"
     depends_on:
       - elasticsearch
     networks:
       - tr-network
+
+volumes:
+  elasticsearch-data:
 
 networks:
   tr-network:
