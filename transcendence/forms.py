@@ -2,6 +2,8 @@ from django import forms
 from django.contrib import auth
 from django.contrib.auth.models import User
 from .models import Profile
+from django.core.exceptions import ValidationError
+import os
 
 class LoginForm ( forms.Form ):
 
@@ -68,3 +70,15 @@ class UpdateProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['avatar', 'avatar_url','bio']
+	
+    def clean_avatar(self):
+        avatar = self.cleaned_data.get('avatar')
+        if avatar:
+            max_size = 2 * 1024 * 1024 # 2MB
+            if avatar.size > max_size:
+                raise ValidationError('Image size must not exceed 950 KB.')
+            valid_extensions = ['.jpg', '.jpeg', '.png', '.gif']
+            ext = os.path.splitext(avatar.name)[1].lower()
+            if ext not in valid_extensions:
+                raise ValidationError('Unsupported file format. Allowed formats are: JPG, JPEG, PNG, GIF.')
+        return avatar

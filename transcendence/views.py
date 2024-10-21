@@ -93,12 +93,11 @@ class ProfileView(LoginRequiredMixin, TemplateView):
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             profile_form.save()
-            if profile_form.cleaned_data['avatar']:
-                profile = request.user.profile
-                print("Uploaded Avatar File:", profile_form.cleaned_data['avatar'])
-                print(" New Avatar URL:", profile.avatar.url)
+            # if profile_form.cleaned_data['avatar']:
+            #     profile = request.user.profile
+                # print("Uploaded Avatar File:", profile_form.cleaned_data['avatar'])
+                # print(" New Avatar URL:", profile.avatar.url)
             messages.success(request, 'Your profile is updated successfully')
-
             return redirect('profile')
 
         context = self.get_context_data()
