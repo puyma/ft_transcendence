@@ -17,11 +17,12 @@ from django.views.generic import TemplateView
 # https://django-advanced-training.readthedocs.io/en/latest/features/class-based-views/
 
 class HomepageView ( generic.TemplateView ):
-	template_name = "tr/base.html"
+	template_name = 'tr/base.html'
 
 	def get_context_data ( self, **kwargs ):
 		context = super().get_context_data( **kwargs )
-		context["page"] = "tr/pages/home.html"
+		context['page'] = 'tr/pages/home.html'
+		context['active_nav'] = 'home'
 		return ( context )
 
 class LoginView(auth_views.LoginView):
@@ -45,11 +46,11 @@ def do_logout ( request ):
 
 class LogoutView ( auth_views.LogoutView ):
 	http_method_names = ["post", "get"]
-	template_name = "tr/base.html"
+	template_name = 'tr/base.html'
 
 	def get_context_data ( self, **kwargs ):
 		context = super().get_context_data( **kwargs )
-		context["page"] = "tr/pages/logout.html"
+		context['page'] = "tr/pages/logout.html"
 		return ( context )
 
 	def get ( self, request, *args, **kwargs ):
@@ -74,14 +75,12 @@ class SignupView(generic.CreateView):
 def profile_dashboard ( request ):
 	return ( render( request, 'tr/pages/base.html', {'page': 'tr/pages/profile.html'} ) )
 
-#    --------------------------  code added by clara --------------------------------------- #
-
 class ProfileView(LoginRequiredMixin, TemplateView):
     template_name = "tr/base.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["page"] = "tr/pages/profile.html"  # Make sure this path is correct
+        context["page"] = "tr/pages/profile.html"
         context["user_form"] = UpdateUserForm(instance=self.request.user)
         context["profile_form"] = UpdateProfileForm(instance=self.request.user.profile)
         return context
@@ -93,7 +92,7 @@ class ProfileView(LoginRequiredMixin, TemplateView):
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             profile_form.save()
-            # if profile_form.cleaned_data['avatar']:
+            # if profile_form.cleaned_data['avatar']: keep this lines till is all good he avatar tests !!
             #     profile = request.user.profile
                 # print("Uploaded Avatar File:", profile_form.cleaned_data['avatar'])
                 # print(" New Avatar URL:", profile.avatar.url)
@@ -106,29 +105,6 @@ class ProfileView(LoginRequiredMixin, TemplateView):
         return self.render_to_response(context)
 
 
-#   ------------------------------- code added by clara --------------------------------------- #
-
-
-# @login_required
-# def profile(request):
-#     if request.method == 'POST':
-#         user_form = UpdateUserForm(request.POST, instance=request.user)  # Populates the form with current user data
-#         profile_form = UpdateProfileForm(request.POST, request.FILES, instance=request.user.profile)
-
-#         if user_form.is_valid() and profile_form.is_valid():
-#             user_form.save()
-#             profile_form.save()
-#             messages.success(request, 'Your profile is updated successfully')
-#             return redirect(to='users-profile')
-#     else:
-#         messages.success(request, 'Your profile is updated successfully')
-#         print("G****************************************************ET method, initializing form with current user data")  # Debugging line
-#         user_form = UpdateUserForm(instance=request.user)
-#         profile_form = UpdateProfileForm(instance=request.user.profile)
-
-#     return render(request, 'users/profile.html', {'user_form': user_form, 'profile_form': profile_form})	
-# # ----------------------------------
-
 @login_required
 def profile_delete ( request ):
 	user_pk = request.user.pk
@@ -138,28 +114,78 @@ def profile_delete ( request ):
 	messages.success( request, "account delete successfully" )
 	return ( redirect( 'home' ) )
 
-class TournamentView ( generic.TemplateView ):
-	template_name = "tr/base.html"
+class PasswordChangeView ( auth_views.PasswordChangeView ):
+	template_name = 'tr/base.html'
 
 	def get_context_data ( self, **kwargs ):
 		context = super().get_context_data( **kwargs )
-		context["page"] = "tr/pages/tournament.html"
+		context['page'] = 'tr/pages/password_change.html'
+		return ( context )
+
+class PasswordChangeDoneView ( auth_views.PasswordChangeDoneView ):
+	template_name = 'tr/base.html'
+
+	def get_context_data ( self, **kwargs ):
+		context = super().get_context_data( **kwargs )
+		context['page'] = 'tr/pages/password_change_done.html'
+		return ( context )
+
+class PasswordResetView ( auth_views.PasswordResetView ):
+	template_name = 'tr/base.html'
+
+	def get_context_data ( self, **kwargs ):
+		context = super().get_context_data( **kwargs )
+		context['page'] = 'tr/pages/password_reset.html'
+		return ( context )
+
+class PasswordResetDoneView ( auth_views.PasswordResetDoneView ):
+	template_name = 'tr/base.html'
+
+	def get_context_data ( self, **kwargs ):
+		context = super().get_context_data( **kwargs )
+		context['page'] = 'tr/pages/password_reset_done.html'
+		return ( context )
+
+class PasswordResetConfirmView ( auth_views.PasswordResetConfirmView ):
+	template_name = 'tr/base.html'
+
+	def get_context_data ( self, **kwargs ):
+		context = super().get_context_data( **kwargs )
+		context['page'] = 'tr/pages/password_reset_confirm.html'
+		return ( context )
+
+class PasswordResetCompleteView ( auth_views.PasswordResetCompleteView ):
+	template_name = 'tr/base.html'
+
+	def get_context_data ( self, **kwargs ):
+		context = super().get_context_data( **kwargs )
+		context['page'] = 'tr/pages/password_reset_complete.html'
+		return ( context )
+
+## LEGACY CODE ---- ##
+
+class TournamentView ( generic.TemplateView ):
+	template_name = 'tr/base.html'
+
+	def get_context_data ( self, **kwargs ):
+		context = super().get_context_data( **kwargs )
+		context['page'] = 'tr/pages/tournament.html'
 		return ( context )
 
 class PlayView ( generic.TemplateView ):
-	template_name = "tr/base.html"
+	template_name = 'tr/base.html'
 
 	def get_context_data ( self, **kwargs ):
 		context = super().get_context_data( **kwargs )
-		context["page"] = "tr/pages/tournament.html"
+		context['page'] = 'tr/pages/tournament.html'
 		return ( context )
 
 class GameView ( generic.TemplateView ):
-	template_name = "tr/pages/pong.html"
+	template_name = 'tr/pages/pong.html'
 	
 	def get_context_data ( self, **kwargs ):
 		context = super().get_context_data( **kwargs )
-		context["page"] = "tr/pages/pong.html"
+		context['page'] = 'tr/pages/pong.html'
 		return ( context )
 
 def double_play_view ( request ):
@@ -167,17 +193,17 @@ def double_play_view ( request ):
 		"title":"P4ngP2ong",
 		"lang":"en",
         "username": "clara",
-		"page": "tr/pages/double_play.html",
+		'page': 'tr/pages/double_play.html',
     }
     return ( render( request, 'tr/base.html', context) )
 
 def solo_play_view ( request ):
 
 	context = {
-		"title":"P4ngP2ong",
-		"lang":"en",
-        "username": "clara",
-		"page": "tr/pages/solo_play.html",
+		'title':'P4ngP2ong',
+		'lang':'en',
+        'username': 'clara',
+		'page':'tr/pages/solo_play.html',
     }
 	return ( render( request, 'tr/base.html', context ) )
 
@@ -186,7 +212,7 @@ def play_view ( request ):
 		"title":"P4ngP2ong",
 		"lang":"en",
         "username": "clara",
-		"page": "tr/pages/play.html",
+		'page': 'tr/pages/play.html',
     }
     return ( render ( request, 'tr/base.html', context ) )
 
@@ -195,6 +221,6 @@ def pong_view ( request ):
 		"title":"P4ngP2ong",
 		"lang":"en",
         "username": "clara",
-		"page": "tr/pages/pong.html",
+		'page': "tr/pages/pong.html",
     }
     return ( render( request, 'tr/base.html', context ) )
