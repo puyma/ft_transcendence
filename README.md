@@ -1,3 +1,5 @@
+# Configuration
+
 To configure the database, postgres's default environment variables
 must be set.
 
@@ -9,19 +11,38 @@ DB_USER=
 DB_PASSWORD=
 ```
 
-In order to fully erase database's contents (stored by default in ./database/data) just run `make purgedb`
+Also add these. DOMAIN_URL consists of scheme + domain + port (if not the default ones; 80/443 )
+```
+DOMAIN=
+DOMAIN_URL=
+```
+
+To enable 42.fr API also add these to ".env".
+
+```
+API_42_UID=
+API_42_SECRET=
+```
+
+For 42's API to work it is necessary to add the DOMAIN_URL + route to oauth callback (oauth/callback/) in the field "Redirect URI" in your 42 application (V2).
+
+In order to fully erase database's contents (if postgres's user is not mapped on your system) `make purgedb` can be run.
+
+# Conventions
+
+## Commit messages
+
+Commit messages should be as follows:
+
+- `- | <commit>` : Deleted something
+- `~ | <commit>` : Modified something
+- `+ | <commit>` : Added something
 
 <!--
 
-- [ ] Solve database data directory (./data/pgdata) permissions.
-The postgres startup script sets them (chown) to a user postgres that only exists inside the container and does not map with the host system.
+## Code formatters
 
-To delete the 'data' directory where the database is stored use `sudo` or, in case of not having the required permissions, remove it from inside a container where permissions properly map to those of the 'data' directory.
-
-Must be ran from the root of the repository.
-
-```
-docker run --tty --rm --mount type=bind,src=./docker/database,dst=/ft postgres:alpine ash -c "rm -vr /ft/data"
-```
+- ECMAScript: Prettier
+- Python: Black
 
 -->

@@ -1,4 +1,4 @@
-http://localhost
+minijuegos.xyz
 {
 	root * /usr/app/
 
@@ -16,7 +16,7 @@ http://localhost
 	}
 }
 
-http://webmail.localhost
+webmail.minijuegos.xyz
 {
 	reverse_proxy mailhog:8025
 }

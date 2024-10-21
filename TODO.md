@@ -1,5 +1,11 @@
-coverage report
-continuous integration
-advanced django testing
-selenium testing
-unittest testing
+- [ ] python:coverage report
+- [ ] continuous integration
+- [ ] advanced django testing
+- [ ] selenium testing
+- [ ] unittest testing
+- [ ] merge webpack + sass + assets container(s)
+- [ ] setup prettier and eslinter
+- [ ] nginx -> maybe try nginx UNIT
+- [x] compile js assets into single file (webpack)
+- [x] resolve 80/443 8000/8443 CSRF_TRUSTED_ORIGINS
+- [x] resolve daphne https / runserver NO DJANGO RELOAD
