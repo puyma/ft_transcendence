@@ -1,108 +1,138 @@
 {% load static %}
 
-<h1>Profile</h1>
-
 {% if request.user.is_authenticated %}
 
-<div class="mb-3 row">
-  <label for="staticEmail" class="col-sm-2 col-form-label">Email</label>
-  <div class="col-sm-10">
-    <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="email@example.com">
-  </div>
-</div>
-<div class="mb-3 row">
-  <label for="inputPassword" class="col-sm-2 col-form-label">Password</label>
-  <div class="col-sm-10">
-    <input type="password" class="form-control" id="inputPassword">
-  </div>
-</div>
-
-<form>
-  <fieldset disabled>
-    <div class="mb-3">
-      <label for="user" class="form-label">
-        Username
-      </label>
-      <input id="user"
-             type="text"
-             aria-label="Username"
-             class="form-control"
-             placeholder="{{ user.username }}">
-      <label for="date" class="form-label">
-        Date joined
-      </label>
-      <input id="date"
-             type="text"
-             aria-label="date-joined"
-             class="form-control"
-             placeholder="{{ user.date_joined }}">
-  </fieldset>
-  <fieldset>
-    <label for="firstname" class="form-label">
-      First name
-    </label>
-    <input id="firstname"
-           type="text"
-           aria-label="Username"
-           class="form-control"
-           placeholder="{{ user.username }}">
-    <label for="lastname" class="form-label">
-      Last name
-    </label>
-    <input id="lastname"
-           type="text"
-           aria-label="Username"
-           class="form-control"
-           placeholder="{{ user.username }}">
-
-    <label for="avatar" class="form-label">
-      Avatar
-    </label>
-    <input id="avatar"
-           type="file"
-           aria-label="date-joined"
-           class="form-control"
-		   placeholder="{{ user.profile.avatar }}">
-    <label for="email" class="form-label">
-      Email
-    </label>
-    <input id="email"
-           type="email"
-           aria-label="date-joined"
-           class="form-control"
-           placeholder="{{ user.email }}">
+<!-- ERRORS IN THE profile FORM avatar iamge size and format-->
+{% if profile_form.errors %}
+    <div class="container" style="max-width: 600px; margin: 20px auto;">
+        <div class="alert alert-danger">
+                {% for field in profile_form %}
+                    {% for error in field.errors %}
+                        {{ error }}
+                    {% endfor %}
+                {% endfor %}
+                {% for error in profile_form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+        </div>
     </div>
-
-  </fieldset>
-
-  <hr>
-  <p>date joined: {{ user.date_joined }}</p>
-  <p>username: {{ user.username }}</p>
-  <p>first name: {{ user.first_name }}</p>
-  <p>last name: {{ user.last_name }}</p>
-  <p>email: {{ user.email }}</p>
-  <p>avatar: <img src="{{ user.profile.avatar_url }}" height="200" width="auto"></p>
-  <p>campus: {{ user.profile.campus_name }}</p>
-  <p>display name: {{ user.profile.display_name }}</p>
-  <p>kind: {{ user.profile.kind }}</p>
-  <p>language: {{ user.profile.language }}:{{ user.profile.language_id }}</p>
-  <p>time zone: {{ user.profile.time_zone }}</p>
-
-</form>
-
-<form method="post" action="{% url 'del_account' %}">
-    {% csrf_token %}
-    <button type="submit">delete account</button>
-</form>
-
-{% if user.friends %}
-<ul class="list-group">
-  <li class="list-group-item"></li>
-  <li class="list-group-item">A second item</li>
-  <li class="list-group-item">A third item</li>
-  <li class="list-group-item">A fourth item</li>
-  <li class="list-group-item">And a fifth one</li>
-</ul>
 {% endif %}
+<!-- end ERRORS IN THE FORM -->
 
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <h1 class="mb-4 text-center">My Profile</h1>
+    </div>
+  </div>
+  <div class="row justify-content-center">
+
+<div class="row justify-content-center">
+  <div class="col-md-4 text-center">
+      <img class="rounded-circle account-img"
+      src="{{ request.user.profile.avatar_image }}"
+           alt="User Avatar" 
+           style="height: 200px; width: 200px; object-fit: cover; cursor: pointer;">
+  </div>
+</div>
+
+<div class="form-content">
+  <div class="row justify-content-center mt-2">
+      <div class="col-md-8">
+          <form method="post" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="form-group">
+                <input type="file" name="avatar" id="id_avatar" class="form-control-file" onchange="updateFileName(this)">
+            </div>
+              <div class="row mb-3">
+                  <div class="col-md-6">
+                      <label for="username" class="form-label">Username</label>
+                      <input type="text" class="form-control" value="{{ user_form.username.value }}" name="username">
+
+                  </div>
+                  <div class="col-md-6">
+                      <label for="date" class="form-label">Date Joined</label>
+                      <input id="date" type="text" aria-label="Date Joined" class="form-control" value="{{ user.date_joined }}" disabled>
+                  </div>
+              </div>
+
+              <div class="row mb-3">
+                  <div class="col-md-6">
+                      <label for="firstname" class="form-label">First Name</label>
+                      <input id="firstname" type="text" name="first_name" aria-label="Firstname" class="form-control" value="{{ user_form.first_name.value }}">
+                  </div>
+                  <div class="col-md-6">
+                      <label for="lastname" class="form-label">Last Name</label>
+                      <input id="lastname" type="text" name="last_name" aria-label="Lastname" class="form-control" value="{{ user_form.last_name.value }}">
+                  </div>
+              </div>
+
+              <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="email" class="form-label">Email</label>
+                    <input id="email" type="text" name="email" aria-label="email" class="form-control" value="{{ user_form.email.value }}">
+                </div>
+                <div class="col-md-6">
+                    <label for="bio" class="form-label">Bio</label>
+                    <input id="bio" type="text" name="bio" aria-label="bio" class="form-control" value="{{ profile_form.bio.value }}">
+                </div>
+            </div>
+              <button type="submit" class="btn btn-dark btn-lg">Save Changes</button>
+          </form>
+         <!-- STATS DISPLAY -->
+         <div class="container mt-4">
+            <h2 class="text-center">Game Stats</h2>
+            <ul class="list-group">
+                <li class="list-group-item" style="background-color: rgb(188, 169, 206);">
+                    Wins: {{ profile.wins }} 
+                    <span class="float-end">{{ win_percentage|floatformat:1 }}%</span>
+                </li>
+                <li class="list-group-item" style="background-color: rgb(115, 101, 222);">
+                    Losses: {{ profile.losses }} 
+                    <span class="float-end">{{ loss_percentage|floatformat:1 }}%</span>
+                </li>
+            </ul>
+        
+            <h4 class="mt-4">Win/Loss Distribution</h4>
+            <div class="progress">
+                <div class="progress-bar bg-success" role="progressbar" style="width: {{ win_percentage|floatformat:1 }}%;" aria-valuenow="{{ win_percentage|floatformat:1 }}" aria-valuemin="0" aria-valuemax="100">
+                    {{ win_percentage|floatformat:1 }}%
+                </div>
+                <div class="progress-bar bg-danger" role="progressbar" style="width: {{ loss_percentage|floatformat:1 }}%;" aria-valuenow="{{ loss_percentage|floatformat:1 }}" aria-valuemin="0" aria-valuemax="100">
+                    {{ loss_percentage|floatformat:1 }}%
+                </div>
+            </div>
+      </div>
+      <!-- FRIENDS DISPLAY -->
+      <div class="container mt-4">
+        <h2 class="text-center">Friends Display</h2>
+      </div>
+      <!-- FRIENDS DISPLAY -->
+      <div class="container mt-4">
+        <h2 class="text-center">Match History</h2>
+      </div>
+
+        
+    </div>
+    </div>
+  </div>
+</div>
+
+
+  {% if user.friends %}
+  <div class="container mt-4">
+    <ul class="list-group">
+      <li class="list-group-item">A first item</li>
+      <li class="list-group-item">A second item</li>
+      <li class="list-group-item">A third item</li>
+      <li class="list-group-item">A fourth item</li>
+      <li class="list-group-item">And a fifth one</li>
+    </ul>
+  </div>
+  {% endif %}
+{% else %}
+  <div class="container mt-5 text-center">
+    <h1>Welcome to Our App</h1>
+    <p class="lead">Please <a href="{% url 'login' %}">login</a> to access your profile and other features.</p>
+  </div>
 {% endif %}
