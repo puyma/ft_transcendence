@@ -64,7 +64,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     avatar = models.ImageField(default='profile_images/default.jpg', upload_to='profile_images')
     avatar_url = models.URLField(max_length=500, blank=True, null=True)
-    bio = models.TextField()
+    bio = models.TextField( null=True )
 
     def __str__(self):
         return self.user.username
