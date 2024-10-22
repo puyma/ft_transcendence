@@ -56,8 +56,6 @@ services:
       - tr-network
     volumes:
       - ./:/usr/app/
-      - ./media:/usr/app/media  # This mounts the media directory from your host
-
 
   database:
     container_name: tr-database
