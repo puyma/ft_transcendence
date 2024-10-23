@@ -12,6 +12,7 @@ from . import forms
 from .providers import fortytwo
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
+from django.contrib.auth.models import User
 
 
 # https://django-advanced-training.readthedocs.io/en/latest/features/class-based-views/
@@ -224,3 +225,38 @@ def pong_view ( request ):
 		'page': "tr/pages/pong.html",
     }
     return ( render( request, 'tr/base.html', context ) )
+
+
+class StatsView ( generic.TemplateView ):
+	template_name = "tr/base.html"
+
+	def get_context_data ( self, **kwargs ):
+		context = super().get_context_data( **kwargs )
+		context["page"] = "tr/pages/stats.html"
+		return ( context )
+
+class FriendsView(generic.TemplateView):
+    template_name = "tr/base.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page"] = "tr/pages/friends.html"
+
+        # Get the current user's profile
+        user_profile = self.request.user.profile
+
+        # Get all users who are not friends with the current user
+        all_users = User.objects.exclude(id=self.request.user.id)
+        potential_friends = all_users.exclude(id__in=user_profile.get_friends().values_list('id', flat=True))
+
+        # Pass the potential friends list to the template
+        context["potential_friends"] = potential_friends
+        return context
+
+class MatchHistoryView ( generic.TemplateView ):
+	template_name = "tr/base.html"
+
+	def get_context_data ( self, **kwargs ):
+		context = super().get_context_data( **kwargs )
+		context["page"] = "tr/pages/match_history.html"
+		return ( context )

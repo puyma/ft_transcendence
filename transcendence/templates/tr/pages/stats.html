@@ -1,0 +1,30 @@
+{% load static %}
+
+{% if request.user.is_authenticated %}
+
+{% include 'tr/components/_navProfile.html' %}
+
+<div class="container mt-4">
+  <h2 class="text-center">Game Stats</h2>
+  <ul class="list-group">
+      <li class="list-group-item" style="background-color: rgb(188, 169, 206);">
+          Wins: {{ profile.wins }} 
+          <span class="float-end">{{ win_percentage|floatformat:1 }}%</span>
+      </li>
+      <li class="list-group-item" style="background-color: rgb(115, 101, 222);">
+          Losses: {{ profile.losses }} 
+          <span class="float-end">{{ loss_percentage|floatformat:1 }}%</span>
+      </li>
+  </ul>
+
+  <!-- <h4 class="mt-4">Win/Loss Distribution</h4>
+  <div class="progress">
+      <div class="progress-bar bg-success" role="progressbar" style="width: {{ win_percentage|floatformat:1 }}%;" aria-valuenow="{{ win_percentage|floatformat:1 }}" aria-valuemin="0" aria-valuemax="100">
+          {{ win_percentage|floatformat:1 }}%
+      </div>
+      <div class="progress-bar bg-danger" role="progressbar" style="width: {{ loss_percentage|floatformat:1 }}%;" aria-valuenow="{{ loss_percentage|floatformat:1 }}" aria-valuemin="0" aria-valuemax="100">
+          {{ loss_percentage|floatformat:1 }}%
+      </div>
+  </div>
+</div> -->
+{% endif %}

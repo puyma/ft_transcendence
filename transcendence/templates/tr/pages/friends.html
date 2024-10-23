@@ -1,0 +1,61 @@
+{% load static %}
+
+{% if request.user.is_authenticated %}
+
+{% include 'tr/components/_navProfile.html' %}
+
+<div class="potential-friends-list">
+  <h2>Potential Friends</h2>
+  <ul>
+      {% for friend in potential_friends %}
+      <li>
+          <div class="potential-friend-item">
+              <!-- Display potential friend's avatar -->
+              <img src="{{ friend.profile.avatar_image }}" alt="{{ friend.username }}'s avatar" width="50" height="50">
+              
+              <!-- Display potential friend's name -->
+              <p>{{ friend.username }}</p>
+          </div>
+      </li>
+      {% empty %}
+      <li>No potential friends found.</li>
+      {% endfor %}
+  </ul>
+</div>
+
+    <div class="friends-list">
+      <h2>Your Friends</h2>
+      <ul>
+          {% for friend in friends %}
+          <li>
+              <div class="friend-item">
+                  <!-- Display friend's avatar -->
+                  <img src="{{ friend.profile.avatar_image }}" alt="{{ friend.username }}'s avatar" width="50" height="50">
+                  
+                  <!-- Display friend's name -->
+                  <p>{{ friend.username }}</p>
+                  
+                  <!-- Display online status -->
+                  <p>Status: {{ friend.profile.is_online|yesno:"Online,Offline" }}</p>
+              </div>
+          </li>
+          {% empty %}
+          <li>You have no friends yet.</li>
+          {% endfor %}
+      </ul>
+  </div>
+
+
+<!-- {% if user.friends %}
+  <div class="container mt-4">
+    <ul class="list-group">
+      <li class="list-group-item">A first item</li>
+      <li class="list-group-item">A second item</li>
+      <li class="list-group-item">A third item</li>
+      <li class="list-group-item">A fourth item</li>
+      <li class="list-group-item">And a fifth one</li>
+    </ul>
+  </div>
+  {% endif %} -->
+  
+{% endif %}

@@ -64,7 +64,31 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     avatar = models.ImageField(default='profile_images/default.jpg', upload_to='profile_images')
     avatar_url = models.URLField(max_length=500, blank=True, null=True)
-    bio = models.TextField( null=True )
+    bio = models.TextField(default="No bio available.")
+    friends = models.ManyToManyField(User, related_name='friends', blank=True)
+    is_online = models.BooleanField(default=False)
+    last_active = models.DateTimeField(null=True, blank=True)
+
+    def set_online(self):
+        self.is_online = True
+        self.last_active = timezone.now()
+        self.save()
+
+    def set_offline(self):
+        self.is_online = False
+        self.save()
+    
+    def get_online_friends(self):
+        return self.friends.filter(profile__is_online=True)
+    
+    def get_friends(self):
+        return self.friends.all()
+    
+    def get_friends_num(self):
+        return self.friends.all().count()
+    
+    def get_last_active_friends(self):
+        return self.friends.order_by('-profile__last_active')
 
     def __str__(self):
         return self.user.username
@@ -92,17 +116,21 @@ class Profile(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-    
-    # def save(self, *args, **kwargs):
-    #     super().save(*args, **kwargs)
 
-        # Only process if the avatar is not using the default path
-        # if self.avatar and self.avatar.name != 'profile_images/default.jpg':
-        #     img = Image.open(self.avatar.path)
-        #     if img.height > 100 or img.width > 100:
-        #         new_img = (100, 100)
-        #         img.thumbnail(new_img)
-        #         img.save(self.avatar.path)
+STATUS_CHOICES = (
+    ('send', 'send'),
+    ('accepted', 'accepted'),     
+)
+
+class Relationship(models.Model):
+    sender=models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='sender')
+    receiver=models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='receiver')
+    status=models.CharField(max_length=8, choices=STATUS_CHOICES)
+    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+         return f"{self.sender}-{self.receiver}-{self.status}"
 
 @receiver( signals.post_save, sender=User )
 def create_profile__user ( sender, instance, created, **kwargs ):
@@ -129,7 +157,6 @@ def save_profile__profile ( sender, instance, update_fields, **kwargs ):
 
 
 class Match ( models.Model ):
-
     id = models.AutoField(primary_key=True)
     winner_username = models.ForeignKey(User, on_delete=models.CASCADE, related_name='won_matches', null=True)
     loser_username = models.ForeignKey(User, on_delete=models.CASCADE, related_name='lost_matches', null=True)
