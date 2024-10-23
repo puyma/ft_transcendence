@@ -230,12 +230,14 @@ export class Game {
 
     endGame(onFinish) {
         this.isGameOver = true;
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.ctx.fillStyle = "BLACK"; // O un color con transparencia
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        // this.drawRectangle(0, 0, this.canvas.width / this.dpr, this.canvas.height / this.dpr, "BLACK");
         let winner = this.user.score >= 2 ? "User" : "Computer";
-        this.drawText(`${winner} wins!`, this.canvas.width / 3 / this.dpr, this.canvas.height / 2 / this.dpr, "WHITE");
+        
+        // this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        // this.ctx.fillStyle = "BLACK"; // O un color con transparencia
+        // this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        // this.drawRectangle(0, 0, this.canvas.width / this.dpr, this.canvas.height / this.dpr, "BLACK");
+        // this.drawText(`${winner} wins!`, this.canvas.width / 3 / this.dpr, this.canvas.height / 2 / this.dpr, "WHITE");
+
         // cancelAnimationFrame(this.animationFrame);
         console.log("DESDE PONG.JS, ganador:", winner);
     

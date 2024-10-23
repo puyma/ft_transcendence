@@ -86,7 +86,6 @@ export class Tournament {
 
     knockoutMatches() {
         let round = [...this.players];
-        console.log("rounds: ", round);
         while (round.length > 1) {
             let nextRound = [];
             this.matches = [];
