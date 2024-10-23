@@ -10,4 +10,5 @@ jobs:
       - uses: psf/black@stable
         with:
           options: '--check --verbose'
+          src: './transcendence'
           version: '~= 24'
