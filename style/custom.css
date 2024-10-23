@@ -34,3 +34,8 @@ main {
     position: absolute;
     left: 50%;
 }
+
+img.avatar {
+	object-fit: cover;
+	object-position: top;
+}
