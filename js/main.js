@@ -57,6 +57,6 @@ document.addEventListener( 'DOMContentLoaded', () => {
 	router.bind_events( [ setup_ajax_anchors, setup_login_providers ] );
 	router.init();
 
-	const game = new Game( 'canvas' );
+	//const game = new Game( 'canvas' );
 	return ;
 } );
