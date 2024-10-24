@@ -4,7 +4,7 @@ from django.db import models
 from django.db.models import signals
 from django.dispatch import receiver
 from PIL import Image
-from django.utils import timezone 
+from django.utils import timezone
 
 # Extends django.contrib.auth User
 # class Profile ( models.Model ):
@@ -13,7 +13,7 @@ from django.utils import timezone
 # 			settings.AUTH_USER_MODEL,
 # 			on_delete=models.CASCADE,
 # 			)
-			
+
 # 	avatar = models.ImageField(
 # 			upload_to='avatars/',
 # 			blank=True,
@@ -57,14 +57,17 @@ from django.utils import timezone
 # 	def __str__ ( self ):
 # 		return ( f'Profile of {self.user.username}' )
 
-#we have the profile class that is linked with the USER class (table) and to access to the first name, last name and email with
+# we have the profile class that is linked with the USER class (table) and to access to the first name, last name and email with
 # property --- print(profile.first_name)  # This will return profile.user.first_name
+
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    avatar = models.ImageField(default='profile_images/default.jpg', upload_to='profile_images')
+    avatar = models.ImageField(
+        default="profile_images/default.jpg", upload_to="profile_images"
+    )
     avatar_url = models.URLField(max_length=500, blank=True, null=True)
-    bio = models.TextField( null=True )
+    bio = models.TextField(null=True)
 
     def __str__(self):
         return self.user.username
@@ -80,59 +83,66 @@ class Profile(models.Model):
     @property
     def email(self):
         return self.user.email
-    
+
     @property
     def avatar_image(self):
-        if self.avatar and self.avatar.name != 'profile_images/default.jpg':
+        if self.avatar and self.avatar.name != "profile_images/default.jpg":
             return self.avatar.url
         if self.avatar_url:
             return self.avatar_url
-        return '/media/profile_images/default.jpg'
-
+        return "/media/profile_images/default.jpg"
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-    
+
     # def save(self, *args, **kwargs):
     #     super().save(*args, **kwargs)
 
-        # Only process if the avatar is not using the default path
-        # if self.avatar and self.avatar.name != 'profile_images/default.jpg':
-        #     img = Image.open(self.avatar.path)
-        #     if img.height > 100 or img.width > 100:
-        #         new_img = (100, 100)
-        #         img.thumbnail(new_img)
-        #         img.save(self.avatar.path)
+    # Only process if the avatar is not using the default path
+    # if self.avatar and self.avatar.name != 'profile_images/default.jpg':
+    #     img = Image.open(self.avatar.path)
+    #     if img.height > 100 or img.width > 100:
+    #         new_img = (100, 100)
+    #         img.thumbnail(new_img)
+    #         img.save(self.avatar.path)
 
-@receiver( signals.post_save, sender=User )
-def create_profile__user ( sender, instance, created, **kwargs ):
-	if created:
-		Profile.objects.create( user=instance )
 
-@receiver( signals.post_save, sender=User )
-def save_profile__user ( sender, instance, update_fields, **kwargs ):
-	instance.profile.save()
+@receiver(signals.post_save, sender=User)
+def create_profile__user(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
 
-## fins aqui entenc be 
+
+@receiver(signals.post_save, sender=User)
+def save_profile__user(sender, instance, update_fields, **kwargs):
+    instance.profile.save()
+
+
+## fins aqui entenc be
 # @receiver( signals.post_save, sender=Profile )
 # def create_profile__profile ( sender, instance, created, update_fields, **kwargs ):
 # 	print( f"created: {created}" )
 # 	print( f"update_fields: {update_fields}\n" )
 # 	#update img; if url -> set avatar
 
+
 # @receiver( signals.post_save, sender=Profile )
 # def save_profile__profile ( sender, instance, update_fields, **kwargs ):
 # 	return
-@receiver( signals.post_save, sender=Profile )
-def save_profile__profile ( sender, instance, update_fields, **kwargs ):
-	return
+@receiver(signals.post_save, sender=Profile)
+def save_profile__profile(sender, instance, update_fields, **kwargs):
+    return
 
 
-class Match ( models.Model ):
+class Match(models.Model):
 
     id = models.AutoField(primary_key=True)
-    winner_username = models.ForeignKey(User, on_delete=models.CASCADE, related_name='won_matches', null=True)
-    loser_username = models.ForeignKey(User, on_delete=models.CASCADE, related_name='lost_matches', null=True)
+    winner_username = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="won_matches", null=True
+    )
+    loser_username = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="lost_matches", null=True
+    )
     winner_points = models.IntegerField(default=0)
     loser_points = models.IntegerField(default=0)
     created_at = models.DateTimeField(default=timezone.now)
