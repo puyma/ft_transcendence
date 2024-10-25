@@ -177,7 +177,7 @@ services:
     ports:
       - "9200:9200"
     volumes:
-      - elasticsearch-data:/usr/share/elasticsearch/data 
+      - elasticsearch-data:/usr/share/elasticsearch/data
     networks:
       - tr-network
   logstash:
@@ -187,6 +187,7 @@ services:
       - ./logstash/config:/usr/share/logstash/config
       - ./logstash/pipeline:/usr/share/logstash/pipeline
     ports:
+      - "5001:5000"
       - "5044:5044"
     depends_on:
       - elasticsearch

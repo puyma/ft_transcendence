@@ -1,4 +1,6 @@
 import os
+import logging
+import logging.config
 
 from pathlib import Path
 
@@ -155,3 +157,36 @@ LOGOUT_URL = 'logout'
 API_42_ENDPOINT = os.environ.get( 'API_42_ENDPOINT' )
 API_42_UID = os.environ.get( 'API_42_UID' )
 API_42_SECRET = os.environ.get( 'API_42_SECRET' )
+
+
+# Logs
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'simple': {  # Using a simple formatter for unstructured logs
+            'format': '%(asctime)s %(levelname)s %(message)s',
+        },
+    },
+    'handlers': {
+        'console': {  # This will output logs to the console
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'logstash': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.SocketHandler',
+            'host': 'logstash',  # Use the name of the Logstash service defined in docker-compose
+            'port': 5000,
+            'formatter': 'simple',  # Using the simple formatter for logstash as well
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'logstash'],  # Use both console and logstash handlers
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
