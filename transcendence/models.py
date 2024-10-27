@@ -5,6 +5,8 @@ from django.db.models import signals
 from django.dispatch import receiver
 from PIL import Image
 from django.utils import timezone 
+from django.core.exceptions import ValidationError
+from django.contrib.auth.signals import user_logged_in, user_logged_out
 
 # Extends django.contrib.auth User
 # class Profile ( models.Model ):
@@ -113,7 +115,6 @@ class Profile(models.Model):
             return self.avatar_url
         return '/media/profile_images/default.jpg'
 
-
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
@@ -129,8 +130,16 @@ class Relationship(models.Model):
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        unique_together = ('sender', 'receiver')
+
     def __str__(self):
          return f"{self.sender}-{self.receiver}-{self.status}"
+
+    def save(self, *args, **kwargs):
+        if self.sender == self.receiver:
+            raise ValidationError("You cannot add yourself as a friend.")
+        super().save(*args, **kwargs)
 
 @receiver( signals.post_save, sender=User )
 def create_profile__user ( sender, instance, created, **kwargs ):
@@ -140,6 +149,30 @@ def create_profile__user ( sender, instance, created, **kwargs ):
 @receiver( signals.post_save, sender=User )
 def save_profile__user ( sender, instance, update_fields, **kwargs ):
 	instance.profile.save()
+     
+
+#  SIGNALS FOR RELATIONSHIPS friends
+@receiver(signals.post_save, sender=Relationship)
+def post_save_add_to_friends(sender, created, instance, **kwargs):
+    sender_=instance.sender
+    receiver_=instance.receiver
+    if instance.status=='accepted':
+        sender_.friends.add(receiver_.user)
+        receiver_.friends.add(sender_.user)
+        sender_.save()
+        receiver_.save()
+
+#  SIGNALS to handle is online/offline & date time
+
+@receiver(user_logged_in)
+def set_user_online(sender, user, request, **kwargs):
+    user.profile.set_online()
+
+@receiver(user_logged_out)
+def set_user_offline(sender, user, request, **kwargs):
+    user.profile.set_offline()
+    user.profile.last_active = timezone.now()
+    user.profile.save()  
 
 ## fins aqui entenc be 
 # @receiver( signals.post_save, sender=Profile )
@@ -154,7 +187,6 @@ def save_profile__user ( sender, instance, update_fields, **kwargs ):
 @receiver( signals.post_save, sender=Profile )
 def save_profile__profile ( sender, instance, update_fields, **kwargs ):
 	return
-
 
 class Match ( models.Model ):
     id = models.AutoField(primary_key=True)

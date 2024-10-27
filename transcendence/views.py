@@ -13,6 +13,9 @@ from .providers import fortytwo
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from django.contrib.auth.models import User
+from django.shortcuts import render, get_object_or_404, redirect
+from django.db.models import Q
+from .models import Profile, Relationship
 
 
 # https://django-advanced-training.readthedocs.io/en/latest/features/class-based-views/
@@ -241,17 +244,71 @@ class FriendsView(generic.TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["page"] = "tr/pages/friends.html"
-
-        # Get the current user's profile
         user_profile = self.request.user.profile
+        
+        # Handle search query
+        search_query = self.request.GET.get('search', '')
+        if search_query:
+            search_results = Profile.objects.filter(
+                Q(user__username__icontains=search_query) & 
+                ~Q(user=self.request.user)
+            )
+        else:
+            search_results = None
+        
+        # Sent requests
+        friend_requests_sent = Relationship.objects.filter(
+            sender=user_profile, status='send'
+        ).select_related('receiver')
+        
+        # Received requests
+        friend_requests_received = Relationship.objects.filter(
+            receiver=user_profile, status='send'
+        ).select_related('sender')
+        
+        friends_list = user_profile.get_friends()  # Make sure get_friends is not cached
 
-        # Get all users who are not friends with the current user
-        all_users = User.objects.exclude(id=self.request.user.id)
-        potential_friends = all_users.exclude(id__in=user_profile.get_friends().values_list('id', flat=True))
+        # Add usernames for users with pending friend requests
+        sent_requests_usernames = [req.receiver.user.username for req in friend_requests_sent]
 
-        # Pass the potential friends list to the template
-        context["potential_friends"] = potential_friends
+        context["profile"] = user_profile
+        context["search_results"] = search_results
+        context["friend_requests_sent"] = friend_requests_sent
+        context["friend_requests_received"] = friend_requests_received
+        context["sent_requests_usernames"] = sent_requests_usernames
+        context["friends_list"] = friends_list  # Include updated friends list
+
+
         return context
+
+    # Add a method for sending a friend request
+    def post(self, request, *args, **kwargs):
+        action = request.POST.get('action')
+        username = request.POST.get('username')
+        user_profile = request.user.profile
+        
+        if action == "send_request":
+            profile_to_add = get_object_or_404(Profile, user__username=username)
+            if profile_to_add not in user_profile.get_friends():
+                Relationship.objects.create(sender=user_profile, receiver=profile_to_add, status='send')
+        
+        elif action == "accept_request":
+            sender_profile = get_object_or_404(Profile, user__username=username)
+            relationship = get_object_or_404(Relationship, sender=sender_profile, receiver=user_profile, status='send')
+            relationship.status = 'accepted'
+            relationship.save()
+        
+        return redirect('friends')
+    # def post(self, request, *args, **kwargs):
+    #     profile_to_add = get_object_or_404(Profile, user__username=request.POST.get('username'))
+    #     user_profile = request.user.profile
+        
+    #     # Create a relationship with status 'send'
+    #     if profile_to_add not in user_profile.get_friends():
+    #         Relationship.objects.create(sender=user_profile, receiver=profile_to_add, status='send')
+    #         return redirect('friends')
+    #     return redirect('friends')
+
 
 class MatchHistoryView ( generic.TemplateView ):
 	template_name = "tr/base.html"

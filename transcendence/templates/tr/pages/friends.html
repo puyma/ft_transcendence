@@ -1,61 +1,143 @@
 {% load static %}
-
 {% if request.user.is_authenticated %}
+    {% include 'tr/components/_navProfile.html' %}
 
-{% include 'tr/components/_navProfile.html' %}
+    <div class="container my-4">
+        <div class="row d-flex align-items-baseline justify-content-around">
+            <div class="col-md-6">
+                <h3 class="text-left">Friends ({{ profile.get_friends_num }})</h3>
+                <form method="GET" action="{% url 'friends' %}" class="my-4">
+                    <div class="input-group mb-3">
+                        <input type="text" name="search" placeholder="Search by username" class="form-control" value="{{ request.GET.search }}">
+                        <span class="input-group-text">
+                            <i class="fas fa-search"></i>
+                        </span>
+                    </div>
+                </form>
 
-<div class="potential-friends-list">
-  <h2>Potential Friends</h2>
-  <ul>
-      {% for friend in potential_friends %}
-      <li>
-          <div class="potential-friend-item">
-              <!-- Display potential friend's avatar -->
-              <img src="{{ friend.profile.avatar_image }}" alt="{{ friend.username }}'s avatar" width="50" height="50">
-              
-              <!-- Display potential friend's name -->
-              <p>{{ friend.username }}</p>
-          </div>
-      </li>
-      {% empty %}
-      <li>No potential friends found.</li>
-      {% endfor %}
-  </ul>
-</div>
+                <div class="search-results-list">
+                    {% if search_results is not None %}
+                        {% if search_results %}
+                            <h3>Search Results</h3>
+                            <div class="row">
+                                {% for result in search_results %}
+                                    <div class="col-md-4 mb-3">
+                                        <div class="card text-center">
+                                            <img src="{{ result.avatar_image }}" alt="{{ result.user.username }}'s avatar" class="card-img-top mx-auto mt-3" style="width: 100px; height: 100px; border-radius: 50%;">
+                                            <div class="card-body">
+                                                <h5 class="card-title">{{ result.user.username }}</h5>
+                                                {% if result.user.username in sent_requests_usernames %}
+                                                    <p>Already sent</p>
+                                                {% elif result.user not in profile.friends.all %}
+                                                    <form method="POST" action="{% url 'friends' %}">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="username" value="{{ result.user.username }}">
+                                                        <input type="hidden" name="action" value="send_request">
+                                                        <button type="submit" class="btn btn-success">Add Friend</button>
+                                                    </form>
+                                                {% else %}
+                                                    <p>Already friends</p>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p>No users found with that username.</p>
+                        {% endif %}
+                    {% endif %}
+                </div>
 
-    <div class="friends-list">
-      <h2>Your Friends</h2>
-      <ul>
-          {% for friend in friends %}
-          <li>
-              <div class="friend-item">
-                  <!-- Display friend's avatar -->
-                  <img src="{{ friend.profile.avatar_image }}" alt="{{ friend.username }}'s avatar" width="50" height="50">
-                  
-                  <!-- Display friend's name -->
-                  <p>{{ friend.username }}</p>
-                  
-                  <!-- Display online status -->
-                  <p>Status: {{ friend.profile.is_online|yesno:"Online,Offline" }}</p>
-              </div>
-          </li>
-          {% empty %}
-          <li>You have no friends yet.</li>
-          {% endfor %}
-      </ul>
-  </div>
+                <div class="friends-list mt-4">
+                    <div class="row justify-content-center">
+                        {% if profile.get_friends %}
+                            {% for friend in profile.get_friends %}
+                            <div class="col-md-12 mb-3">
+                                <div class="friend-rectangle d-flex align-items-center justify-content-between" style="border: 2px solid white; padding: 10px; border-radius: 5px; background-color: white;">
+                                    <img src="{{ friend.profile.avatar_image }}" alt="{{ friend.username }}'s avatar" class="mx-3" style="width: 50px; height: 50px; background-color: white; border-radius: 50%;">
+                                    <div class="flex-grow-1">
+                                        <h5 class="mb-1" style="color: black;">{{ friend.username }}</h5>  
+                                        <p class="mb-0" style="color: {% if friend.profile.is_online %}green{% else %}red{% endif %};">
+                                            {{ friend.profile.is_online|yesno:"Online,Offline" }}
+                                        </p>
+                                        {% if not friend.profile.is_online %}
+                                            <p style="color: rgb(160, 149, 149) !important;">
+                                                Last active: {{ friend.profile.last_active|date:"F j, Y, g:i a" }}
+                                            </p>
+                                        {% endif %}
+                                    </div>
+                                    <button type="button" class="btn btn-primary btn-sm" style="color: white;" disabled>Friends</button>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <p>You have no friends yet.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
 
+            <div class="col-md-4">
+                <h3 class="text-center">Friend Requests</h3>
+                <div class="friends-list mt-4">
+                    <div class="row justify-content-center">
+                        {% if friend_requests_sent %}
+                            {% for request in friend_requests_sent %}
+                            <div class="col-md-12 mb-3">
+                                <div class="friend-rectangle d-flex align-items-center justify-content-between" style="border: 2px solid white; padding: 10px; border-radius: 5px; background-color: white;">
+                                    <div class="d-flex align-items-center">
+                                        <img src="{{ request.receiver.avatar_image }}" alt="{{ request.receiver.user.username }}'s avatar" class="mx-3" style="width: 50px; height: 50px; background-color: white; border-radius: 50%;">
+                                        <div>
+                                            <h5 class="mb-1" style="color: black;">{{ request.receiver.user.username }}</h5>
+                                            <p class="mb-0" style="color: {% if request.receiver.profile.is_online %}green{% else %}red{% endif %};">
+                                                {{ request.receiver.profile.is_online|yesno:"Online,Offline" }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-warning btn-sm" style="color: white;" disabled>
+                                        Pending
+                                    </button>
+                                </div>
+                            </div>                            
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted">No pending friend requests sent.</p>
+                        {% endif %}
+                    </div>
+                </div>
 
-<!-- {% if user.friends %}
-  <div class="container mt-4">
-    <ul class="list-group">
-      <li class="list-group-item">A first item</li>
-      <li class="list-group-item">A second item</li>
-      <li class="list-group-item">A third item</li>
-      <li class="list-group-item">A fourth item</li>
-      <li class="list-group-item">And a fifth one</li>
-    </ul>
-  </div>
-  {% endif %} -->
-  
+                <div class="friends-list">
+                    <div class="row justify-content-center">
+                        {% if friend_requests_received %}
+                            {% for request in friend_requests_received %}
+                            <div class="col-md-12 mb-3">
+                                <div class="friend-rectangle d-flex align-items-center" style="border: 2px solid white; padding: 10px; border-radius: 5px; background-color: white;">
+                                    <img src="{{ request.sender.avatar_image }}" alt="{{ request.sender.user.username }}'s avatar" class="mx-3" style="width: 50px; height: 50px; border-radius: 50%;">
+                                    <div class="flex-grow-1 d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h5 class="mb-1" style="color: black;">{{ request.sender.user.username }}</h5>
+                                            <p class="mb-0" style="color: {% if request.sender.profile.is_online %}green{% else %}red{% endif %};">
+                                                {{ request.sender.profile.is_online|yesno:"Online,Offline" }}
+                                            </p>
+                                        </div>
+                                        <form method="POST" action="{% url 'friends' %}" class="d-inline">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="action" value="accept_request">
+                                            <input type="hidden" name="username" value="{{ request.sender.user.username }}">
+                                            <button type="submit" class="btn btn-success btn-sm" style="color: white;">Accept</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted">No friends invitations to accept.</p>
+                        {% endif %}
+                    </div>
+                </div>                
+            </div>
+        </div>
+    </div>
 {% endif %}
