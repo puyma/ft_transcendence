@@ -78,11 +78,6 @@ urlpatterns = [
         name='friends'
         ),
     path(
-        'profile/match_history/',
-        views.MatchHistoryView.as_view(),
-        name='match_history'
-        ),
-    path(
 		'settings/',
 		views.ProfileView.as_view(),
 		name='settings',

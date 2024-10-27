@@ -16,6 +16,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
 from .models import Profile, Relationship
+from .models import Match  # Adjust the path if Match is in a different app
 
 
 # https://django-advanced-training.readthedocs.io/en/latest/features/class-based-views/
@@ -230,14 +231,26 @@ def pong_view ( request ):
     return ( render( request, 'tr/base.html', context ) )
 
 
-class StatsView ( generic.TemplateView ):
-	template_name = "tr/base.html"
+class StatsView(generic.TemplateView):
+    template_name = "tr/base.html"
 
-	def get_context_data ( self, **kwargs ):
-		context = super().get_context_data( **kwargs )
-		context["page"] = "tr/pages/stats.html"
-		return ( context )
-
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        profile = self.request.user.profile
+        context["page"] = "tr/pages/stats.html"
+        
+        context['matches_played'] = profile.matches_played()
+        context['wins'] = profile.wins()
+        context['losses'] = profile.losses()
+        context['win_percentage'] = profile.win_percentage()
+        context['loss_percentage'] = profile.loss_percentage()
+        context['total_win_points'] = profile.total_win_points()
+        context['total_loss_points'] = profile.total_loss_points()
+        context['match_history'] = Match.objects.filter(
+            Q(winner_username=self.request.user) | Q(loser_username=self.request.user)
+        ).order_by('-created_at')
+        return context
+	
 class FriendsView(generic.TemplateView):
     template_name = "tr/base.html"
 
@@ -308,12 +321,3 @@ class FriendsView(generic.TemplateView):
     #         Relationship.objects.create(sender=user_profile, receiver=profile_to_add, status='send')
     #         return redirect('friends')
     #     return redirect('friends')
-
-
-class MatchHistoryView ( generic.TemplateView ):
-	template_name = "tr/base.html"
-
-	def get_context_data ( self, **kwargs ):
-		context = super().get_context_data( **kwargs )
-		context["page"] = "tr/pages/match_history.html"
-		return ( context )

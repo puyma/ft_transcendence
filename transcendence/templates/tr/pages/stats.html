@@ -1,30 +1,163 @@
 {% load static %}
 
 {% if request.user.is_authenticated %}
-
 {% include 'tr/components/_navProfile.html' %}
 
-<div class="container mt-4">
-  <h2 class="text-center">Game Stats</h2>
-  <ul class="list-group">
-      <li class="list-group-item" style="background-color: rgb(188, 169, 206);">
-          Wins: {{ profile.wins }} 
-          <span class="float-end">{{ win_percentage|floatformat:1 }}%</span>
-      </li>
-      <li class="list-group-item" style="background-color: rgb(115, 101, 222);">
-          Losses: {{ profile.losses }} 
-          <span class="float-end">{{ loss_percentage|floatformat:1 }}%</span>
-      </li>
-  </ul>
+<div class="container">
+    <h2 class="text-center my-4">Dashboard Statistics</h2>
+    <div class="row g-4">
+        <!-- Matches Played Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card stats-card shadow-sm border border-white p-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="text-muted text-uppercase fw-bold small">Matches Played</div>
+                            <div class="stat-value text-primary mt-2">{{ matches_played }}</div>
+                        </div>
+                        <div class="icon-circle">
+                            <i class="fas fa-gamepad text-primary"></i>
+                        </div>
+                    </div>
+                    <div class="progress mt-4">
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Wins Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card stats-card shadow-sm border border-white p-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="text-muted text-uppercase fw-bold small">Wins</div>
+                            <div class="stat-value text-success mt-2">{{ wins }}</div>
+                        </div>
+                        <div class="icon-circle">
+                            <i class="fas fa-trophy text-success"></i>
+                        </div>
+                    </div>                    
+                    <div class="progress mt-4">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ win_percentage }}%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Losses Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card stats-card shadow-sm border border-white p-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="text-muted text-uppercase fw-bold small">Losses</div>
+                            <div class="stat-value text-info mt-2">{{ losses }}</div>
+                        </div>
+                        <div class="icon-circle">
+                            <i class="fas fa-times-circle text-info"></i>
+                        </div>
+                    </div>
+                    <div class="progress mt-4">
+                        <div class="progress-bar bg-info" role="progressbar" style="width: {{ loss_percentage }}%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Win Percentage Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card stats-card shadow-sm border border-white p-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="text-muted text-uppercase fw-bold small">Win Percentage</div>
+                            <div class="stat-value text-warning mt-2">{{ win_percentage|floatformat:2 }}%</div>
+                        </div>
+                        <div class="icon-circle">
+                            <i class="fas fa-chart-line text-warning"></i>
+                        </div>
+                    </div>
+                    <div class="progress mt-4">
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: {{ win_percentage }}%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Total Win Points Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card stats-card shadow-sm border border-white p-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="text-muted text-uppercase fw-bold small">Total Win Points</div>
+                            <div class="stat-value text-success mt-2">{{ total_win_points }}</div>
+                        </div>
+                        <div class="icon-circle">
+                            <i class="fas fa-star text-success"></i>
+                        </div>
+                    </div>
+                    <div class="progress mt-4">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Total Loss Points Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card stats-card shadow-sm border border-white p-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="text-muted text-uppercase fw-bold small">Total Loss Points</div>
+                            <div class="stat-value text-danger mt-2">{{ total_loss_points }}</div>
+                        </div>
+                        <div class="icon-circle">
+                            <i class="fas fa-exclamation-circle text-danger"></i>
+                        </div>
+                    </div>
+                    <div class="progress mt-4">
+                        <div class="progress-bar bg-danger" role="progressbar" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- table with match v1v history -->
+    <div class="table-responsive mt-5">
+        <table class="table table-striped table-bordered table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Date</th>
+                    <th>Winner</th>
+                    <th>Loser</th>
+                    <th>Winner Points</th>
+                    <th>Loser Points</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if match_history %}
+                    {% for match in match_history %}
+                        <tr>
+                            <td>{{ match.created_at }}</td>
+                            <td>{{ match.winner_username }}</td>
+                            <td>{{ match.loser_username }}</td>
+                            <td>{{ match.winner_points }}</td>
+                            <td>{{ match.loser_points }}</td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center">No match history available.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
 
-  <!-- <h4 class="mt-4">Win/Loss Distribution</h4>
-  <div class="progress">
-      <div class="progress-bar bg-success" role="progressbar" style="width: {{ win_percentage|floatformat:1 }}%;" aria-valuenow="{{ win_percentage|floatformat:1 }}" aria-valuemin="0" aria-valuemax="100">
-          {{ win_percentage|floatformat:1 }}%
-      </div>
-      <div class="progress-bar bg-danger" role="progressbar" style="width: {{ loss_percentage|floatformat:1 }}%;" aria-valuenow="{{ loss_percentage|floatformat:1 }}" aria-valuemin="0" aria-valuemax="100">
-          {{ loss_percentage|floatformat:1 }}%
-      </div>
-  </div>
-</div> -->
 {% endif %}

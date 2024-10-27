@@ -7,6 +7,8 @@ from PIL import Image
 from django.utils import timezone 
 from django.core.exceptions import ValidationError
 from django.contrib.auth.signals import user_logged_in, user_logged_out
+from django.db.models import Sum
+
 
 # Extends django.contrib.auth User
 # class Profile ( models.Model ):
@@ -71,6 +73,8 @@ class Profile(models.Model):
     is_online = models.BooleanField(default=False)
     last_active = models.DateTimeField(null=True, blank=True)
 
+    # FRIENDS METHODS 
+
     def set_online(self):
         self.is_online = True
         self.last_active = timezone.now()
@@ -91,6 +95,35 @@ class Profile(models.Model):
     
     def get_last_active_friends(self):
         return self.friends.order_by('-profile__last_active')
+
+    # STATS METHODS
+    def wins(self):
+        return self.user.won_matches.count()
+
+    def losses(self):
+        return self.user.lost_matches.count()
+    
+    def matches_played(self):
+        return self.wins() + self.losses()
+
+    def win_percentage(self):
+        total_matches = self.wins() + self.losses()
+        if total_matches == 0:
+            return 0
+        return (self.wins() / total_matches) * 100
+    
+    def total_win_points(self):
+        return Match.objects.filter(winner_username=self.user).aggregate(Sum('winner_points'))['winner_points__sum'] or 0
+
+    def total_loss_points(self):
+        return Match.objects.filter(loser_username=self.user).aggregate(Sum('loser_points'))['loser_points__sum'] or 0
+
+
+    def loss_percentage(self):
+        total_matches = self.wins() + self.losses()
+        if total_matches == 0:
+            return 0
+        return (self.losses() / total_matches) * 100
 
     def __str__(self):
         return self.user.username
