@@ -40,4 +40,8 @@ $body-color-dark: #fff;
 
 // 8. Add additional custom code here
 
+// Font awesome
+@import '../node_modules/@fortawesome/fontawesome-free/css/all.min';
+
+// Our styles
 @import 'custom';
