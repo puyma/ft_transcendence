@@ -16,7 +16,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
 from .models import Profile, Relationship
-from .models import Match  # Adjust the path if Match is in a different app
+from .models import Match
 
 
 # https://django-advanced-training.readthedocs.io/en/latest/features/class-based-views/
@@ -250,11 +250,6 @@ class StatsView(generic.TemplateView):
             Q(winner_username=self.request.user) | Q(loser_username=self.request.user)
         ).order_by('-created_at')
         return context
-	
-from django.views import generic
-from django.shortcuts import get_object_or_404, redirect
-from django.db.models import Q
-from .models import Profile, Relationship
 
 class FriendsView(generic.TemplateView):
     template_name = "tr/base.html"
@@ -274,20 +269,16 @@ class FriendsView(generic.TemplateView):
         else:
             search_results = None
         
-        # Sent requests
         friend_requests_sent = Relationship.objects.filter(
             sender=user_profile, status='send'
         ).select_related('receiver')
         
-        # Received requests
         friend_requests_received = Relationship.objects.filter(
             receiver=user_profile, status='send'
         ).select_related('sender')
         
-        # Get friends list
         friends_list = user_profile.get_friends()
 
-        # Add usernames for users with pending friend requests
         sent_requests_usernames = [req.receiver.user.username for req in friend_requests_sent]
 
         context["profile"] = user_profile
@@ -305,8 +296,6 @@ class FriendsView(generic.TemplateView):
 
         if action == "send_request":
             profile_to_add = get_object_or_404(Profile, user__username=username)
-            
-            # Delete any existing relationship and create a new 'send' request
             Relationship.objects.filter(
                 Q(sender=user_profile, receiver=profile_to_add) | 
                 Q(sender=profile_to_add, receiver=user_profile)
@@ -325,14 +314,11 @@ class FriendsView(generic.TemplateView):
             relationship.save()
 
         elif action == "remove_friend":
-            friend_profile = get_object_or_404(Profile, user__username=username)
-            
-            # Delete any relationship between the users, regardless of its status
+            friend_profile = get_object_or_404(Profile, user__username=username)            
             Relationship.objects.filter(
                 Q(sender=user_profile, receiver=friend_profile) | 
                 Q(sender=friend_profile, receiver=user_profile)
             ).delete()
-            
             messages.success(request, "Friend removed successfully.")
 
         return redirect('friends')

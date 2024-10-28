@@ -10,58 +10,6 @@ from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.db.models import Sum
 from django.db.models import Q
 
-
-# Extends django.contrib.auth User
-# class Profile ( models.Model ):
-
-# 	user = models.OneToOneField(
-# 			settings.AUTH_USER_MODEL,
-# 			on_delete=models.CASCADE,
-# 			)
-			
-# 	avatar = models.ImageField(
-# 			upload_to='avatars/',
-# 			blank=True,
-# 			)
-
-# 	avatar_url = models.URLField(
-# 			blank=True,
-# 			)
-# 	# if not set, use default avatar
-
-# 	campus_name = models.CharField(
-# 			max_length=100,
-# 			blank=True,
-# 			)
-
-# 	display_name = models.CharField(
-# 			max_length=100,
-# 			blank=True,
-# 			)
-
-# 	kind = models.CharField(
-# 			max_length=42,
-# 			blank=True,
-# 			)
-
-# 	language = models.CharField(
-# 			max_length=42,
-# 			blank=True,
-# 			)
-
-# 	language_id = models.CharField(
-# 			max_length=10,
-# 			blank=True,
-# 			)
-
-# 	time_zone = models.CharField(
-# 			max_length=84,
-# 			blank=True,
-# 			)
-
-# 	def __str__ ( self ):
-# 		return ( f'Profile of {self.user.username}' )
-
 #we have the profile class that is linked with the USER class (table) and to access to the first name, last name and email with
 # property --- print(profile.first_name)  # This will return profile.user.first_name
 
@@ -170,6 +118,19 @@ class Relationship(models.Model):
     def save(self, *args, **kwargs):
         if self.sender == self.receiver:
             raise ValidationError("You cannot add yourself as a friend.")
+
+        # Check if there's an existing reciprocal request two send requests
+        reciprocal_request = Relationship.objects.filter(
+            sender=self.receiver,
+            receiver=self.sender,
+            status='send'
+        ).first()
+        
+        if reciprocal_request:
+            self.status = 'accepted'
+            reciprocal_request.status = 'accepted'
+            reciprocal_request.save()
+        
         super().save(*args, **kwargs)
     
     def remove_friend(self):
