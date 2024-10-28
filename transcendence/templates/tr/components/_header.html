@@ -43,7 +43,7 @@
       <div class="dropdown text-end">
         <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
 			{% if user.profile.avatar %}
-			<img src="/media/{{ user.profile.avatar }}" alt="{{ user.username }}" width="32" height="32" class="rounded-circle">
+			  <img src="/media/{{ user.profile.avatar }}" alt="{{ user.username }}" width="32" height="32" class="rounded-circle">
 			{% else %}
 			{{ user.username }}
 			{% endif %}

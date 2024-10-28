@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 from .models import Profile
 from .models import Match
-
+from .models import Relationship
 #@admin.register( Profile )
 #class ProfileAdmin ( admin.ModelAdmin ):
 #	list_display = ['user', 'avatar']
@@ -29,4 +29,5 @@ class MatchAdmin(admin.ModelAdmin):
 admin.site.unregister( User )
 admin.site.register( User, UserAdmin )
 admin.site.register( Profile )
+admin.site.register( Relationship )
 admin.site.register( Match, MatchAdmin )
