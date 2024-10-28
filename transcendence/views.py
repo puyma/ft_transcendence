@@ -251,6 +251,11 @@ class StatsView(generic.TemplateView):
         ).order_by('-created_at')
         return context
 	
+from django.views import generic
+from django.shortcuts import get_object_or_404, redirect
+from django.db.models import Q
+from .models import Profile, Relationship
+
 class FriendsView(generic.TemplateView):
     template_name = "tr/base.html"
 
@@ -279,7 +284,8 @@ class FriendsView(generic.TemplateView):
             receiver=user_profile, status='send'
         ).select_related('sender')
         
-        friends_list = user_profile.get_friends()  # Make sure get_friends is not cached
+        # Get friends list
+        friends_list = user_profile.get_friends()
 
         # Add usernames for users with pending friend requests
         sent_requests_usernames = [req.receiver.user.username for req in friend_requests_sent]
@@ -289,35 +295,44 @@ class FriendsView(generic.TemplateView):
         context["friend_requests_sent"] = friend_requests_sent
         context["friend_requests_received"] = friend_requests_received
         context["sent_requests_usernames"] = sent_requests_usernames
-        context["friends_list"] = friends_list  # Include updated friends list
-
-
+        context["friends_list"] = friends_list
         return context
-
-    # Add a method for sending a friend request
+	
     def post(self, request, *args, **kwargs):
         action = request.POST.get('action')
         username = request.POST.get('username')
         user_profile = request.user.profile
-        
+
         if action == "send_request":
             profile_to_add = get_object_or_404(Profile, user__username=username)
-            if profile_to_add not in user_profile.get_friends():
-                Relationship.objects.create(sender=user_profile, receiver=profile_to_add, status='send')
-        
+            
+            # Delete any existing relationship and create a new 'send' request
+            Relationship.objects.filter(
+                Q(sender=user_profile, receiver=profile_to_add) | 
+                Q(sender=profile_to_add, receiver=user_profile)
+            ).delete()
+            
+            Relationship.objects.create(
+                sender=user_profile,
+                receiver=profile_to_add,
+                status='send'
+            )
+
         elif action == "accept_request":
             sender_profile = get_object_or_404(Profile, user__username=username)
             relationship = get_object_or_404(Relationship, sender=sender_profile, receiver=user_profile, status='send')
             relationship.status = 'accepted'
             relationship.save()
-        
+
+        elif action == "remove_friend":
+            friend_profile = get_object_or_404(Profile, user__username=username)
+            
+            # Delete any relationship between the users, regardless of its status
+            Relationship.objects.filter(
+                Q(sender=user_profile, receiver=friend_profile) | 
+                Q(sender=friend_profile, receiver=user_profile)
+            ).delete()
+            
+            messages.success(request, "Friend removed successfully.")
+
         return redirect('friends')
-    # def post(self, request, *args, **kwargs):
-    #     profile_to_add = get_object_or_404(Profile, user__username=request.POST.get('username'))
-    #     user_profile = request.user.profile
-        
-    #     # Create a relationship with status 'send'
-    #     if profile_to_add not in user_profile.get_friends():
-    #         Relationship.objects.create(sender=user_profile, receiver=profile_to_add, status='send')
-    #         return redirect('friends')
-    #     return redirect('friends')

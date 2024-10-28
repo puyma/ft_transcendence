@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.core.exceptions import ValidationError
 from django.contrib.auth.signals import user_logged_in, user_logged_out
 from django.db.models import Sum
+from django.db.models import Q
 
 
 # Extends django.contrib.auth User
@@ -69,11 +70,14 @@ class Profile(models.Model):
     avatar = models.ImageField(default='profile_images/default.jpg', upload_to='profile_images')
     avatar_url = models.URLField(max_length=500, blank=True, null=True)
     bio = models.TextField(default="No bio available.")
-    friends = models.ManyToManyField(User, related_name='friends', blank=True)
     is_online = models.BooleanField(default=False)
     last_active = models.DateTimeField(null=True, blank=True)
 
-    # FRIENDS METHODS 
+    def get_friends(self):
+        return Profile.objects.filter(
+            Q(receiver__sender=self, receiver__status='accepted') |
+            Q(sender__receiver=self, sender__status='accepted')
+        )
 
     def set_online(self):
         self.is_online = True
@@ -85,17 +89,11 @@ class Profile(models.Model):
         self.save()
     
     def get_online_friends(self):
-        return self.friends.filter(profile__is_online=True)
-    
-    def get_friends(self):
-        return self.friends.all()
-    
-    def get_friends_num(self):
-        return self.friends.all().count()
-    
-    def get_last_active_friends(self):
-        return self.friends.order_by('-profile__last_active')
+        return self.get_friends().filter(is_online=True)
 
+    def get_friends_num(self):
+        return self.get_friends().count()
+    
     # STATS METHODS
     def wins(self):
         return self.user.won_matches.count()
@@ -117,7 +115,6 @@ class Profile(models.Model):
 
     def total_loss_points(self):
         return Match.objects.filter(loser_username=self.user).aggregate(Sum('loser_points'))['loser_points__sum'] or 0
-
 
     def loss_percentage(self):
         total_matches = self.wins() + self.losses()
@@ -152,8 +149,9 @@ class Profile(models.Model):
         super().save(*args, **kwargs)
 
 STATUS_CHOICES = (
-    ('send', 'send'),
-    ('accepted', 'accepted'),     
+    ('send', 'Send'),
+    ('accepted', 'Accepted'),
+    ('removed', 'Removed'),
 )
 
 class Relationship(models.Model):
@@ -173,6 +171,10 @@ class Relationship(models.Model):
         if self.sender == self.receiver:
             raise ValidationError("You cannot add yourself as a friend.")
         super().save(*args, **kwargs)
+    
+    def remove_friend(self):
+        self.status = 'removed'
+        self.save()
 
 @receiver( signals.post_save, sender=User )
 def create_profile__user ( sender, instance, created, **kwargs ):
@@ -182,20 +184,11 @@ def create_profile__user ( sender, instance, created, **kwargs ):
 @receiver( signals.post_save, sender=User )
 def save_profile__user ( sender, instance, update_fields, **kwargs ):
 	instance.profile.save()
-     
 
-#  SIGNALS FOR RELATIONSHIPS friends
 @receiver(signals.post_save, sender=Relationship)
-def post_save_add_to_friends(sender, created, instance, **kwargs):
-    sender_=instance.sender
-    receiver_=instance.receiver
-    if instance.status=='accepted':
-        sender_.friends.add(receiver_.user)
-        receiver_.friends.add(sender_.user)
-        sender_.save()
-        receiver_.save()
-
-#  SIGNALS to handle is online/offline & date time
+def post_save_add_to_friends(sender, instance, created, **kwargs):
+    if created and instance.status == 'accepted':
+        pass
 
 @receiver(user_logged_in)
 def set_user_online(sender, user, request, **kwargs):
@@ -205,18 +198,8 @@ def set_user_online(sender, user, request, **kwargs):
 def set_user_offline(sender, user, request, **kwargs):
     user.profile.set_offline()
     user.profile.last_active = timezone.now()
-    user.profile.save()  
+    user.profile.save()
 
-## fins aqui entenc be 
-# @receiver( signals.post_save, sender=Profile )
-# def create_profile__profile ( sender, instance, created, update_fields, **kwargs ):
-# 	print( f"created: {created}" )
-# 	print( f"update_fields: {update_fields}\n" )
-# 	#update img; if url -> set avatar
-
-# @receiver( signals.post_save, sender=Profile )
-# def save_profile__profile ( sender, instance, update_fields, **kwargs ):
-# 	return
 @receiver( signals.post_save, sender=Profile )
 def save_profile__profile ( sender, instance, update_fields, **kwargs ):
 	return
