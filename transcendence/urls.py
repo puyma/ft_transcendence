@@ -68,6 +68,16 @@ urlpatterns = [
 		name='del_account',
 		),
     path(
+        'profile/stats/', 
+        views.StatsView.as_view(),
+        name='stats'
+        ),
+    path(
+        'profile/friends/',
+        views.FriendsView.as_view(),
+        name='friends'
+        ),
+    path(
 		'settings/',
 		views.ProfileView.as_view(),
 		name='settings',

@@ -12,6 +12,11 @@ from . import forms
 from .providers import fortytwo
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
+from django.contrib.auth.models import User
+from django.shortcuts import render, get_object_or_404, redirect
+from django.db.models import Q
+from .models import Profile, Relationship
+from .models import Match
 
 
 # https://django-advanced-training.readthedocs.io/en/latest/features/class-based-views/
@@ -224,3 +229,96 @@ def pong_view ( request ):
 		'page': "tr/pages/pong.html",
     }
     return ( render( request, 'tr/base.html', context ) )
+
+
+class StatsView(generic.TemplateView):
+    template_name = "tr/base.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        profile = self.request.user.profile
+        context["page"] = "tr/pages/stats.html"
+        
+        context['matches_played'] = profile.matches_played()
+        context['wins'] = profile.wins()
+        context['losses'] = profile.losses()
+        context['win_percentage'] = profile.win_percentage()
+        context['loss_percentage'] = profile.loss_percentage()
+        context['total_win_points'] = profile.total_win_points()
+        context['total_loss_points'] = profile.total_loss_points()
+        context['match_history'] = Match.objects.filter(
+            Q(winner_username=self.request.user) | Q(loser_username=self.request.user)
+        ).order_by('-created_at')
+        return context
+
+class FriendsView(generic.TemplateView):
+    template_name = "tr/base.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page"] = "tr/pages/friends.html"
+        user_profile = self.request.user.profile
+        
+        # Handle search query
+        search_query = self.request.GET.get('search', '')
+        if search_query:
+            search_results = Profile.objects.filter(
+                Q(user__username__icontains=search_query) & 
+                ~Q(user=self.request.user)
+            )
+        else:
+            search_results = None
+        
+        friend_requests_sent = Relationship.objects.filter(
+            sender=user_profile, status='send'
+        ).select_related('receiver')
+        
+        friend_requests_received = Relationship.objects.filter(
+            receiver=user_profile, status='send'
+        ).select_related('sender')
+        
+        friends_list = user_profile.get_friends()
+
+        sent_requests_usernames = [req.receiver.user.username for req in friend_requests_sent]
+
+        context["profile"] = user_profile
+        context["search_results"] = search_results
+        context["friend_requests_sent"] = friend_requests_sent
+        context["friend_requests_received"] = friend_requests_received
+        context["sent_requests_usernames"] = sent_requests_usernames
+        context["friends_list"] = friends_list
+        return context
+	
+    def post(self, request, *args, **kwargs):
+        action = request.POST.get('action')
+        username = request.POST.get('username')
+        user_profile = request.user.profile
+
+        if action == "send_request":
+            profile_to_add = get_object_or_404(Profile, user__username=username)
+            Relationship.objects.filter(
+                Q(sender=user_profile, receiver=profile_to_add) | 
+                Q(sender=profile_to_add, receiver=user_profile)
+            ).delete()
+            
+            Relationship.objects.create(
+                sender=user_profile,
+                receiver=profile_to_add,
+                status='send'
+            )
+
+        elif action == "accept_request":
+            sender_profile = get_object_or_404(Profile, user__username=username)
+            relationship = get_object_or_404(Relationship, sender=sender_profile, receiver=user_profile, status='send')
+            relationship.status = 'accepted'
+            relationship.save()
+
+        elif action == "remove_friend":
+            friend_profile = get_object_or_404(Profile, user__username=username)            
+            Relationship.objects.filter(
+                Q(sender=user_profile, receiver=friend_profile) | 
+                Q(sender=friend_profile, receiver=user_profile)
+            ).delete()
+            messages.success(request, "Friend removed successfully.")
+
+        return redirect('friends')

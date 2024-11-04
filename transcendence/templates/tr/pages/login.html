@@ -28,6 +28,13 @@
           {{ form.password.label_tag }}
           {{ form.password }}
         </div>
+        <!-- Forgotten Password Link -->
+      <div class="text-end mb-3">
+        <a href="{% url 'password_reset' %}" class="link-primary text-decoration-none">
+          Forgotten your password?
+        </a>
+      </div>
+
         
         <div class="row justify-content-center mt-4">
           <div class="col-md-6">
@@ -49,9 +56,3 @@
     </div>
   </div>
 </div>
-
-<p>
-<a href="{% url "password_reset" %}">
-	Forgotten your password?
-</a>
-</p>
