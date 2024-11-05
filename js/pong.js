@@ -2,6 +2,52 @@
 //     set players, 1 y 2, si no hay 2 -> computer
 //     teclas para empezar a jugar y reset game
 
+class Message {
+    constructor(ctx, dpr, scaleFactor) {
+        this.ctx = ctx;
+        this.dpr = dpr;
+        this.scaleFactor = scaleFactor;
+        this.messageText = "";
+        this.isVisible = false;
+    }
+
+    showMessage(text) {
+        this.messageText = text;
+        this.isVisible = true;
+        this.render();
+    }
+
+    hide() {
+        this.isVisible = false;
+        this.clear();
+    }
+
+    render() {
+        if (this.isVisible) {
+            // this.clear();
+            // this.ctx.font = `${20 * this.scaleFactor}px Arial`;
+            // this.ctx.fillStyle = "white";
+            // this.ctx.textAlign = "center";
+            // this.ctx.fillText(this.messageText, this.ctx.canvas.width / 2 / this.dpr, this.ctx.canvas.height / 2 / this.dpr);
+            
+            // Crea un rectángulo semi-transparente para oscurecer la pantalla
+            this.ctx.fillStyle = "rgba(0, 0, 0, 0.5)"; // Cambia el último valor para ajustar la opacidad
+            this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+
+            // Dibuja el texto del mensaje
+            this.ctx.font = `${20 * this.scaleFactor}px Arial`;
+            this.ctx.fillStyle = "white"; // Color del texto
+            this.ctx.textAlign = "center";
+            this.ctx.fillText(this.messageText, this.ctx.canvas.width / 2 / this.dpr, this.ctx.canvas.height / 2 / this.dpr);
+        }
+    }
+
+    clear() {
+        this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+    }
+}
+
+
 export class Game {
     constructor(canvasId, mode) {
         this.canvas = document.getElementById(canvasId);
@@ -27,6 +73,8 @@ export class Game {
         this.updateInterval = 16;
         this.isGameOver = false;
         this.gameStarted = false;
+        // -----PROBANDO
+        this.message = new Message(this.ctx, this.dpr, this.scaleFactor);
         // this.init();
     }
 
@@ -66,6 +114,7 @@ export class Game {
         this.canvas.focus();
         // this.canvas.addEventListener("keydown", (evt) => this.move(evt));
         // ------ probando
+        this.message.showMessage("Press Space to Start");
         document.addEventListener("keydown", (evt) => {
             if (evt.code === "Space" && !this.gameStarted) {
                 this.startGame(); // Inicia el juego al presionar "Space"
@@ -75,7 +124,6 @@ export class Game {
         });
         this.render(); // Dibuja la escena inicial
         // ------- fin prueba
-        // this.gameLoop();
     }
 
     startGame() {
@@ -127,6 +175,10 @@ export class Game {
         this.drawRectangle(this.user.x, this.user.y, this.user.width, this.user.height, this.user.color);
         this.drawRectangle(this.com.x, this.com.y, this.com.width, this.com.height, this.com.color);
         this.drawCircle(this.ball.x, this.ball.y, this.ball.radius, this.ball.color);
+
+        if (!this.gameStarted || this.isGameOver) {
+            this.message.render();  // Renderiza el mensaje si el juego no ha comenzado o está terminado
+        }
     }
 
     move(evt) {
@@ -232,13 +284,15 @@ export class Game {
         this.isGameOver = true;
         let winner = this.user.score >= 2 ? "User" : "Computer";
         
-        // this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        // this.ctx.fillStyle = "BLACK"; // O un color con transparencia
-        // this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        // this.drawRectangle(0, 0, this.canvas.width / this.dpr, this.canvas.height / this.dpr, "BLACK");
-        // this.drawText(`${winner} wins!`, this.canvas.width / 3 / this.dpr, this.canvas.height / 2 / this.dpr, "WHITE");
+        // this.winnerMessage = `${winner} Wins!`;
+        
+        // Mostrar mensaje de ganador con opción de reiniciar
+        // this.message.showMessage(`${winner} Wins!`, "Press 'R' to Restart");
+        
+        // TODO -> if (this.gameMode === 'solo_play' || this.gameMode === 'double_play')
+        this.message.showMessage(`${winner} Wins! Press 'R' to Restart`);
+        document.addEventListener("keydown", (evt) => this.resetGame(evt), { once: true });
 
-        // cancelAnimationFrame(this.animationFrame);
         console.log("DESDE PONG.JS, ganador:", winner);
     
         // Llamar al callback con el ganador
@@ -251,11 +305,67 @@ export class Game {
         if (!this.isGameOver) {
             this.update();
             this.render();
-            this.animationFrame = requestAnimationFrame(() => this.gameLoop());
+            // this.animationFrame = requestAnimationFrame(() => this.gameLoop());
         }
-        // this.update();
-        // this.render();
-        // // requestAnimationFrame(() => this.gameLoop());
+        //-----CHECKKK
+        else {
+            this.message.render(); // Muestra el mensaje en pantalla
+        }
+
+        if (!this.isGameOver) {
+            requestAnimationFrame(() => this.gameLoop());
+        }
+        // --------FIN
+        
         // this.animationFrame = requestAnimationFrame(() => this.gameLoop());
+        
+        // //PRUEBA MENSAJE PARA GANADOR
+        // if (this.isGameOver && this.winnerMessage) {
+        //     // Fondo semi-transparente para el mensaje
+        //     this.ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+        //     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    
+        //     // Estilos del texto del mensaje
+        //     this.ctx.fillStyle = "white";
+        //     this.ctx.font = `${40 * this.scaleFactor}px Arial`;
+        //     this.ctx.textAlign = "center";
+        //     this.ctx.textBaseline = "middle";
+            
+        //     // Coordenadas para centrar el mensaje en la pantalla
+        //     const centerX = this.canvas.width / 2 / this.dpr;
+        //     const centerY = this.canvas.height / 2 / this.dpr;
+            
+        //     // Dibuja el mensaje centrado
+        //     this.ctx.fillText(this.winnerMessage, centerX, centerY);
+
+        //     //-----------PRUEBA RETRY
+        //     // Dibuja el mensaje para reiniciar
+        //     this.ctx.font = `${20 * this.scaleFactor}px Arial`;
+        //     this.ctx.fillText("Press 'R' to Restart", centerX, centerY + 50 * this.scaleFactor);
+
+        //     // Listener para reiniciar el juego al presionar 'R'
+        //     document.addEventListener("keydown", (evt) => this.resetGame(evt), { once: true });
+        //     //-----------FIN PRUEBA RETRY
+        //     return;
+        // }
+
+        // // Continuar el bucle si el juego no ha terminado
+        // if (!this.isGameOver) {
+        //     requestAnimationFrame(() => this.gameLoop());
+        // }
+        // //FIN PRUEBA MENSAJE GANADOR
+    }
+
+    resetGame(evt) {
+        if (evt.code === "KeyR") {
+            this.isGameOver = false; // Reinicia el estado del juego
+            this.user.score = 0;
+            this.com.score = 0;
+            this.winnerMessage = null;
+            this.gameStarted = false;
+            
+            this.init(); // Vuelve a inicializar el juego
+            // this.gameLoop(); // Comienza el bucle de juego nuevamente
+        }
     }
 }
