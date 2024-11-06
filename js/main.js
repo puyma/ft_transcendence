@@ -51,6 +51,21 @@ function setup_ajax_anchors ()
 	return ;
 }
 
+// function setup_game_buttons() {
+//     const button = window.document.getElementById('pong-play-btn');
+//     if (button != null) {
+//         button.addEventListener('click', () => {
+//             if (!window.game || window.game.isFinished) {
+//                 window.game = new Game3D();
+//                 window.game.start();
+//             } else {
+//                 console.log("juego cargado");
+//             }
+//         });
+//     }
+// }
+// MIRAR CUAL DE LAS DOS FUNCIONA MEJOR---------------------->
+
 function setup_game_buttons ()
 {
 	const button = window.document.getElementById('pong-play-btn');
