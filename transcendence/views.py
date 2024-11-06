@@ -15,22 +15,23 @@ from .providers import fortytwo
 # https://django-advanced-training.readthedocs.io/en/latest/features/class-based-views/
 
 class HomepageView ( generic.TemplateView ):
-	template_name = "tr/base.html"
+	template_name = 'tr/base.html'
 
 	def get_context_data ( self, **kwargs ):
 		context = super().get_context_data( **kwargs )
-		context["page"] = "tr/pages/home.html"
+		context['page'] = 'tr/pages/home.html'
+		context['active_nav'] = 'home'
 		return ( context )
 
 class LoginView ( auth_views.LoginView ):
 	redirect_authenticated_user = True
-	template_name = "tr/base.html"
+	template_name = 'tr/base.html'
 	# settings.py: next_page = "/profile"
 
 	def get_context_data ( self, **kwargs ):
 		context = super().get_context_data( **kwargs )
-		context["page"] = "tr/pages/login.html"
-		context["form"] = forms.LoginForm()
+		context['page'] = 'tr/pages/login.html'
+		context['form'] = forms.LoginForm()
 		context['provider_42_login'] = fortytwo.get_login_url( "42", 
 				{"state": self.request.COOKIES.get( 'csrftoken' ) } )
 		return ( context )
@@ -43,11 +44,11 @@ def do_logout ( request ):
 
 class LogoutView ( auth_views.LogoutView ):
 	http_method_names = ["post", "get"]
-	template_name = "tr/base.html"
+	template_name = 'tr/base.html'
 
 	def get_context_data ( self, **kwargs ):
 		context = super().get_context_data( **kwargs )
-		context["page"] = "tr/pages/logout.html"
+		context['page'] = "tr/pages/logout.html"
 		return ( context )
 
 	def get ( self, request, *args, **kwargs ):
@@ -60,12 +61,12 @@ class LogoutView ( auth_views.LogoutView ):
 class SignupView ( generic.CreateView ):
   form_class = auth.forms.UserCreationForm
   success_url = urls.reverse_lazy( 'login' )
-  template_name = "tr/base.html"
+  template_name = 'tr/base.html'
 
   def get_context_data ( self, **kwargs ):
 	  context = super().get_context_data( **kwargs )
-	  context["page"] = "tr/pages/signup.html"
-	  context["form"] = forms.SignupForm()
+	  context['page'] = "tr/pages/signup.html"
+	  #context['form'] = forms.SignupForm()
 	  return ( context )
 
 @login_required
@@ -73,11 +74,11 @@ def profile_dashboard ( request ):
 	return ( render( request, 'tr/pages/base.html', {'page': 'tr/pages/profile.html'} ) )
 
 class ProfileView ( generic.TemplateView ):
-	template_name = "tr/base.html"
+	template_name = 'tr/base.html'
 
 	def get_context_data ( self, **kwargs ):
 		context = super().get_context_data( **kwargs )
-		context["page"] = "tr/pages/profile.html"
+		context['page'] = "tr/pages/profile.html"
 		return ( context )
 
 @login_required
@@ -89,28 +90,78 @@ def profile_delete ( request ):
 	messages.success( request, "account delete successfully" )
 	return ( redirect( 'home' ) )
 
-class TournamentView ( generic.TemplateView ):
-	template_name = "tr/base.html"
+class PasswordChangeView ( auth_views.PasswordChangeView ):
+	template_name = 'tr/base.html'
 
 	def get_context_data ( self, **kwargs ):
 		context = super().get_context_data( **kwargs )
-		context["page"] = "tr/pages/tournament.html"
+		context['page'] = 'tr/pages/password_change.html'
+		return ( context )
+
+class PasswordChangeDoneView ( auth_views.PasswordChangeDoneView ):
+	template_name = 'tr/base.html'
+
+	def get_context_data ( self, **kwargs ):
+		context = super().get_context_data( **kwargs )
+		context['page'] = 'tr/pages/password_change_done.html'
+		return ( context )
+
+class PasswordResetView ( auth_views.PasswordResetView ):
+	template_name = 'tr/base.html'
+
+	def get_context_data ( self, **kwargs ):
+		context = super().get_context_data( **kwargs )
+		context['page'] = 'tr/pages/password_reset.html'
+		return ( context )
+
+class PasswordResetDoneView ( auth_views.PasswordResetDoneView ):
+	template_name = 'tr/base.html'
+
+	def get_context_data ( self, **kwargs ):
+		context = super().get_context_data( **kwargs )
+		context['page'] = 'tr/pages/password_reset_done.html'
+		return ( context )
+
+class PasswordResetConfirmView ( auth_views.PasswordResetConfirmView ):
+	template_name = 'tr/base.html'
+
+	def get_context_data ( self, **kwargs ):
+		context = super().get_context_data( **kwargs )
+		context['page'] = 'tr/pages/password_reset_confirm.html'
+		return ( context )
+
+class PasswordResetCompleteView ( auth_views.PasswordResetCompleteView ):
+	template_name = 'tr/base.html'
+
+	def get_context_data ( self, **kwargs ):
+		context = super().get_context_data( **kwargs )
+		context['page'] = 'tr/pages/password_reset_complete.html'
+		return ( context )
+
+## LEGACY CODE ---- ##
+
+class TournamentView ( generic.TemplateView ):
+	template_name = 'tr/base.html'
+
+	def get_context_data ( self, **kwargs ):
+		context = super().get_context_data( **kwargs )
+		context['page'] = 'tr/pages/tournament.html'
 		return ( context )
 
 class PlayView ( generic.TemplateView ):
-	template_name = "tr/base.html"
+	template_name = 'tr/base.html'
 
 	def get_context_data ( self, **kwargs ):
 		context = super().get_context_data( **kwargs )
-		context["page"] = "tr/pages/tournament.html"
+		context['page'] = 'tr/pages/tournament.html'
 		return ( context )
 
 class GameView ( generic.TemplateView ):
-	template_name = "tr/pages/pong.html"
+	template_name = 'tr/pages/pong.html'
 	
 	def get_context_data ( self, **kwargs ):
 		context = super().get_context_data( **kwargs )
-		context["page"] = "tr/pages/pong.html"
+		context['page'] = 'tr/pages/pong.html'
 		return ( context )
 
 ##
@@ -120,17 +171,17 @@ def double_play_view ( request ):
 		"title":"P4ngP2ong",
 		"lang":"en",
         "username": "clara",
-		"page": "tr/pages/double_play.html",
+		'page': 'tr/pages/double_play.html',
     }
     return ( render( request, 'tr/base.html', context) )
 
 def solo_play_view ( request ):
 
 	context = {
-		"title":"P4ngP2ong",
-		"lang":"en",
-        "username": "clara",
-		"page": "tr/pages/solo_play.html",
+		'title':'P4ngP2ong',
+		'lang':'en',
+        'username': 'clara',
+		'page':'tr/pages/solo_play.html',
     }
 	return ( render( request, 'tr/base.html', context ) )
 
@@ -139,7 +190,7 @@ def play_view ( request ):
 		"title":"P4ngP2ong",
 		"lang":"en",
         "username": "clara",
-		"page": "tr/pages/play.html",
+		'page': 'tr/pages/play.html',
     }
     return ( render ( request, 'tr/base.html', context ) )
 
@@ -148,6 +199,6 @@ def pong_view ( request ):
 		"title":"P4ngP2ong",
 		"lang":"en",
         "username": "clara",
-		"page": "tr/pages/pong.html",
+		'page': "tr/pages/pong.html",
     }
     return ( render( request, 'tr/base.html', context ) )

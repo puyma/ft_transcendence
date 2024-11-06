@@ -1,5 +1,15 @@
 import * as THREE from 'three';
 
+// Función para establecer el modo de juego
+function setModoJuego(modo) {
+	localStorage.setItem('modoJuego', modo);
+}
+
+// Función para obtener el modo de juego almacenado
+function getModoJuego() {
+	return localStorage.getItem('modoJuego') || 'default'; // Puedes cambiar 'default' a un modo específico si es necesario
+}
+
 class MessageManager {
     constructor() {
         this.messageElement = null; // Elemento del mensaje en el DOM
@@ -99,10 +109,12 @@ class Game {
     }
     
     start() {
-        // Aquí puedes inicializar el juego
-        this.init(); // Llamar al método init para configurar el juego
+        const modoJuegoSeleccionado = getModoJuego(); // Obtener el modo de juego almacenado
+        console.log("Modo de juego seleccionado:", modoJuegoSeleccionado);
+        // Inicializa el juego usando modoJuegoSeleccionado
+        this.init(modoJuegoSeleccionado); // Asumiendo que `init` acepta el modo de juego
     }
-
+   
     exitGame() {
         this.isGameStarted = false;
         // Función para salir del juego y volver al menú anterior
@@ -112,28 +124,28 @@ class Game {
             window.location.href = "menu.html";  // Cambiar la URL al menú o página anterior
         }
     }
+ 
+    init(modo) {
+        if (modo === 'solo' || modo === 'double')
+            // TEMP
+            document.getElementsByTagName( 'header' )?.[0].setAttribute( "style", "display:none;" );
 
-    init() {
+            this.scene = new THREE.Scene();
+            this.createCamera();
+            this.createRenderer();
+            this.createLights();
+            this.createObjects();
 
-        // TEMP
-        document.getElementsByTagName( 'header' )?.[0].setAttribute( "style", "display:none;" );
+            // Crear el marcador
+            this.createScoreboard();
 
-        this.scene = new THREE.Scene();
-        this.createCamera();
-        this.createRenderer();
-        this.createLights();
-        this.createObjects();
+            // Configurar los event listeners
+            window.addEventListener('resize', this.resizeCanvas.bind(this));
+            window.addEventListener('keydown', this.handleKeydown.bind(this));
+            window.addEventListener('keyup', this.handleKeyup.bind(this));
 
-        // Crear el marcador
-        this.createScoreboard();
-
-        // Configurar los event listeners
-        window.addEventListener('resize', this.resizeCanvas.bind(this));
-        window.addEventListener('keydown', this.handleKeydown.bind(this));
-        window.addEventListener('keyup', this.handleKeyup.bind(this));
-
-        this.messageManager.showMessage("Presiona cualquier tecla para comenzar");
-        this.gameLoop();
+            this.messageManager.showMessage("Presiona cualquier tecla para comenzar");
+            this.gameLoop();
     }
 
     startGame() {
@@ -493,7 +505,7 @@ class Paddle {
     resetPosition() {
         this.mesh.position.copy(this.initialPosition); // Restablecer la posición inicial
     }
-}
+    }
 
 // Clase para la pelota
 class Ball {
@@ -564,11 +576,4 @@ class Walls {
     }
 }
 
-// Modificar el listener del botón para que llame a esta función
-document.getElementById("pong-play-btn")?.addEventListener("click", (event) => {
-    event.preventDefault();
-    // Iniciar el juego
-    const game = new Game();
-    document.getElementById('main').innerHTML = ""; // Limpiar el contenedor principal
-    game.start();  // Llamar al nuevo método start
-});
+export { Game };
