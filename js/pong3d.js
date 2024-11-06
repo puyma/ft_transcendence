@@ -86,7 +86,7 @@ class Game {
 
         // Variables de juego
         this.speed = 0.5;  // Velocidad de movimiento de las palas
-        this.speedIncrement = 0.05; // Incremento de velocidad de la pelota en cada colisión
+        this.speedIncrement = 0.02; // Incremento de velocidad de la pelota en cada colisión
         this.boundaryMargin = 5; // Margen para detectar cuando la pelota sale del campo
 
         // Inicializa las palas
@@ -462,7 +462,7 @@ class Game {
 // Clase para las palas
 class Paddle {
     constructor(xPosition, fieldHeight) {
-        const paddleGeometry = new THREE.BoxGeometry(2, 2, 5);
+        const paddleGeometry = new THREE.BoxGeometry(2, 2, 10);
         const paddleMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
         this.mesh = new THREE.Mesh(paddleGeometry, paddleMaterial);
         this.mesh.position.set(xPosition, 1.5, 0);
