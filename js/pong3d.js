@@ -50,9 +50,12 @@ class Game {
             hard: 2
         };
         this.initialSpeed = this.difficultySettings[this.difficulty];
+        // // Velocidad inicial de la pelota basada en la dificultad
+        // this.initialSpeed = this.difficultySettings[this.difficulty];
+        // this.ballSpeed = this.initialSpeed; // Velocidad actual de la pelota
 
         // Ajustar dificultad de la máquina
-        this.aiDifficulty = 'medium'; // 'easy', 'medium', 'hard'
+        this.aiDifficulty = 'easy'; // 'easy', 'medium', 'hard'
         this.aiDifficultySettings = {
             easy: 0.5,   // velocidad de la máquina
             medium: 1,   // velocidad de la máquina
@@ -97,6 +100,7 @@ class Game {
 
         this.isGameStarted = false; // Nuevo estado para saber si el juego ha comenzado
 
+        this.winner = ''; // Variable para almacenar al ganador
         this.winScore = 1; // Goles necesarios para ganar
     }
 
@@ -148,6 +152,8 @@ class Game {
             // Restablecer posiciones de las palas
             this.paddle1.resetPosition();
             this.paddle2.resetPosition();
+            // // Reiniciar la velocidad actual de la pelota y posiciones de las palas
+            // this.ballSpeed = this.initialSpeed;
             his.initialSpeed = this.difficultySettings[this.difficulty];
             this.gameLoop();            // Iniciar el bucle del juego
         }
@@ -165,12 +171,14 @@ class Game {
     endGame(winnerMessage) {
         this.isGameStarted = false;
     
+        this.winner = winnerMessage; // Guardar el ganador al final del juego
         // Mostrar mensaje de fin de juego
         this.messageManager.showMessage(`${winnerMessage}<br>Presiona 'R' para volver a jugar o ESC para salir.`, '#FF0000');
     }
 
     resetGame() {
-
+        // // Reiniciar la velocidad actual de la pelota y posiciones de las palas
+        // this.ballSpeed = this.initialSpeed;
         // Limpiar el mensaje de fin de juego
         document.getElementById("pong-message").innerHTML = ''; // Asegúrate de eliminar el mensaje
     
@@ -181,7 +189,7 @@ class Game {
         this.isGameStarted = false; // Marcar el juego como no iniciado
         // Mostrar el mensaje de inicio
         this.messageManager.showMessage("Presiona cualquier tecla para comenzar");
-     }
+    }
 
     createCamera() {
         this.camera = new THREE.PerspectiveCamera(
