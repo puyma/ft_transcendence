@@ -1,14 +1,6 @@
 import * as THREE from 'three';
 
-// Función para establecer el modo de juego
-function setModoJuego(modo) {
-	localStorage.setItem('modoJuego', modo);
-}
-
-// Función para obtener el modo de juego almacenado
-function getModoJuego() {
-	return localStorage.getItem('modoJuego') || 'default'; // Puedes cambiar 'default' a un modo específico si es necesario
-}
+let numberOfPlayers = 1;  // Supongamos que se obtiene dinámicamente de la lógica del juego
 
 class MessageManager {
     constructor() {
@@ -86,7 +78,7 @@ class Game {
         this.ball = null;
         this.field = null;
         this.walls = null;
-        this.soloPlay = sessionStorage.getItem('modoJuego') === 'solo';
+        // this.soloPlay = sessionStorage.getItem('modoJuego') === 'solo';
 
         // Entradas del teclado
         this.wKey = { isPressed: false };
@@ -107,12 +99,10 @@ class Game {
 
         this.winScore = 1; // Goles necesarios para ganar
     }
-    
+
     start() {
-        const modoJuegoSeleccionado = getModoJuego(); // Obtener el modo de juego almacenado
-        console.log("Modo de juego seleccionado:", modoJuegoSeleccionado);
-        // Inicializa el juego usando modoJuegoSeleccionado
-        this.init(modoJuegoSeleccionado); // Asumiendo que `init` acepta el modo de juego
+       
+        this.init();
     }
    
     exitGame() {
@@ -125,29 +115,31 @@ class Game {
         }
     }
  
-    init(modo) {
-        if (modo === 'solo' || modo === 'double')
-            // TEMP
-            document.getElementsByTagName( 'header' )?.[0].setAttribute( "style", "display:none;" );
-
-            this.scene = new THREE.Scene();
-            this.createCamera();
-            this.createRenderer();
-            this.createLights();
-            this.createObjects();
-
-            // Crear el marcador
-            this.createScoreboard();
-
-            // Configurar los event listeners
-            window.addEventListener('resize', this.resizeCanvas.bind(this));
-            window.addEventListener('keydown', this.handleKeydown.bind(this));
-            window.addEventListener('keyup', this.handleKeyup.bind(this));
-
-            this.messageManager.showMessage("Presiona cualquier tecla para comenzar");
-            this.gameLoop();
+    init() {
+        // Ocultar el header siempre que inicie el juego
+        const header = document.getElementsByTagName('header')?.[0];
+        if (header) {
+            header.setAttribute("style", "display:none;");
+        }
+    
+        this.scene = new THREE.Scene();
+        this.createCamera();
+        this.createRenderer();
+        this.createLights();
+        this.createObjects();
+    
+        // Crear el marcador
+        this.createScoreboard();
+    
+        // Configurar los event listeners
+        window.addEventListener('resize', this.resizeCanvas.bind(this));
+        window.addEventListener('keydown', this.handleKeydown.bind(this));
+        window.addEventListener('keyup', this.handleKeyup.bind(this));
+    
+        this.messageManager.showMessage("Presiona cualquier tecla para comenzar");
+        this.gameLoop();
     }
-
+   
     startGame() {
 
         if (!this.isGameStarted) {
@@ -217,7 +209,7 @@ class Game {
 
         const main = document.getElementById("main");
         if (main) {
-            main.appendChild(this.renderer.domElement);
+            main.replaceChildren(this.renderer.domElement);
         } else {
             console.error("No se encontró el elemento con id 'main'. Asegúrate de que exista en tu HTML.");
         }
@@ -431,12 +423,23 @@ class Game {
             this.endGame('Jugador 2 gana!');
         }
 
-        // Mover las palas
-        this.movePaddle(this.paddle1, this.upKey.isPressed, this.downKey.isPressed);
+        // Detectamos el número de jugadores al iniciar el juego
+        if (numberOfPlayers === 1) {
+            this.soloPlay = true;  // Un solo jugador, modo "solo_play"
+        } else {
+            this.soloPlay = false; // Dos jugadores, modo "double_play"
+        }
+
+        // Lógica de movimiento de las palas
         if (this.soloPlay) {
+            // Modo "solo_play", movemos la pala del jugador 1 con las teclas 'W' y 'S'
+            this.movePaddle(this.paddle1, this.wKey.isPressed, this.sKey.isPressed);
+            // Y también actualizamos la pala del CPU (computadora)
             this.updateComPaddle();
         } else {
-            this.movePaddle(this.paddle2, this.wKey.isPressed, this.sKey.isPressed);
+            // Modo "double_play", movemos ambas palas de los jugadores
+            this.movePaddle(this.paddle1, this.wKey.isPressed, this.sKey.isPressed);
+            this.movePaddle(this.paddle2, this.upKey.isPressed, this.downKey.isPressed);
         }
     }
 
