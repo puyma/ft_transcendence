@@ -90,7 +90,7 @@ function initEvents() {
                 return;
             }
             // const game = new Game('canvas');
-			const players = ['Player 1', '2', '3'];
+			const players = ['mica', 'clara'];
 			const tournament = new Tournament(players);
 			tournament.startTournament();
         });
