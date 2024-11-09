@@ -161,6 +161,9 @@ def set_user_offline(sender, user, request, **kwargs):
     user.profile.last_active = timezone.now()
     user.profile.save()
 
+# @receiver( signals.post_save, sender=Profile )
+# def save_profile__profile ( sender, instance, update_fields, **kwargs ):
+# 	return
 @receiver( signals.post_save, sender=Profile )
 def save_profile__profile ( sender, instance, update_fields, **kwargs ):
 	return
