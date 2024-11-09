@@ -7,6 +7,7 @@
     "three": "^0.168.0"
   },
   "devDependencies": {
+    "prettier": "3.3.3",
     "webpack-cli": "^5.1.4"
   },
   "scripts": {

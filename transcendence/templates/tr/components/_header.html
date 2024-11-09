@@ -16,21 +16,21 @@
 			  </a>
 		  </li>
         <li>
-			<a href="#" class="nav-link px-2 link-body-emphasis
+			<a href="#" data-ajax="true" class="nav-link px-2 link-body-emphasis
 					{% if active_nav == "inventory" %} active{% endif %}"
 						  {% if active_nav == "inventory" %} aria-current='page'{% endif %}>
 				Inventory
 			</a>
 		</li>
         <li>
-			<a href="/" class="nav-link px-2 link-body-emphasis
+			<a href="/" data-ajax="true" class="nav-link px-2 link-body-emphasis
 					{% if active_nav == "customers" %} active{% endif %}"
 						  {% if active_nav == "customers" %} aria-current='page'{% endif %}>
 				Customers
 			</a>
 		</li>
         <li>
-			<a href="#" class="nav-link px-2 link-body-emphasis
+			<a href="#" data-ajax="true" class="nav-link px-2 link-body-emphasis
 					{% if active_nav == "products" %} active{% endif %}"
 						  {% if active_nav == "products" %} aria-current='page'{% endif %}>
 				Products
@@ -49,10 +49,10 @@
 			{% endif %}
         </a>
         <ul class="dropdown-menu text-small">
-          <li><a class="dropdown-item" href="{% url 'settings' %}">Settings</a></li>
-          <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
+          <li><a class="dropdown-item" data-ajax="true" href="{% url 'settings' %}">Settings</a></li>
+          <li><a class="dropdown-item" data-ajax="true" href="{% url 'profile' %}">Profile</a></li>
           <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item" href="{% url 'logout' %}">Sign out</a></li>
+          <li><a class="dropdown-item" data-ajax="true" href="{% url 'logout' %}">Sign out</a></li>
         </ul>
       </div>
 
