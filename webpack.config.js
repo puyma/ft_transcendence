@@ -6,7 +6,7 @@ const TerserPlugin = require( 'terser-webpack-plugin' );
 module.exports = {
 	mode: ( debug == true ) ? "development" : "production",
 	devtool: 'source-map',
-	entry: ['./js/main.js', './js/pong.js', './js/pong3d.js'],
+	entry: ['./js/main.js'],
 	output: {
 			path: path.resolve( __dirname, 'static/js' ),
 			filename: 'bundle.js',
