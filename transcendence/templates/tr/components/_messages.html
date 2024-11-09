@@ -1,21 +1,19 @@
 {% load static %}
 
 <div aria-live="polite" aria-atomic="true" class="position-relative">
-	<div class="toast-container bottom-0 end-0 p-3">
-
-		{% for message in messages %}
-		<div class="toast fade show" role="alert" aria-live="assertive" aria-atomic="true">
-			<div class="toast-header">
-				<img src="..." class="rounded me-2" alt="...">
-				<strong class="me-auto">Bootstrap</strong>
-				<small class="text-body-secondary">just now</small>
+    <div class="toast-container bottom-0 end-0 p-3">
+        {% for message in messages %}
+        <div class="toast fade show" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="true">
+            <div class="toast-header">
+                <img src="{% static 'assets/success_message.png' %}" class="rounded me-3" alt="" style="width: 20px; height: 20px;">
+                <strong class="me-auto">Notification</strong>
+                	<small class="text-muted">just now</small>
 				<button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-			</div>
-			<div class="toast-body">
-				{{ message|safe }}
-			</div>
-		</div>
-		{% endfor %}
-
-	</div>
+            </div>
+            <div class="toast-body">
+                {{ message|safe }}
+            </div>
+        </div>
+        {% endfor %}
+    </div>	
 </div>
