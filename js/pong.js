@@ -310,7 +310,7 @@ export class Game {
             this.ball.velocityY = -this.ball.velocityY;  // Cambia la dirección
         }
 
-        if (this.soloPlay) {
+        if (this.gameMode === 'solo_play') {
             this.updateComPaddle();
         }
 

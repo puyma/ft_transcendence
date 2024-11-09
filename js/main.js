@@ -50,7 +50,7 @@ function setup_ajax_anchors ()
 	return ;
 }
 
-function initEvents() {
+function initPlay() {
     const startGame = document.getElementById('playGame');
     if (startGame) {
         startGame.addEventListener('click', (event) => {
@@ -70,20 +70,20 @@ function initEvents() {
                 return;
             }
             // const game = new Game('canvas');
-			const players = ['mica', 'clara'];
+			const players = ['mica', 'clara', 'ana'];
 			const tournament = new Tournament(players);
 			tournament.startTournament();
         });
     }
-	const tournamentMode = document.getElementById('tournamentMode');
-	if (tournamentMode) {
-		tournamentMode.addEventListener('click', (event) => {
-			event.preventDefault();
-			const players = ['Player 1', 'Player 2', 'Player 3', 'Player 4', 'Player 5'];
-			const tournament = new Tournament(players);
-			tournament.startTournament();
-		});
-	}
+	// const tournamentMode = document.getElementById('tournamentMode');
+	// if (tournamentMode) {
+	// 	tournamentMode.addEventListener('click', (event) => {
+	// 		event.preventDefault();
+	// 		const players = ['Player 1', 'Player 2', 'Player 3', 'Player 4', 'Player 5'];
+	// 		const tournament = new Tournament(players);
+	// 		tournament.startTournament();
+	// 	});
+	// }
 }
 
 // __main__
@@ -91,7 +91,7 @@ function initEvents() {
 
 document.addEventListener( 'DOMContentLoaded', () => {
 	router = window.router = new Router();
-	router.bind_events( [ setup_ajax_anchors, setup_login_providers ] );
+	router.bind_events( [ setup_ajax_anchors, setup_login_providers, initPlay ] );
 	router.init();
 
 	//const game = new Game( 'canvas' );
