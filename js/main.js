@@ -4,7 +4,8 @@ import { Dropdown } from 'bootstrap';
 import { Toast } from 'bootstrap';
 
 import { Router } from './router.js';
-import { Game } from './pong.js';
+import { Game } from './pong';
+import { Tournament } from './tournament';
 import { Game as Game3D } from './pong3d.js';  
 
 // variables
@@ -51,40 +52,15 @@ function setup_ajax_anchors ()
 	return ;
 }
 
-// function setup_game_buttons() {
-//     const button = window.document.getElementById('pong-play-btn');
-//     if (button != null) {
-//         button.addEventListener('click', () => {
-//             if (!window.game || window.game.isFinished) {
-//                 window.game = new Game3D();
-//                 window.game.start();
-//             } else {
-//                 console.log("juego cargado");
-//             }
-//         });
-//     }
-// }
-// MIRAR CUAL DE LAS DOS FUNCIONA MEJOR---------------------->
-
-function setup_game_buttons ()
-{
-	const button = window.document.getElementById('pong-play-btn');
-	if ( button != null	 )
-		button.addEventListener( 'click', window.game.start.bind( window.game ) );
-	return ;
-}
-
 // __main__
 // Execute once DOM is loaded
 
 document.addEventListener( 'DOMContentLoaded', () => {
 	const game = window.game = new Game3D();
 	router = window.router = new Router();
-	router.bind_events([
-		setup_ajax_anchors,
-		setup_login_providers,
-		setup_game_buttons,
-	]);
+	router.bind_events( [ setup_ajax_anchors, setup_login_providers ] );
 	router.init();
+
+	const game = new Game( 'canvas' );
 	return ;
 } );

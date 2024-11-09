@@ -1,13 +1,44 @@
-<h1>
-	Signup page
-</h1>
-
-<form method='POST'>
-	
-	{% csrf_token %}
-
-	{{ form }}
-
-	<input type='submit' value='Sign up'>
-
-</form>
+<div class="mask d-flex align-items-center h-100 gradient-custom-3">
+	<div class="container h-100">
+	  <div class="row d-flex justify-content-center align-items-center h-100">
+		<div class="col-12 col-md-9 col-lg-7 col-xl-6">
+			<div class="card" style="border-radius: 15px; background-color: transparent; border: none;">
+				<div class="card-body p-5">
+			  <h2 class="text-uppercase text-center mb-5">Create an account</h2>
+  
+			  <form method="post" id="signup-form">
+				{% csrf_token %}
+				
+				{% if form.errors %}
+				<div class="alert alert-danger" role="alert">
+				  There are errors in the form. Please check and try again.
+				</div>
+				{% endif %}
+				
+				<div data-mdb-input-init class="form-outline mb-4">
+				  {{ form.username.label_tag }}
+				  {{ form.username }}
+				</div>
+				
+				<div data-mdb-input-init class="form-outline mb-4">
+				  {{ form.password.label_tag }}
+				  {{ form.password }}
+				</div>
+				
+				<div data-mdb-input-init class="form-outline mb-4">
+				  {{ form.password_confirm.label_tag }}
+				  {{ form.password_confirm }}
+				</div>
+				
+				<div class="d-flex justify-content-center">
+				  <button type="submit" class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">Register</button>
+				</div>
+				
+				<p class="text-center text-muted mt-5 mb-0">Already have an account? <a href="{% url 'login' %}" class="fw-bold text-body"><u>Login here</u></a></p>
+			  </form>
+			</div>
+		  </div>
+		</div>
+	  </div>
+	</div>
+  </div>

@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.contrib import auth
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 
 from . import views
 from .providers import fortytwo
@@ -66,6 +68,16 @@ urlpatterns = [
 		name='del_account',
 		),
     path(
+        'profile/stats/', 
+        views.StatsView.as_view(),
+        name='stats'
+        ),
+    path(
+        'profile/friends/',
+        views.FriendsView.as_view(),
+        name='friends'
+        ),
+    path(
 		'settings/',
 		views.ProfileView.as_view(),
 		name='settings',
@@ -104,13 +116,12 @@ urlpatterns = [
 	path(
 		'admin/', admin.site.urls,
 		),
-	#the following will use list views
 	path(
 		'users/<str:username>/', views.HomepageView.as_view(),
 		),
 	path(
 		'pong/users/<str:username>/', views.HomepageView.as_view(),
 		),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # handle404...
