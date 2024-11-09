@@ -33,7 +33,6 @@ function setup_login_providers() {
   });
   return;
 }
-<<<<<<< HEAD
 
 // @fn		event_handler_anchor
 // @ev		{Event}
@@ -85,7 +84,6 @@ function initPlay() {
                 console.error('<main> element not found.');
                 return;
             }
-            // const game = new Game('canvas');
 			const players = ['mica', 'clara', 'ana'];
 			const tournament = new Tournament(players);
 			tournament.startTournament();
@@ -105,10 +103,10 @@ function initPlay() {
 // __main__
 // Execute once DOM is loaded
 
-<<<<<<< HEAD
 function main() {
   router = window.router = new Router();
   router.attach([setup_login_providers], "pre");
+  router.attach([initPlay], "post");
   router.add_event(
     window.document,
     "click",
@@ -130,15 +128,3 @@ function main() {
 }
 
 document.addEventListener("DOMContentLoaded", main);
-
-/*
-document.addEventListener( 'DOMContentLoaded', () => {
-	const game = window.game = new Game3D();
-	router = window.router = new Router();
-	router.bind_events( [ setup_ajax_anchors, setup_login_providers, initPlay ] );
-	router.init();
-
-	const game = new Game( 'canvas' );
-	return ;
-} );
-*/
