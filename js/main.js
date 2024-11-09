@@ -6,6 +6,7 @@ import { Toast } from 'bootstrap';
 import { Router } from './router.js';
 import { Game } from './pong';
 import { Tournament } from './tournament';
+import { Game as Game3D } from './pong3d.js';  
 
 // variables
 
@@ -18,6 +19,7 @@ window.dataset.scheme = document.body.dataset.scheme;
 window.dataset.host = document.body.dataset.host;
 
 // functions
+
 
 // @fn		setup_login_providers
 // @return	{void}
@@ -35,11 +37,11 @@ function setup_login_providers ()
 	} );
 	return ;
 }
-
+			
 // @fn		setupAjaxLinks
 //			Replaces click events on anchors with data-ajax=true attr.
 // @return	{void}
-
+			
 function setup_ajax_anchors ()
 {
 	const anchors = document.querySelectorAll( 'a[data-ajax=true]' );
@@ -90,10 +92,11 @@ function initPlay() {
 // Execute once DOM is loaded
 
 document.addEventListener( 'DOMContentLoaded', () => {
+	const game = window.game = new Game3D();
 	router = window.router = new Router();
 	router.bind_events( [ setup_ajax_anchors, setup_login_providers, initPlay ] );
 	router.init();
 
-	//const game = new Game( 'canvas' );
+	const game = new Game( 'canvas' );
 	return ;
 } );

@@ -3,7 +3,8 @@
     "@fortawesome/fontawesome-free": "^6.6.0",
     "bootstrap": "^5.3.3",
     "sass": "^1.78.0",
-    "terser-webpack-plugin": "^5.3.10"
+    "terser-webpack-plugin": "^5.3.10",
+    "three": "^0.168.0"
   },
   "devDependencies": {
     "webpack-cli": "^5.1.4"
