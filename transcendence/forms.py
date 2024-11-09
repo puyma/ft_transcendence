@@ -18,7 +18,7 @@ class LoginForm ( forms.Form ):
 			widget=forms.PasswordInput(attrs={"class": "form-control mb-3"}),
 			)
 
-class SignupForm ( forms.Form ):
+class SignupForm ( forms.ModelForm ):
 
 	username = forms.CharField(
 			label="Username",
@@ -45,6 +45,13 @@ class SignupForm ( forms.Form ):
 		if data['password'] != data['password_confirm']:
 			raise forms.ValidationError( "Passwords do not match" )
 		return ( data['password'] )
+
+	def save(self, commit=True):
+		user = super().save(commit=False)
+		user.set_password(self.cleaned_data["password"])
+		if commit:
+			user.save()
+		return user
 
 class UpdateUserForm(forms.ModelForm):
     first_name = forms.CharField(max_length=100,
