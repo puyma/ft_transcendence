@@ -1,54 +1,69 @@
-import { Button } from 'bootstrap';
-import { Collapse } from 'bootstrap';
-import { Dropdown } from 'bootstrap';
-import { Toast } from 'bootstrap';
-
+import { Button } from "bootstrap";
+import { Collapse } from "bootstrap";
+import { Dropdown } from "bootstrap";
+import { Toast } from "bootstrap";
 import { Router } from './router.js';
 import { Game } from './pong';
 import { Tournament } from './tournament';
+import { Game as Game3D } from './pong3d.js';  
 
 // variables
 
-const scheme = document.body.dataset.scheme === 'http' ? 'ws' : 'wss';
-const host = document.body.dataset.host;
-//const ws = new WebSocket( `${scheme}://${host}/ws/router/` )
-
-window.dataset = {};
-window.dataset.scheme = document.body.dataset.scheme;
-window.dataset.host = document.body.dataset.host;
+//const host = document.body.dataset.host;
+//const ws = new WebSocket( `wss://${host}/ws/` )
 
 // functions
+
 
 // @fn		setup_login_providers
 // @return	{void}
 
-function setup_login_providers ()
-{
-	const elements = document.querySelectorAll( '[data-login-provider=true]' );
-	if ( ! elements ) { return ; }
-	elements.forEach( (element) => {
-		const url = element.getAttribute( 'data-login-provider-url' );
-		element.addEventListener( 'click', (event) => {
-			event.preventDefault();
-			window.open( url, "_self" );
-		} );
-	} );
-	return ;
+function setup_login_providers() {
+  const elements = document.querySelectorAll("[data-login-provider=true]");
+
+  if (!elements) {
+    return;
+  }
+  elements.forEach((element) => {
+    const url = element.getAttribute("data-login-provider-url");
+    element.addEventListener("click", (event) => {
+      event.preventDefault();
+      window.open(url, "_self");
+    });
+  });
+  return;
 }
 
-// @fn		setupAjaxLinks
-//			Replaces click events on anchors with data-ajax=true attr.
+// @fn		event_handler_anchor
+// @ev		{Event}
 // @return	{void}
 
-function setup_ajax_anchors ()
-{
-	const anchors = document.querySelectorAll( 'a[data-ajax=true]' );
-	if ( ! anchors ) { return ; }
-	anchors.forEach( (element) => {
-		element.addEventListener( 'click', window.router.default_event );
-	} );
-	return ;
+function event_handler_anchor(event) {
+  const href = event.target?.getAttribute("href");
+
+  event.preventDefault();
+  Router.notify(href);
+  return;
 }
+
+// @fn		event_handler_form
+// @ev		{Event}
+// @return	{void}
+
+function event_handler_form(event) {
+  const target = event.target;
+  const form = target.tagName === "FORM" ? target : target.form;
+  const form_data = new FormData(form);
+
+  event.preventDefault();
+  console.log(form_data);
+  // send form POST
+  // wait response,
+  // swap content,
+  // update history
+  return;
+}
+			
 
 function initPlay() {
     const startGame = document.getElementById('playGame');
@@ -69,7 +84,6 @@ function initPlay() {
                 console.error('<main> element not found.');
                 return;
             }
-            // const game = new Game('canvas');
 			const players = ['mica', 'clara', 'ana'];
 			const tournament = new Tournament(players);
 			tournament.startTournament();
@@ -89,11 +103,28 @@ function initPlay() {
 // __main__
 // Execute once DOM is loaded
 
-document.addEventListener( 'DOMContentLoaded', () => {
-	router = window.router = new Router();
-	router.bind_events( [ setup_ajax_anchors, setup_login_providers, initPlay ] );
-	router.init();
+function main() {
+  router = window.router = new Router();
+  router.attach([setup_login_providers], "pre");
+  router.attach([initPlay], "post");
+  router.add_event(
+    window.document,
+    "click",
+    'a[data-ajax="true"]',
+    event_handler_anchor,
+  );
+  /*
+  router.add_event(
+    window.document,
+    "submit",
+    'form[data-ajax="true"]',
+    event_handler_form,
+  );
+  */
+  //router.add_event(window.router, 'notify', , );
+  //router.add_event(window.router, 'history', , );
+  router.init();
+  return;
+}
 
-	//const game = new Game( 'canvas' );
-	return ;
-} );
+document.addEventListener("DOMContentLoaded", main);

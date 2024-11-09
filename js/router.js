@@ -1,116 +1,177 @@
-class Router
-{
-	constructor ()
-	{
-		window.router = this;
-		this.pre_load_events = [];
-		this.post_load_events = [ window.router.bind_history ];
-		this.href = window.location.href;
-		return ;
-	}
+import { try_replace_content } from "./spa.js";
 
-	init ()
-	{
-		//this.bind_events();
-		this.post_load();
-	}
-	
-	bind_pre_event ( fn )
-	{
-		this.pre_load_events.push( fn );
-		return ;
-	}
+// class Router
+//
+// #events = { 'click': [ { selector: '', func: '' }, ... ], ... };
 
-	bind_post_event ( fn )
-	{
-		this.post_load_events.push( fn );
-		return ;
-	}
+class Router {
+  static #_instance = null;
 
-	bind_events ( fn_array, when='post' )
-	{
-		if ( ! fn_array )
-			return ;
-		if ( when === 'pre' )
-			fn_array.forEach( (fn) => { this.bind_pre_event( fn ); });
-		else if ( when === 'post' )
-			fn_array.forEach( (fn) => { this.bind_post_event( fn ); });
-		return ;
-	}
+  #href = null;
+  #events = new Object();
 
-	bind_history ()
-	{
-		window.addEventListener( 'popstate', window.router.default_history_event );
-		return ;
-	}
-	
-	notify ( url )
-	{
-		if ( url.startsWith( '/' ) )
-			this.href = `${window.location.origin}${url}`;
-		else if ( url.startsWith( 'https://' ) || url.startswith( 'http://' ) )
-			this.href = url;
-		this.load_content();
-		return ;
-	}
+  constructor() {
+    if (this._instance != null) return Router._instance;
+    Router._instance = this;
+    this.href = window.location.href;
+    this.#history_update();
+    this.pre_load_events = [];
+    this.post_load_events = [];
+    this.add_event(window.document, "click", 'a[data-ajax="true"]', null);
+    //this.add_event(window.document, "submit", 'form[data-ajax="true"]', null);
+    this.add_event(window, "popstate", null, function () {
+      Router.notify(window.location.href);
+      return;
+    });
+    return;
+  }
 
-	default_event ( ev )
-	{
-		ev.preventDefault();
-		let href = ev.target?.getAttribute( 'href' );
-		window.router.notify( href );
-		return ;
-	}
-	
-	default_history_event ()
-	{
-		let href = window.location.href;
-		window.router.notify( href );
-		return ;
-	}
+  init() {
+    console.log("router: initialized");
+    this.pre_load();
+    this.post_load();
+    return;
+  }
 
-	history_update ()
-	{
-		try { window.history.pushState( {}, '', this.href ); }
-		catch ( err ) { console.log( err ); }
-		return ;
-	}
+  add_event(_interface, event_name, selector, func) {
+    let event_array = null;
+    let event_data = null;
 
-	pre_load ()
-	{
-		if ( this.pre_load_events.length === 0 )
-			return ;
-		return ;
-	}
+    // Create empty an array corresponding to an event_name identifier
+    // if has not been set previously.
+    if (Object.hasOwn(this.#events, event_name) != true)
+      this.#events[event_name] = [];
+    event_array = this.#events[event_name];
 
-	post_load ()
-	{
-		if ( this.post_load_events.length === 0 )
-			return ;
-		this.post_load_events.forEach( (fn) => {
-			try { fn(); }
-			catch ( err ) { console.log( err ); }
-		});
-		this.history_update( this.url );
-		return ;
-	}
+    // Get event_data if already set
+    event_data = this.#events[event_name].find((item) => {
+      return (Object.hasOwn(item, "selector") && item.selector === selector)
+    });
+    if (event_data == undefined) {
+      let pos = this.#events[event_name].push(new Object());
+      event_data = this.#events[event_name].at(pos - 1);
+    }
 
-	load_content ()
-	{
-		this.pre_load();
-		fetch( this.href, { method: "GET" } )
-			.then( (response) => response.text() )
-			.then( (data) => {
-				const parser = new DOMParser();
-				const doc = parser.parseFromString( data, 'text/html' );
-				const main_tag = doc.querySelector( 'main' ).innerHTML;
-				document.querySelector( 'main' ).innerHTML = main_tag;
-			} )
-			.then( () => { this.post_load(); } )
-			.catch ( (err) => { console.log( err ) } );
-		return ;
-	}
+    // Set event_data content
+    event_data.selector = selector;
+    event_data.func = func;
 
+    this.#bind_event(_interface, event_name);
+    return;
+  }
+
+  #bind_event(_interface, event_name) {
+    _interface.addEventListener(event_name, Router.event_controller);
+    return;
+  }
+
+  static event_controller(event) {
+    const router = Router._instance;
+    const type = event.type;
+    const target = event.target;
+
+    if (Object.hasOwn(router.#events, type) == false) return;
+    router.#events[type].forEach((obj) => {
+      if (obj.selector === null || target.matches(obj.selector) === true) {
+        event.preventDefault();
+        try {
+          obj.func(event);
+        } catch (err) {
+          console.error(err);
+        }
+      }
+    });
+    return;
+  }
+
+  #attach_pre_event(fn) {
+    this.pre_load_events.push(fn);
+    return;
+  }
+
+  #attach_post_event(fn) {
+    this.post_load_events.push(fn);
+    return;
+  }
+
+  attach(fn_array, when = "post") {
+    if (!fn_array) return;
+    if (when === "pre")
+      fn_array.forEach((fn) => {
+        this.#attach_pre_event(fn);
+      });
+    else if (when === "post")
+      fn_array.forEach((fn) => {
+        this.#attach_post_event(fn);
+      });
+    return;
+  }
+
+  pre_load() {
+    console.log("fn: pre_load");
+    if (this.pre_load_events.length === 0) return;
+    this.pre_load_events.forEach((fn) => {
+      try {
+        fn();
+      } catch (err) {
+        window.console.log(err);
+      }
+    });
+    return;
+  }
+
+  post_load() {
+    console.log("fn: post_load");
+    if (this.post_load_events.length === 0) return;
+    this.post_load_events.forEach((fn) => {
+      try {
+        fn();
+      } catch (err) {
+        window.console.log(err);
+      }
+    });
+    this.#history_update(this.url);
+    return;
+  }
+
+  static notify(url) {
+	  const router = Router._instance;
+
+    if (url.startsWith("/")) router.href = `${window.location.origin}${url}`;
+    else if (url.startsWith("https://") || url.startswith("http://"))
+      router.href = url;
+    router.load_content();
+    return;
+  }
+
+  #history_update() {
+    try {
+      window.history.pushState({}, "", this.href);
+    } catch (err) {
+      window.console.log(err);
+    }
+    return;
+  }
+
+  load_content() {
+    this.pre_load();
+    fetch(this.href, {
+      method: "GET",
+    })
+      .then((response) => response.text())
+      .then((data) => {
+        try_replace_content("header", data);
+        try_replace_content("main", data);
+        try_replace_content("footer", data);
+      })
+      .then(() => {
+        this.post_load();
+      })
+      .catch((err) => {
+        window.console.log(err);
+      });
+    return;
+  }
 }
 
 export { Router };
