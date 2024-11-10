@@ -1,4 +1,5 @@
 from django import urls
+from django.urls import reverse_lazy
 from django.contrib import auth
 from django.contrib import messages
 from django.contrib.auth import views as auth_views
@@ -7,7 +8,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.views import generic
-from .forms import UpdateUserForm, UpdateProfileForm
+from .forms import LoginForm, SignupForm, UpdateUserForm, UpdateProfileForm
 from . import forms
 from .providers import fortytwo
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -37,7 +38,7 @@ class LoginView(auth_views.LoginView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["page"] = "tr/pages/login.html"
-        context["form"] = forms.LoginForm()
+        context["form"] = LoginForm()
         context['provider_42_login'] = fortytwo.get_login_url(
             "42", {"state": self.request.COOKIES.get('csrftoken')}
         )
@@ -65,16 +66,27 @@ class LogoutView ( auth_views.LogoutView ):
 			return ( HttpResponseRedirect( redirect_to ) )
 		return ( super().get( request, *args, **kwargs ) )
 
-class SignupView(generic.CreateView):
-    form_class = auth.forms.UserCreationForm
-    success_url = urls.reverse_lazy('login')
+class SignupView(generic.FormView):
+    form_class = SignupForm
+    success_url = reverse_lazy('home')
     template_name = "tr/base.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["page"] = "tr/pages/signup.html"
-        context["form"] = forms.SignupForm()
         return context
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            user = form.save()
+            auth.login(request, user, backend='django.contrib.auth.backends.ModelBackend') 
+            return redirect(self.success_url)
+        return self.form_invalid(form)
+	
+    def form_invalid(self, form):
+        context = self.get_context_data(form=form)
+        return self.render_to_response(context)
 
 @login_required
 def profile_dashboard ( request ):
