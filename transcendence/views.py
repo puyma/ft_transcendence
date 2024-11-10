@@ -211,10 +211,17 @@ class TournamentRegisterView(generic.TemplateView):
         
         # Collect aliases from the POST request
         aliases = {f"alias_{i+1}": request.POST.get(f"alias_{i+1}") for i in range(num_participants)}
-        
-        # Store aliases in the session
+
+        # Check if all aliases are unique
+        alias_values = list(aliases.values())
+        if len(alias_values) != len(set(alias_values)):
+            # If duplicates found, add error message and re-render the form
+            messages.error(request, "Each alias must be unique. Please correct the duplicates.")
+            return redirect('tournament_register')
+
+        # Store aliases in the session if no duplicates
         request.session['aliases'] = aliases
-        
+
         # Redirect to the order page
         return redirect('tournament_order')
 
