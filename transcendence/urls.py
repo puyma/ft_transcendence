@@ -107,6 +107,9 @@ urlpatterns = [
 		views.pong_view,
 		name='pong',
 		),
+        # path('tournament/register/',
+        #     views.Tournament.as_view(),
+        #     name='tournament_register'),
     path(
 		'pong/play/solo', views.GameView.as_view(),
 		),

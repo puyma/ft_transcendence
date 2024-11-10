@@ -169,13 +169,42 @@ class PasswordResetCompleteView ( auth_views.PasswordResetCompleteView ):
 
 ## LEGACY CODE ---- ##
 
-class TournamentView ( generic.TemplateView ):
-	template_name = 'tr/base.html'
+class TournamentView( generic.TemplateView ):
+    template_name = 'tr/base.html'
 
-	def get_context_data ( self, **kwargs ):
-		context = super().get_context_data( **kwargs )
-		context['page'] = 'tr/pages/tournament.html'
-		return ( context )
+    def get(self, request, *args, **kwargs):
+        # Get the number of participants from the session or set to None if not set
+        num_participants = request.session.get('num_participants', None)
+        
+        # Pass a range of participants to the template if num_participants is set
+        participant_range = range(num_participants) if num_participants else []
+        
+        context = {
+            'page': 'tr/pages/tournament.html',
+            'num_participants': num_participants,  # Pass num_participants to the template
+            'participant_range': participant_range,  # Pass the range to the template
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        # Get the number of participants from the form submission
+        num_participants = request.POST.get('num_participants')
+        
+        if num_participants:
+            # Convert num_participants to an integer and store it in the session
+            num_participants = int(num_participants)
+            request.session['num_participants'] = num_participants
+        
+        # Pass the range to the template after form submission
+        participant_range = range(num_participants) if num_participants else []
+        
+        context = {
+            'page': 'tr/pages/tournament.html',
+            'num_participants': num_participants,  # Pass the number of participants
+            'participant_range': participant_range,  # Pass the range to the template
+        }
+        return render(request, self.template_name, context)
+
 
 class PlayView ( generic.TemplateView ):
 	template_name = 'tr/base.html'
@@ -229,7 +258,6 @@ def pong_view ( request ):
 		'page': "tr/pages/pong.html",
     }
     return ( render( request, 'tr/base.html', context ) )
-
 
 class StatsView(generic.TemplateView):
     template_name = "tr/base.html"
@@ -322,3 +350,24 @@ class FriendsView(generic.TemplateView):
             messages.success(request, "Friend removed successfully.")
 
         return redirect('friends')
+
+    template_name = "tr/base.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page"] = "tr/pages/friends.html"
+        user_profile = self.request.user.profile
+        
+        # Handle search query
+        search_query = self.request.GET.get('search', '')
+        if search_query:
+            search_results = Profile.objects.filter(
+                Q(user__username__icontains=search_query) & 
+                ~Q(user=self.request.user)
+            )
+        else:
+            search_results = None
+        
+        friend_requests_sent = Relationship.objects.filter(
+            sender=user_profile, status='send'
+        ).select_related('receiver')
