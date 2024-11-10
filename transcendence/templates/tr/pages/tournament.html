@@ -1,34 +1,19 @@
-<h1 class="text-center mt-5">Register for the Tournament</h1>
+<h1 class="text-center mt-5">Enter Number of Participants</h1>
 
 <div class="container mt-5">
   <div class="row justify-content-center">
     <div class="col-md-6">
-      <form method="post" action="">
+      <form method="post">
         {% csrf_token %}
-        
-        {% if not num_participants %}
-          <div class="mb-3">
-            <label for="num_participants" class="form-label">Number of Participants</label>
-            <input type="number" name="num_participants" id="num_participants" 
-                   class="form-control" min="1" max="100" required>
-          </div>
-        {% else %}
-          <h5>Enter Aliases for {{ num_participants }} Participants</h5>
-          {% for i in participant_range %}
-            <div class="mb-3">
-              <label for="alias_{{ forloop.counter }}" class="form-label">Alias {{ forloop.counter }}</label>
-              <input type="text" name="alias_{{ forloop.counter }}" id="alias_{{ forloop.counter }}" 
-                     class="form-control" placeholder="Enter alias" required>
-            </div>
-          {% endfor %}
-        {% endif %}
-        
-        <div class="d-grid gap-2">
-          <button type="submit" class="btn btn-primary btn-lg w-100">
-            {% if num_participants %}Register{% else %}Next{% endif %}
-          </button>
+        <div class="mb-3">
+          <label for="num_participants" class="form-label">Number of Participants</label>
+          <input type="number" name="num_participants" id="num_participants" 
+                 class="form-control" min="1" max="100" required>
         </div>
 
+        <div class="d-grid gap-2">
+          <button type="submit" class="btn btn-primary btn-lg w-100">Next</button>
+        </div>
       </form>
     </div>
   </div>

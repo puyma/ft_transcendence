@@ -167,45 +167,71 @@ class PasswordResetCompleteView ( auth_views.PasswordResetCompleteView ):
 		context['page'] = 'tr/pages/password_reset_complete.html'
 		return ( context )
 
-## LEGACY CODE ---- ##
-
-class TournamentView( generic.TemplateView ):
+## LEGACY CODE TOURNAMENT---- ##
+class TournamentView(generic.TemplateView):
     template_name = 'tr/base.html'
-
+    
     def get(self, request, *args, **kwargs):
-        # Get the number of participants from the session or set to None if not set
         num_participants = request.session.get('num_participants', None)
         
-        # Pass a range of participants to the template if num_participants is set
-        participant_range = range(num_participants) if num_participants else []
+        # Render the page with the current number of participants, if any
+        context = super().get_context_data(**kwargs)
+        context['num_participants'] = num_participants
+        context['page'] = 'tr/pages/tournament.html'
         
-        context = {
-            'page': 'tr/pages/tournament.html',
-            'num_participants': num_participants,  # Pass num_participants to the template
-            'participant_range': participant_range,  # Pass the range to the template
-        }
-        return render(request, self.template_name, context)
+        return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
-        # Get the number of participants from the form submission
-        num_participants = request.POST.get('num_participants')
+        # Get the number of participants from the form and store it in the session
+        num_participants = int(request.POST.get('num_participants'))
+        request.session['num_participants'] = num_participants
         
-        if num_participants:
-            # Convert num_participants to an integer and store it in the session
-            num_participants = int(num_participants)
-            request.session['num_participants'] = num_participants
+        # Redirect to the registration page
+        return redirect('tournament_register')
+
+
+class TournamentRegisterView(generic.TemplateView):
+    template_name = 'tr/base.html'
+    
+    def get(self, request, *args, **kwargs):
+        num_participants = request.session.get('num_participants')
         
-        # Pass the range to the template after form submission
+        # Create the participant range based on the number of participants
         participant_range = range(num_participants) if num_participants else []
         
-        context = {
-            'page': 'tr/pages/tournament.html',
-            'num_participants': num_participants,  # Pass the number of participants
-            'participant_range': participant_range,  # Pass the range to the template
-        }
-        return render(request, self.template_name, context)
+        context = super().get_context_data(**kwargs)
+        context['num_participants'] = num_participants
+        context['participant_range'] = participant_range
+        context['page'] = 'tr/pages/tournament_register.html'
+        
+        return self.render_to_response(context)
 
+    def post(self, request, *args, **kwargs):
+        num_participants = request.session.get('num_participants')
+        
+        # Collect aliases from the POST request
+        aliases = {f"alias_{i+1}": request.POST.get(f"alias_{i+1}") for i in range(num_participants)}
+        
+        # Store aliases in the session
+        request.session['aliases'] = aliases
+        
+        # Redirect to the order page
+        return redirect('tournament_order')
 
+class TournamentOrderView(generic.TemplateView):
+    template_name = 'tr/base.html'
+    def get(self, request, *args, **kwargs):
+        num_participants = request.session.get('num_participants')
+        aliases = request.session.get('aliases', {})
+        
+        context = super().get_context_data(**kwargs)
+        
+        context['num_participants'] = num_participants
+        context['aliases'] = aliases
+        context['page'] = 'tr/pages/tournament_order.html'
+        
+        return self.render_to_response(context)
+    
 class PlayView ( generic.TemplateView ):
 	template_name = 'tr/base.html'
 

@@ -88,6 +88,14 @@ urlpatterns = [
 		name='tournament',
 		),
     path(
+		'tournament/register', 
+		views.TournamentRegisterView.as_view(),
+		name='tournament_register',
+		),
+    path('tournament/tournament_order/',
+        views.TournamentOrderView.as_view(), 
+        name='tournament_order'),
+    path(
 		'double_play/',
 		views.double_play_view,
 		name='double_play',
@@ -107,9 +115,6 @@ urlpatterns = [
 		views.pong_view,
 		name='pong',
 		),
-        # path('tournament/register/',
-        #     views.Tournament.as_view(),
-        #     name='tournament_register'),
     path(
 		'pong/play/solo', views.GameView.as_view(),
 		),
