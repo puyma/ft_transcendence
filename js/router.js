@@ -14,13 +14,15 @@ class Router {
     if (this._instance != null) return Router._instance;
     Router._instance = this;
     this.href = window.location.href;
+    this.form = null;
+    this.form_data = null;
     this.#history_update();
     this.pre_load_events = [];
     this.post_load_events = [];
     this.add_event(window.document, "click", 'a[data-ajax="true"]', null);
     //this.add_event(window.document, "submit", 'form[data-ajax="true"]', null);
     this.add_event(window, "popstate", null, function () {
-      Router.notify(window.location.href);
+      Router.get(window.location.href);
       return;
     });
     return;
@@ -45,7 +47,7 @@ class Router {
 
     // Get event_data if already set
     event_data = this.#events[event_name].find((item) => {
-      return (Object.hasOwn(item, "selector") && item.selector === selector)
+      return Object.hasOwn(item, "selector") && item.selector === selector;
     });
     if (event_data == undefined) {
       let pos = this.#events[event_name].push(new Object());
@@ -134,13 +136,22 @@ class Router {
     return;
   }
 
-  static notify(url) {
-	  const router = Router._instance;
+  static get(url) {
+    const router = Router._instance;
 
     if (url.startsWith("/")) router.href = `${window.location.origin}${url}`;
     else if (url.startsWith("https://") || url.startswith("http://"))
       router.href = url;
     router.load_content();
+    return;
+  }
+
+  static post(form) {
+    const router = Router._instance;
+
+    router.form = form;
+    router.form_data = new FormData(form);
+    router.publish_content();
     return;
   }
 
@@ -171,6 +182,23 @@ class Router {
         window.console.log(err);
       });
     return;
+  }
+
+  publish_content() {
+    fetch(this.form.action, {
+      method: "POST",
+      body: this.form_data,
+    })
+      .then((response) => response.text())
+      .then((data) => {
+        try_replace_content("header", data);
+        try_replace_content("main", data);
+        try_replace_content("footer", data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    return this.form_data;
   }
 }
 
