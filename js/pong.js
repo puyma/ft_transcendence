@@ -417,36 +417,62 @@ export class Game {
   //     }
   // }
 
-  endGame(onFinish, onNextMatch, isLastMatch, tournamentWinner) {
+  //---------ULTIMA VERSION ENDGAME FUNCIONANDO
+  // endGame(onFinish, onNextMatch, isLastMatch, tournamentWinner) {
+  //   this.isGameOver = true;
+  //   let winner = this.user.score >= 2 ? this.player1 : this.player2;
+
+  //   if (this.gameMode === "solo_play" || this.gameMode === "double_play") {
+  //     this.message.showMessage(`${winner} Wins! Press 'R' to Restart`);
+  //     document.addEventListener("keydown", (evt) => this.resetGame(evt), {
+  //       once: true,
+  //     });
+  //   }
+  //   if (
+  //     (this.gameMode === "all_vs_all" || this.gameMode === "knockout") &&
+  //     !isLastMatch
+  //   ) {
+  //     this.message.showMessage(`${winner} Wins! Press 'N' for Next Match`);
+  //     if (onNextMatch) onNextMatch();
+  //   }
+  //   // Si es el último partido, mostrar ganador del partido y luego ganador del torneo
+  //   if (isLastMatch) {
+  //     if (this.gameMode === "knockout")
+  //       this.message.showMessage(`Tournament winner: ${winner}.`);
+  //     else if (this.gameMode === "all_vs_all")
+  //       this.message.showMessage(`Tournament winner: ${tournamentWinner}`);
+  //   }
+
+  //   if (onFinish) {
+  //     onFinish(winner);
+  //   }
+  // }
+  // -----------------------------------
+
+  endGame(onFinish, onNextMatch) {
     this.isGameOver = true;
     let winner = this.user.score >= 2 ? this.player1 : this.player2;
 
+    // Para modos de juego individuales
     if (this.gameMode === "solo_play" || this.gameMode === "double_play") {
-      this.message.showMessage(`${winner} Wins! Press 'R' to Restart`);
-      document.addEventListener("keydown", (evt) => this.resetGame(evt), {
-        once: true,
-      });
+        this.message.showMessage(`${winner} Wins! Press 'R' to Restart`);
+        document.addEventListener("keydown", (evt) => this.resetGame(evt), {
+            once: true,
+        });
     }
-    if (
-      (this.gameMode === "all_vs_all" || this.gameMode === "knockout") &&
-      !isLastMatch
-    ) {
-      this.message.showMessage(`${winner} Wins! Press 'N' for Next Match`);
-      if (onNextMatch) onNextMatch();
-    }
-    // Si es el último partido, mostrar ganador del partido y luego ganador del torneo
-    if (isLastMatch) {
-      if (this.gameMode === "knockout")
-        this.message.showMessage(`Tournament winner: ${winner}.`);
-      else if (this.gameMode === "all_vs_all")
-        this.message.showMessage(`Tournament winner: ${tournamentWinner}`);
+    
+    // Para modos de torneo (llama a onNextMatch si no es el último partido)
+    if (this.gameMode === "all_vs_all" || this.gameMode === "knockout") {
+        this.message.showMessage(`${winner} Wins! Press 'N' for Next Match`);
+        if (onNextMatch) onNextMatch();
     }
 
+    // Llamar a onFinish para que `Tournament` registre el ganador del partido y avance al siguiente
     if (onFinish) {
-      onFinish(winner);
+        onFinish(winner);
     }
-  }
-
+}
+  
   gameLoop() {
     if (!this.isGameOver) {
       this.update();

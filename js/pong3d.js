@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 let numberOfPlayers = 1;  // Supongamos que se obtiene dinámicamente de la lógica del juego
 
-class MessageManager {
+export class MessageManager {
     constructor() {
         this.messageElement = null; // Elemento del mensaje en el DOM
     }

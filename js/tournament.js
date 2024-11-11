@@ -1,7 +1,8 @@
 //TODO: if 1 pl -> 1 vs com
 //      if 2 pl -> double play
 //      if >= 3 -> tournament all_vs_all / knockout
-import { Game, Message } from "./pong";
+import { Game } from "./pong";
+import { MessageManager } from "./pong3d";
 
 export class Tournament {
   constructor(players) {
@@ -184,54 +185,104 @@ export class Tournament {
     document.addEventListener("keydown", handleKeyN);
   }
 
+  //-------------------ULTIMA VERSION FUNCIONANDO
+  // playMatch(player1, player2, onFinish) {
+  //   const game = new Game("canvas", this.mode, player1, player2);
+  //   game.init();
+
+  //   const checkGameOver = setInterval(() => {
+  //     if (game.isGameOver) {
+  //       clearInterval(checkGameOver); // Detener chequeo
+  //       game.endGame((winner) => {
+  //         console.log(`Ganador entre ${player1} y ${player2} es ${winner}`);
+  //         this.winCounts[winner]++;
+  //         onFinish(winner);
+  //       }, this.handleNextMatch.bind(this));
+  //     }
+  //   }, 100);
+  // }
+
+  // playNextMatch() {
+  //   if (this.matches.length === 0) {
+  //     console.log("Torneo terminado.");
+
+  //     // Establece el ganador del torneo antes del último partido
+  //     if (this.mode === "all_vs_all") {
+  //       this.determineWinner();
+  //     } else if (this.mode === "knockout" && this.winners.length > 0) {
+  //       this.tournamentWinner = this.winners[this.winners.length - 1];
+  //     }
+  //     console.log("WINNERRRRR: ", this.tournamentWinner);
+  //     const finalGame = new Game("canvas", this.mode, null, null); // Creamos una instancia de juego final sin jugadores reales
+  //     finalGame.endGame(
+  //       () => {},
+  //       () => {},
+  //       true, // Indicamos que es el último "partido" o mensaje final
+  //       this.tournamentWinner // Pasamos el ganador del torneo
+  //     );
+
+  //     return;
+  //   }
+
+  //   const [player1, player2] = this.matches.shift();
+  //   console.log(`Partido entre ${player1} y ${player2}`);
+
+  //   this.playMatch(player1, player2, (winner) => {
+  //     console.log(`Ganador entre ${player1} y ${player2} es ${winner}`);
+  //     this.winners.push(winner);
+
+  //     this.handleNextMatch(() => {
+  //       this.playNextMatch();
+  //     });
+  //   });
+  // }
+  //-----------------------------------------------
+
+  //-------------------------PRUEBA
   playMatch(player1, player2, onFinish) {
     const game = new Game("canvas", this.mode, player1, player2);
     game.init();
 
     const checkGameOver = setInterval(() => {
-      if (game.isGameOver) {
-        clearInterval(checkGameOver); // Detener chequeo
-        game.endGame((winner) => {
-          console.log(`Ganador entre ${player1} y ${player2} es ${winner}`);
-          this.winCounts[winner]++;
-          onFinish(winner);
-        }, this.handleNextMatch.bind(this));
-      }
+        if (game.isGameOver) {
+            clearInterval(checkGameOver);
+            game.endGame((winner) => {
+                console.log(`Ganador entre ${player1} y ${player2} es ${winner}`);
+                this.winCounts[winner]++;
+                onFinish(winner);
+            });
+        }
     }, 100);
-  }
+}
 
-  playNextMatch() {
-    if (this.matches.length === 0) {
-      console.log("Torneo terminado.");
-
-      // Establece el ganador del torneo antes del último partido
-      if (this.mode === "all_vs_all") {
-        this.determineWinner();
-      } else if (this.mode === "knockout" && this.winners.length > 0) {
-        this.tournamentWinner = this.winners[this.winners.length - 1];
-      }
-      console.log("WINNERRRRR: ", this.tournamentWinner);
-      const finalGame = new Game("canvas", this.mode, null, null); // Creamos una instancia de juego final sin jugadores reales
-      finalGame.endGame(
-        () => {},
-        () => {},
-        true, // Indicamos que es el último "partido" o mensaje final
-        this.tournamentWinner // Pasamos el ganador del torneo
-      );
-
+playNextMatch() {
+  if (this.matches.length === 0) {
+      this.finishTournament();
       return;
-    }
-
-    const [player1, player2] = this.matches.shift();
-    console.log(`Partido entre ${player1} y ${player2}`);
-
-    this.playMatch(player1, player2, (winner) => {
-      console.log(`Ganador entre ${player1} y ${player2} es ${winner}`);
-      this.winners.push(winner);
-
-      this.handleNextMatch(() => {
-        this.playNextMatch();
-      });
-    });
   }
+
+  const [player1, player2] = this.matches.shift();
+  console.log(`Partido entre ${player1} y ${player2}`);
+
+  this.playMatch(player1, player2, (winner) => {
+      this.winners.push(winner);
+      this.handleNextMatch(() => {
+          this.playNextMatch();
+      });
+  });
+}
+
+// Método para terminar el torneo y mostrar el mensaje final
+finishTournament() {
+  if (this.mode === "all_vs_all") {
+      this.determineWinner();
+  } else if (this.mode === "knockout" && this.winners.length > 0) {
+      this.tournamentWinner = this.winners[this.winners.length - 1];
+  }
+
+  console.log("WINNERRRRR: ", this.tournamentWinner);
+  const messageManager = new MessageManager();
+  messageManager.showMessage(`Tournament winner: ${this.tournamentWinner}`, '#FF0000'); // Ejemplo con color rojo
+}
+
 }
