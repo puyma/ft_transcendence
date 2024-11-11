@@ -368,55 +368,6 @@ export class Game {
     }
   }
 
-  // endGame(onFinish) {
-  //     this.isGameOver = true;
-  //     let winner = this.user.score >= 2 ? this.player1 : this.player2;
-
-  //     // this.winnerMessage = `${winner} Wins!`;
-
-  //     // Mostrar mensaje de ganador con opción de reiniciar
-  //     // this.message.showMessage(`${winner} Wins!`, "Press 'R' to Restart");
-
-  //     if (this.gameMode === 'solo_play' || this.gameMode === 'double_play')
-  //     {
-  //         this.message.showMessage(`${winner} Wins! Press 'R' to Restart`);
-  //         document.addEventListener("keydown", (evt) => this.resetGame(evt), { once: true });
-  //     }
-
-  //     console.log("DESDE PONG.JS, ganador:", winner);
-
-  //     // Llamar al callback con el ganador
-  //     if (onFinish) {
-  //         onFinish(winner);
-  //     }
-  // }
-
-  // endGame(onFinish, onNextMatch) {
-  //     this.isGameOver = true;
-  //     let winner = this.user.score >= 2 ? this.player1 : this.player2;
-
-  //     // Mostrar el mensaje del ganador
-  //     this.message.showMessage(`${winner} Wins! Press 'N' for Next Match`);
-
-  //     // Si estamos en un modo de torneo (con múltiples jugadores)
-  //     if (this.gameMode !== 'solo_play' && this.gameMode !== 'double_play') {
-  //         // Llamar a handleNextMatch (definido en tournament.js)
-  //         onNextMatch(() => {
-  //             // Llamar a la función de siguiente partido cuando presionemos 'N'
-  //         });
-  //     } else {
-  //         // Para los modos solo_play o double_play, usamos R para reiniciar
-  //         document.addEventListener("keydown", (evt) => this.resetGame(evt), { once: true });
-  //     }
-
-  //     console.log("DESDE PONG.JS, ganador:", winner);
-
-  //     // Llamar al callback con el ganador
-  //     if (onFinish) {
-  //         onFinish(winner);
-  //     }
-  // }
-
   //---------ULTIMA VERSION ENDGAME FUNCIONANDO
   // endGame(onFinish, onNextMatch, isLastMatch, tournamentWinner) {
   //   this.isGameOver = true;
