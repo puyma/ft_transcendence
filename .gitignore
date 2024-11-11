@@ -168,3 +168,5 @@ node_modules
 static/
 media/
 *.pem
+
+migrations/
