@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-import { Button } from 'bootstrap';
-import { Collapse } from 'bootstrap';
-import { Dropdown } from 'bootstrap';
-import { Toast } from 'bootstrap';
-
-import { Router } from './router.js';
-import { Game } from './pong';
-import { Tournament } from './tournament';
-=======
 import { Button } from "bootstrap";
 import { Collapse } from "bootstrap";
 import { Dropdown } from "bootstrap";
@@ -16,7 +6,6 @@ import { Router } from "./router.js";
 import { Game } from "./pong";
 import { Tournament } from "./tournament";
 import { Game as Game3D } from "./pong3d.js";
->>>>>>> development
 
 // variables
 
@@ -106,51 +95,9 @@ function initPlay() {
   // }
 }
 
-function initPlay() {
-    const startGame = document.getElementById('playGame');
-    if (startGame) {
-        startGame.addEventListener('click', (event) => {
-            event.preventDefault();
-			let canvas = document.createElement('canvas');
-            canvas.id = 'canvas';
-            canvas.style.width = `${window.innerWidth}px`;
-			canvas.style.height = `${window.innerHeight}px`;
-			canvas.width = window.innerWidth * window.devicePixelRatio;
-        	canvas.height = window.innerHeight * window.devicePixelRatio;
-
-            const main = document.querySelector('main');
-            if (main) {
-                main.replaceChildren(canvas);
-            } else {
-                console.error('<main> element not found.');
-                return;
-            }
-            // const game = new Game('canvas');
-			const players = ['mica', 'clara', 'ana'];
-			const tournament = new Tournament(players);
-			tournament.startTournament();
-        });
-    }
-	// const tournamentMode = document.getElementById('tournamentMode');
-	// if (tournamentMode) {
-	// 	tournamentMode.addEventListener('click', (event) => {
-	// 		event.preventDefault();
-	// 		const players = ['Player 1', 'Player 2', 'Player 3', 'Player 4', 'Player 5'];
-	// 		const tournament = new Tournament(players);
-	// 		tournament.startTournament();
-	// 	});
-	// }
-}
-
 // __main__
 // Execute once DOM is loaded
 
-<<<<<<< HEAD
-document.addEventListener( 'DOMContentLoaded', () => {
-	router = window.router = new Router();
-	router.bind_events( [ setup_ajax_anchors, setup_login_providers, initPlay ] );
-	router.init();
-=======
 function main() {
   router = window.router = new Router();
   router.attach([setup_login_providers], "pre");
@@ -172,6 +119,5 @@ function main() {
   router.init();
   return;
 }
->>>>>>> development
 
 document.addEventListener("DOMContentLoaded", main);
