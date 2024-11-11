@@ -375,24 +375,3 @@ class FriendsView(generic.TemplateView):
             messages.success(request, "Friend removed successfully.")
 
         return redirect('friends')
-
-    template_name = "tr/base.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["page"] = "tr/pages/friends.html"
-        user_profile = self.request.user.profile
-        
-        # Handle search query
-        search_query = self.request.GET.get('search', '')
-        if search_query:
-            search_results = Profile.objects.filter(
-                Q(user__username__icontains=search_query) & 
-                ~Q(user=self.request.user)
-            )
-        else:
-            search_results = None
-        
-        friend_requests_sent = Relationship.objects.filter(
-            sender=user_profile, status='send'
-        ).select_related('receiver')
