@@ -24,13 +24,11 @@ class Message {
 
   render() {
     if (this.isVisible) {
-      // Crea un rectángulo semi-transparente para oscurecer la pantalla
-      this.ctx.fillStyle = "rgba(0, 0, 0, 0.5)"; // Cambia el último valor para ajustar la opacidad
+      // rectángulo semi-transparente
+      this.ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
       this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-
-      // Dibuja el texto del mensaje
       this.ctx.font = `${20 * this.scaleFactor}px Arial`;
-      this.ctx.fillStyle = "white"; // Color del texto
+      this.ctx.fillStyle = "white";
       this.ctx.textAlign = "center";
       this.ctx.fillText(
         this.messageText,
@@ -86,9 +84,7 @@ export class Game {
     this.updateInterval = 16;
     this.isGameOver = false;
     this.gameStarted = false;
-    // -----PROBANDO
     this.message = new Message(this.ctx, this.dpr, this.scaleFactor);
-    // this.init();
   }
 
   createPaddle(x, y, color) {
@@ -103,18 +99,15 @@ export class Game {
   }
 
   createBall(x, y, color) {
-    let angleRad = (Math.random() * Math.PI) / 4; // Ángulo aleatorio en la salida
-    let direction = Math.random() > 0.5 ? 1 : -1; // Dirección aleatoria
-    let initialSpeed = 7; // Velocidad inicial más baja
+    let angleRad = (Math.random() * Math.PI) / 4; // ang aleatorio en la salida
+    let direction = Math.random() > 0.5 ? 1 : -1; // direccion aleatoria
+    let initialSpeed = 7;
     return {
       x: x,
       y: y,
       radius: 5 * this.scaleFactor,
-      // speed: 7,
-      // velocityX: 7,
-      // velocityY: 7,
-      speed: initialSpeed, // Establece la velocidad inicial baja
-      velocityX: initialSpeed * Math.cos(angleRad) * direction, // Inicializa la velocidad X
+      speed: initialSpeed,
+      velocityX: initialSpeed * Math.cos(angleRad) * direction,
       velocityY: initialSpeed * Math.sin(angleRad),
       color: color,
     };
@@ -133,26 +126,22 @@ export class Game {
     this.ball.y = this.canvas.height / 2 / this.dpr;
     this.canvas.setAttribute("tabindex", 0);
     this.canvas.focus();
-    // this.canvas.addEventListener("keydown", (evt) => this.move(evt));
-    // ------ probando
-    // this.message.showMessage("Press Space to Start");
+
     this.message.showMessage(
       `Next Match: ${this.player1} vs ${this.player2}, Press Space to start`
     );
     document.addEventListener("keydown", (evt) => {
       if (evt.code === "Space" && !this.gameStarted) {
-        this.startGame(); // Inicia el juego al presionar "Space"
-      } else {
-        this.move(evt); // Mueve el paddle si el juego ha comenzado
+        this.startGame();
+        this.move(evt);
       }
     });
-    this.render(); // Dibuja la escena inicial
-    // ------- fin prueba
+    this.render();
   }
 
   startGame() {
-    this.gameStarted = true; // Marca que el juego ha comenzado
-    this.gameLoop(); // Inicia el bucle del juego
+    this.gameStarted = true;
+    this.gameLoop();
   }
 
   resizeCanvas() {
@@ -188,9 +177,7 @@ export class Game {
   drawNet() {
     const canvasWidth = this.canvas.width / this.dpr;
     const canvasHeight = this.canvas.height / this.dpr;
-    //check centro
     const netX = canvasWidth / 2 - this.net.width / 2;
-    // console.log("w: ", canvasWidth, "h: ", canvasHeight);
     for (let i = 0; i <= canvasHeight; i += 15 * this.scaleFactor) {
       this.drawRectangle(
         netX,
@@ -245,7 +232,7 @@ export class Game {
     );
 
     if (!this.gameStarted || this.isGameOver) {
-      this.message.render(); // Renderiza el mensaje si el juego no ha comenzado o está terminado
+      this.message.render();
     }
   }
 
@@ -296,60 +283,38 @@ export class Game {
   }
 
   resetBall() {
-    // this.ball.x = this.canvas.width / 2 / this.dpr;
-    // this.ball.y = this.canvas.height / 2 / this.dpr;
-    // this.ball.speed = this.ball.velocityX = this.ball.velocityY = 7;
     this.ball.x = this.canvas.width / 2 / this.dpr;
     this.ball.y = this.canvas.height / 2 / this.dpr;
-    this.ball.speed = 7; // Asegúrate de que la velocidad se restablezca correctamente
+    this.ball.speed = 7;
 
-    let angleRad = (Math.random() * Math.PI) / 4; // Genera un nuevo ángulo de rebote
-    let direction = Math.random() > 0.5 ? 1 : -1; // Elige una dirección aleatoria
+    let angleRad = (Math.random() * Math.PI) / 4; // nuevo angulo de rebote
+    let direction = Math.random() > 0.5 ? 1 : -1; //direccion aleatoria
 
-    // Calcula las velocidades iniciales basadas en la velocidad total
     this.ball.velocityX = this.ball.speed * Math.cos(angleRad) * direction;
     this.ball.velocityY = this.ball.speed * Math.sin(angleRad);
   }
 
-  // updateComPaddle() {
-  //     let now = Date.now();
-  //     if (now - this.lastUpdate > this.updateInterval) {
-  //         this.lastUpdate = now;
-  //         let targetY = this.ball.y - (this.com.y + this.com.height / 2);
-  //         if (Math.abs(targetY) > 5) {
-  //             this.com.y += this.comLevel * Math.sign(targetY) * Math.min(10, Math.abs(targetY));
-  //         }
-  //         if (this.com.y < 0) {
-  //             this.com.y = 0;
-  //         } else if (this.com.y + this.com.height > this.canvas.height / this.dpr) {
-  //             this.com.y = (this.canvas.height / this.dpr) - this.com.height;
-  //         }
-  //     }
-  // }
   updateComPaddle() {
     let now = Date.now();
     if (now - this.lastUpdate > this.updateInterval) {
       this.lastUpdate = now;
 
-      // Duración del tiempo para mantener el error constante
       if (!this.errorTime || now - this.errorTime > 1000) {
         // Cambia el margen de error cada segundo
-        this.errorFactor = Math.min(this.ball.speed / 10, 1.5); // Ajusta este factor según la velocidad
+        this.errorFactor = Math.min(this.ball.speed / 10, 1.5);
         this.errorOffset = (Math.random() - 0.5) * 100 * this.errorFactor; // Genera un nuevo error
         this.errorTime = now; // Marca el momento en que se generó el nuevo error
       }
 
-      // El targetY ahora incluye el error aleatorio, pero este error se actualiza cada 1 segundo
       let targetY =
         this.ball.y + this.errorOffset - (this.com.y + this.com.height / 2);
 
-      // Si el error es pequeño (para evitar movimientos bruscos), ajusta el paddle
       if (Math.abs(targetY) > 10) {
         this.com.y +=
           this.comLevel * Math.sign(targetY) * Math.min(8, Math.abs(targetY));
       }
 
-      // Limita el paddle dentro de los bordes del canvas
+      // paddle no se sale
       if (this.com.y < 0) {
         this.com.y = 0;
       } else if (this.com.y + this.com.height > this.canvas.height / this.dpr) {
@@ -376,20 +341,16 @@ export class Game {
     this.ball.y += this.ball.velocityY;
 
     if (this.ball.y + this.ball.radius > this.canvas.height / this.dpr) {
-      this.ball.y = this.canvas.height / this.dpr - this.ball.radius; // Corrige la posición
-      this.ball.velocityY = -this.ball.velocityY; // Cambia la dirección
+      this.ball.y = this.canvas.height / this.dpr - this.ball.radius;
+      this.ball.velocityY = -this.ball.velocityY;
     } else if (this.ball.y - this.ball.radius < 0) {
-      this.ball.y = this.ball.radius; // Corrige la posición
-      this.ball.velocityY = -this.ball.velocityY; // Cambia la dirección
+      this.ball.y = this.ball.radius;
+      this.ball.velocityY = -this.ball.velocityY;
     }
 
     if (this.gameMode === "solo_play") {
       this.updateComPaddle();
     }
-
-    // if (this.ball.y + this.ball.radius > this.canvas.height / this.dpr || this.ball.y - this.ball.radius < 0) {
-    //     this.ball.velocityY = -this.ball.velocityY;
-    // }
 
     let player =
       this.ball.x < this.canvas.width / 2 / this.dpr ? this.user : this.com;
@@ -480,11 +441,6 @@ export class Game {
       else if (this.gameMode === "all_vs_all")
         this.message.showMessage(`Tournament winner: ${tournamentWinner}`);
     }
-    // else {
-    // //     Mensaje para un partido normal, sin ser el último
-    //     this.message.showMessage(`${winner} Wins! Press 'N' for Next Match`);
-    //     if (onNextMatch) onNextMatch();
-    // }
 
     if (onFinish) {
       onFinish(winner);
@@ -508,54 +464,16 @@ export class Game {
     // --------FIN
 
     // this.animationFrame = requestAnimationFrame(() => this.gameLoop());
-
-    // //PRUEBA MENSAJE PARA GANADOR
-    // if (this.isGameOver && this.winnerMessage) {
-    //     // Fondo semi-transparente para el mensaje
-    //     this.ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
-    //     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-
-    //     // Estilos del texto del mensaje
-    //     this.ctx.fillStyle = "white";
-    //     this.ctx.font = `${40 * this.scaleFactor}px Arial`;
-    //     this.ctx.textAlign = "center";
-    //     this.ctx.textBaseline = "middle";
-
-    //     // Coordenadas para centrar el mensaje en la pantalla
-    //     const centerX = this.canvas.width / 2 / this.dpr;
-    //     const centerY = this.canvas.height / 2 / this.dpr;
-
-    //     // Dibuja el mensaje centrado
-    //     this.ctx.fillText(this.winnerMessage, centerX, centerY);
-
-    //     //-----------PRUEBA RETRY
-    //     // Dibuja el mensaje para reiniciar
-    //     this.ctx.font = `${20 * this.scaleFactor}px Arial`;
-    //     this.ctx.fillText("Press 'R' to Restart", centerX, centerY + 50 * this.scaleFactor);
-
-    //     // Listener para reiniciar el juego al presionar 'R'
-    //     document.addEventListener("keydown", (evt) => this.resetGame(evt), { once: true });
-    //     //-----------FIN PRUEBA RETRY
-    //     return;
-    // }
-
-    // // Continuar el bucle si el juego no ha terminado
-    // if (!this.isGameOver) {
-    //     requestAnimationFrame(() => this.gameLoop());
-    // }
-    // //FIN PRUEBA MENSAJE GANADOR
   }
 
   resetGame(evt) {
     if (evt.code === "KeyR") {
-      this.isGameOver = false; // Reinicia el estado del juego
+      this.isGameOver = false;
       this.user.score = 0;
       this.com.score = 0;
       this.winnerMessage = null;
       this.gameStarted = false;
-
-      this.init(); // Vuelve a inicializar el juego
-      // this.gameLoop(); // Comienza el bucle de juego nuevamente
+      this.init();
     }
   }
 }
