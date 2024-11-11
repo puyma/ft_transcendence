@@ -189,7 +189,6 @@ class TournamentView(generic.TemplateView):
         # Redirect to the registration page
         return redirect('tournament_register')
 
-
 class TournamentRegisterView(generic.TemplateView):
     template_name = 'tr/base.html'
     
@@ -227,18 +226,21 @@ class TournamentRegisterView(generic.TemplateView):
 
 class TournamentOrderView(generic.TemplateView):
     template_name = 'tr/base.html'
+    
     def get(self, request, *args, **kwargs):
         num_participants = request.session.get('num_participants')
         aliases = request.session.get('aliases', {})
+
+        if isinstance(aliases, dict):
+            aliases = list(aliases.values())
         
         context = super().get_context_data(**kwargs)
-        
         context['num_participants'] = num_participants
         context['aliases'] = aliases
         context['page'] = 'tr/pages/tournament_order.html'
-        
+
         return self.render_to_response(context)
-    
+
 class PlayView ( generic.TemplateView ):
 	template_name = 'tr/base.html'
 
