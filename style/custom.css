@@ -58,3 +58,17 @@ main {
         background-color: rgba(0, 123, 255, 0.1);
     }
 }
+
+.btn-custom {
+    background-color: transparent;
+    border: 2px solid white;
+    color: white;
+    padding: 12px 24px;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+}
+
+.btn-custom:hover {
+    background-color: white;
+    color: black;
+}

@@ -413,6 +413,79 @@ export class Game {
         if (onFinish) {
             onFinish(winner);
         }
+<<<<<<< HEAD
+    }
+    
+    
+
+    gameLoop() {
+        if (!this.isGameOver) {
+            this.update();
+            this.render();
+            // this.animationFrame = requestAnimationFrame(() => this.gameLoop());
+        }
+        //-----CHECKKK
+        else {
+            this.message.render(); // Muestra el mensaje en pantalla
+        }
+
+        if (!this.isGameOver) {
+            requestAnimationFrame(() => this.gameLoop());
+        }
+        // --------FIN
+        
+        // this.animationFrame = requestAnimationFrame(() => this.gameLoop());
+        
+        // //PRUEBA MENSAJE PARA GANADOR
+        // if (this.isGameOver && this.winnerMessage) {
+        //     // Fondo semi-transparente para el mensaje
+        //     this.ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+        //     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    
+        //     // Estilos del texto del mensaje
+        //     this.ctx.fillStyle = "white";
+        //     this.ctx.font = `${40 * this.scaleFactor}px Arial`;
+        //     this.ctx.textAlign = "center";
+        //     this.ctx.textBaseline = "middle";
+            
+        //     // Coordenadas para centrar el mensaje en la pantalla
+        //     const centerX = this.canvas.width / 2 / this.dpr;
+        //     const centerY = this.canvas.height / 2 / this.dpr;
+            
+        //     // Dibuja el mensaje centrado
+        //     this.ctx.fillText(this.winnerMessage, centerX, centerY);
+
+        //     //-----------PRUEBA RETRY
+        //     // Dibuja el mensaje para reiniciar
+        //     this.ctx.font = `${20 * this.scaleFactor}px Arial`;
+        //     this.ctx.fillText("Press 'R' to Restart", centerX, centerY + 50 * this.scaleFactor);
+
+        //     // Listener para reiniciar el juego al presionar 'R'
+        //     document.addEventListener("keydown", (evt) => this.resetGame(evt), { once: true });
+        //     //-----------FIN PRUEBA RETRY
+        //     return;
+        // }
+
+        // // Continuar el bucle si el juego no ha terminado
+        // if (!this.isGameOver) {
+        //     requestAnimationFrame(() => this.gameLoop());
+        // }
+        // //FIN PRUEBA MENSAJE GANADOR
+    }
+
+    resetGame(evt) {
+        if (evt.code === "KeyR") {
+            this.isGameOver = false; // Reinicia el estado del juego
+            this.user.score = 0;
+            this.com.score = 0;
+            this.winnerMessage = null;
+            this.gameStarted = false;
+            
+            this.init(); // Vuelve a inicializar el juego
+            // this.gameLoop(); // Comienza el bucle de juego nuevamente
+        }
+=======
+>>>>>>> development
     }
     
     
