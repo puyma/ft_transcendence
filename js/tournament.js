@@ -52,17 +52,7 @@ export class Tournament {
         break;
     }
   }
-  // startTournament() {
-  //     if (this.mode === 'knockout') {
-  //         if (this.players.length < 3) {
-  //             console.log("Necesita 3 o + jugadores");
-  //             return;
-  //         }
-  //         this.knockoutMatches();
-  //     } else {
-  //         this.allVsAllMatches();
-  //     }
-  // }
+
   soloPlayGame() {
     console.log(this.mode);
     const game = new Game("canvas", this.mode, this.players[0], "Computer");
@@ -112,9 +102,7 @@ export class Tournament {
       //prox matches
       for (let i = 0; i < round.length; i += 2) {
         if (round[i + 1]) {
-          // Crear partido si hay un segundo jugador
           this.matches.push([round[i], round[i + 1]]);
-          // console.log(`Partido: ${round[i]} vs ${round[i + 1]}`);
         }
       }
 
@@ -142,8 +130,6 @@ export class Tournament {
       `El ganador del torneo por cantidad de partidos ganados es: ${winner}`
     );
     this.tournamentWinner = winner;
-    // this.tournamentWinner = Object.keys(this.winCounts).reduce((a, b) => this.winCounts[a] > this.winCounts[b] ? a : b);
-    // console.log(`El ganador del torneo por cantidad de partidos ganados es: ${this.tournamentWinner}`);
   }
 
   // playNextMatch() {
@@ -191,11 +177,11 @@ export class Tournament {
   handleNextMatch(onNextMatch) {
     const handleKeyN = (evt) => {
       if (evt.code === "KeyN") {
-        document.removeEventListener("keydown", handleKeyN); // Evita escuchar más veces
-        if (onNextMatch) onNextMatch(); // Llama a la función de callback para continuar con el siguiente partido
+        document.removeEventListener("keydown", handleKeyN); 
+        if (onNextMatch) onNextMatch(); 
       }
     };
-    document.addEventListener("keydown", handleKeyN); // Agrega el evento de escucha para la tecla 'N'
+    document.addEventListener("keydown", handleKeyN);
   }
 
   playMatch(player1, player2, onFinish) {
@@ -208,7 +194,6 @@ export class Tournament {
         game.endGame((winner) => {
           console.log(`Ganador entre ${player1} y ${player2} es ${winner}`);
           this.winCounts[winner]++;
-          // Llamamos al onFinish para continuar con el siguiente partido
           onFinish(winner);
         }, this.handleNextMatch.bind(this));
       }
@@ -216,13 +201,6 @@ export class Tournament {
   }
 
   playNextMatch() {
-    // if (this.matches.length === 0) {
-    //     console.log("Torneo terminado.");
-    //     if (this.mode === 'all_vs_all') {
-    //         this.determineWinner();
-    //     }
-    //     return ;
-    // }
     if (this.matches.length === 0) {
       console.log("Torneo terminado.");
 
@@ -251,9 +229,7 @@ export class Tournament {
       console.log(`Ganador entre ${player1} y ${player2} es ${winner}`);
       this.winners.push(winner);
 
-      // Llamamos a handleNextMatch que se encargará de esperar la tecla 'N'
       this.handleNextMatch(() => {
-        // Llamar playNextMatch para continuar con el siguiente partido
         this.playNextMatch();
       });
     });
