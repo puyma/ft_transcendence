@@ -198,3 +198,58 @@ export class Tournament {
     });
   }
 }
+
+//PROBANDO
+// playMatch(player1, player2, onFinish) {
+//     const game = new Game("canvas", this.mode, player1, player2);
+//     game.init();
+
+//     const checkGameOver = setInterval(() => {
+//         if (game.isGameOver) {
+//             clearInterval(checkGameOver);
+//             game.endGame((winner) => {
+//                 console.log(`Ganador entre ${player1} y ${player2} es ${winner}`);
+//                 this.winCounts[winner]++;
+//                 onFinish(winner);
+//             });
+//         }
+//     }, 100);
+// }
+
+// playNextMatch() {
+//     if (this.matches.length === 0) {
+//         this.finishTournament();
+//         return;
+//     }
+
+//     const [player1, player2] = this.matches.shift();
+//     console.log(`Partido entre ${player1} y ${player2}`);
+
+//     this.playMatch(player1, player2, (winner) => {
+//         this.winners.push(winner);
+//         this.handleNextMatch(() => {
+//             this.playNextMatch();
+//         });
+//     });
+// }
+
+// // Método para terminar el torneo y mostrar el mensaje final
+// finishTournament() {
+//     if (this.mode === "all_vs_all") {
+//         this.determineWinner();
+//     } else if (this.mode === "knockout" && this.winners.length > 0) {
+//         this.tournamentWinner = this.winners[this.winners.length - 1];
+//     }
+
+//     console.log("WINNERRRRR: ", this.tournamentWinner);
+//     this.showFinalMessage();
+// }
+
+// // Muestra el mensaje final del ganador del torneo
+// showFinalMessage() {
+//     const message = new Message(this.ctx, this.dpr, this.scaleFactor); 
+//     message.showMessage(`Tournament winner: ${this.tournamentWinner}`);
+// }
+
+
+// }
