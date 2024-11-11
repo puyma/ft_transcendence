@@ -1,4 +1,5 @@
 from django import urls
+from django.urls import reverse_lazy
 from django.contrib import auth
 from django.contrib import messages
 from django.contrib.auth import views as auth_views
@@ -7,7 +8,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.views import generic
-from .forms import UpdateUserForm, UpdateProfileForm
+from .forms import LoginForm, SignupForm, UpdateUserForm, UpdateProfileForm
 from . import forms
 from .providers import fortytwo
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -37,7 +38,7 @@ class LoginView(auth_views.LoginView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["page"] = "tr/pages/login.html"
-        context["form"] = forms.LoginForm()
+        context["form"] = LoginForm()
         context['provider_42_login'] = fortytwo.get_login_url(
             "42", {"state": self.request.COOKIES.get('csrftoken')}
         )
@@ -65,16 +66,27 @@ class LogoutView ( auth_views.LogoutView ):
 			return ( HttpResponseRedirect( redirect_to ) )
 		return ( super().get( request, *args, **kwargs ) )
 
-class SignupView(generic.CreateView):
-    form_class = auth.forms.UserCreationForm
-    success_url = urls.reverse_lazy('login')
+class SignupView(generic.FormView):
+    form_class = SignupForm
+    success_url = reverse_lazy('home')
     template_name = "tr/base.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["page"] = "tr/pages/signup.html"
-        context["form"] = forms.SignupForm()
         return context
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            user = form.save()
+            auth.login(request, user, backend='django.contrib.auth.backends.ModelBackend') 
+            return redirect(self.success_url)
+        return self.form_invalid(form)
+	
+    def form_invalid(self, form):
+        context = self.get_context_data(form=form)
+        return self.render_to_response(context)
 
 @login_required
 def profile_dashboard ( request ):
@@ -167,26 +179,19 @@ class PasswordResetCompleteView ( auth_views.PasswordResetCompleteView ):
 		context['page'] = 'tr/pages/password_reset_complete.html'
 		return ( context )
 
-## LEGACY CODE TOURNAMENT---- ##
 class TournamentView(generic.TemplateView):
     template_name = 'tr/base.html'
     
     def get(self, request, *args, **kwargs):
         num_participants = request.session.get('num_participants', None)
-        
-        # Render the page with the current number of participants, if any
         context = super().get_context_data(**kwargs)
         context['num_participants'] = num_participants
         context['page'] = 'tr/pages/tournament.html'
-        
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
-        # Get the number of participants from the form and store it in the session
         num_participants = int(request.POST.get('num_participants'))
         request.session['num_participants'] = num_participants
-        
-        # Redirect to the registration page
         return redirect('tournament_register')
 
 class TournamentRegisterView(generic.TemplateView):
@@ -194,34 +199,22 @@ class TournamentRegisterView(generic.TemplateView):
     
     def get(self, request, *args, **kwargs):
         num_participants = request.session.get('num_participants')
-        
-        # Create the participant range based on the number of participants
         participant_range = range(num_participants) if num_participants else []
-        
         context = super().get_context_data(**kwargs)
         context['num_participants'] = num_participants
         context['participant_range'] = participant_range
         context['page'] = 'tr/pages/tournament_register.html'
-        
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
         num_participants = request.session.get('num_participants')
-        
-        # Collect aliases from the POST request
         aliases = {f"alias_{i+1}": request.POST.get(f"alias_{i+1}") for i in range(num_participants)}
-
-        # Check if all aliases are unique
         alias_values = list(aliases.values())
         if len(alias_values) != len(set(alias_values)):
             # If duplicates found, add error message and re-render the form
             messages.error(request, "Each alias must be unique. Please correct the duplicates.")
             return redirect('tournament_register')
-
-        # Store aliases in the session if no duplicates
         request.session['aliases'] = aliases
-
-        # Redirect to the order page
         return redirect('tournament_order')
 
 class TournamentOrderView(generic.TemplateView):
@@ -230,15 +223,12 @@ class TournamentOrderView(generic.TemplateView):
     def get(self, request, *args, **kwargs):
         num_participants = request.session.get('num_participants')
         aliases = request.session.get('aliases', {})
-
         if isinstance(aliases, dict):
             aliases = list(aliases.values())
-        
         context = super().get_context_data(**kwargs)
         context['num_participants'] = num_participants
         context['aliases'] = aliases
         context['page'] = 'tr/pages/tournament_order.html'
-
         return self.render_to_response(context)
 
 class PlayView ( generic.TemplateView ):
