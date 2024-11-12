@@ -17,6 +17,7 @@ export class Tournament {
     this.players.forEach((player) => {
       this.winCounts[player] = 0;
     });
+    this.messageManager = new MessageManager();
   }
 
   setMode() {
@@ -185,11 +186,11 @@ export class Tournament {
       }
   }
 
-  showRoundMatches(matches) {
+  showRoundMatches(matches, messageManager) {
     const matchList = matches.map(([player1, player2]) => `${player1} vs ${player2}`).join('<br>');
-    console.log(`Round matches:\n${matchList}`);
-    const messageManager = new MessageManager();
-    messageManager.showMessage(`Round matches:<br>${matchList}`, '#00FF00');
+    console.log(`lalala Round matches:\n${matchList}`);
+    // const messageManager = new MessageManager();
+    this.messageManager.showMessage(`Round matches:<br>${matchList}`, '#00FF00');
   }
 
   determineWinner() {
@@ -248,6 +249,7 @@ export class Tournament {
     const handleKeyN = (evt) => {
       if (evt.code === "KeyN") {
         document.removeEventListener("keydown", handleKeyN); 
+        this.messageManager.hideMessage();
         if (onNextMatch) onNextMatch(); 
       }
     };
@@ -351,8 +353,8 @@ finishTournament() {
   // }
 
   console.log("WINNERRRRR: ", this.tournamentWinner);
-  const messageManager = new MessageManager();
-  messageManager.showMessage(`Tournament winner: ${this.tournamentWinner}`, '#FF0000'); // Ejemplo con color rojo
+  // const messageManager = new MessageManager();
+  this.messageManager.showMessage(`Tournament winner: ${this.tournamentWinner}`, '#FF0000'); // Ejemplo con color rojo
 }
 
 }
