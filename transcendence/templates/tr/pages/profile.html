@@ -2,6 +2,8 @@
 
 {% if request.user.is_authenticated %}
 
+{% include 'tr/components/_navProfile.html' %}
+
 <!-- ERRORS IN THE profile FORM avatar iamge size and format-->
 {% if profile_form.errors %}
     <div class="container" style="max-width: 600px; margin: 20px auto;">
@@ -18,12 +20,8 @@
     </div>
 {% endif %}
 <!-- end ERRORS IN THE FORM -->
-
 <div class="container mt-5">
   <div class="row justify-content-center">
-    <div class="col-md-8">
-      <h1 class="mb-4 text-center">My Profile</h1>
-    </div>
   </div>
   <div class="row justify-content-center">
 
@@ -79,57 +77,7 @@
             </div>
               <button type="submit" class="btn btn-dark btn-lg">Save Changes</button>
           </form>
-         <!-- STATS DISPLAY -->
-         <div class="container mt-4">
-            <h2 class="text-center">Game Stats</h2>
-            <ul class="list-group">
-                <li class="list-group-item" style="background-color: rgb(188, 169, 206);">
-                    Wins: {{ profile.wins }} 
-                    <span class="float-end">{{ win_percentage|floatformat:1 }}%</span>
-                </li>
-                <li class="list-group-item" style="background-color: rgb(115, 101, 222);">
-                    Losses: {{ profile.losses }} 
-                    <span class="float-end">{{ loss_percentage|floatformat:1 }}%</span>
-                </li>
-            </ul>
-        
-            <h4 class="mt-4">Win/Loss Distribution</h4>
-            <div class="progress">
-                <div class="progress-bar bg-success" role="progressbar" style="width: {{ win_percentage|floatformat:1 }}%;" aria-valuenow="{{ win_percentage|floatformat:1 }}" aria-valuemin="0" aria-valuemax="100">
-                    {{ win_percentage|floatformat:1 }}%
-                </div>
-                <div class="progress-bar bg-danger" role="progressbar" style="width: {{ loss_percentage|floatformat:1 }}%;" aria-valuenow="{{ loss_percentage|floatformat:1 }}" aria-valuemin="0" aria-valuemax="100">
-                    {{ loss_percentage|floatformat:1 }}%
-                </div>
-            </div>
-      </div>
-      <!-- FRIENDS DISPLAY -->
-      <div class="container mt-4">
-        <h2 class="text-center">Friends Display</h2>
-      </div>
-      <!-- FRIENDS DISPLAY -->
-      <div class="container mt-4">
-        <h2 class="text-center">Match History</h2>
-      </div>
 
-        
-    </div>
-    </div>
-  </div>
-</div>
-
-
-  {% if user.friends %}
-  <div class="container mt-4">
-    <ul class="list-group">
-      <li class="list-group-item">A first item</li>
-      <li class="list-group-item">A second item</li>
-      <li class="list-group-item">A third item</li>
-      <li class="list-group-item">A fourth item</li>
-      <li class="list-group-item">And a fifth one</li>
-    </ul>
-  </div>
-  {% endif %}
 {% else %}
   <div class="container mt-5 text-center">
     <h1>Welcome to Our App</h1>

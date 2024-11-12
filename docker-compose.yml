@@ -98,9 +98,6 @@ services:
       django:
         condition: service_started
         restart: true
-      mailhog:
-        condition: service_started
-        restart: true
     networks:
       - tr-network
     ports:
@@ -111,14 +108,14 @@ services:
       - ./:/usr/app/
     working_dir: /usr/app/
 
-  mailhog:
-    container_name: tr-mail
-    expose:
-      - 1025
-      - 8025
-    image: mailhog/mailhog:latest
-    networks:
-      - tr-network
+  #mailhog:
+  #container_name: tr-mail
+  #expose:
+  #- 1025
+  #- 8025
+  #image: mailhog/mailhog:latest
+  #networks:
+  #- tr-network
 
   npm:
     container_name: tr-util-npm
@@ -147,6 +144,10 @@ services:
   assets:
     container_name: tr-util-assets
     entrypoint: ./assets-entrypoint.sh
+    depends_on:
+      npm:
+        condition: service_completed_successfully
+        restart: true
     image: alpine:3.20
     volumes:
       - ./:/usr/app/

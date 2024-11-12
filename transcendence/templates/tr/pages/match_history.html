@@ -1,0 +1,7 @@
+{% load static %}
+
+{% if request.user.is_authenticated %}
+
+{% include 'tr/components/_navProfile.html' %}
+
+{% endif %}

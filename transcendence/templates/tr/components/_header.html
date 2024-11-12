@@ -12,30 +12,9 @@
 		  <li><a href="/" data-ajax="true" class="nav-link px-2
 					{% if active_nav == "home" %} active{% endif %}"
 						  {% if active_nav == "home" %} aria-current='page'{% endif %}>
-				  Games
+				  Home
 			  </a>
 		  </li>
-        <li>
-			<a href="#" class="nav-link px-2 link-body-emphasis
-					{% if active_nav == "inventory" %} active{% endif %}"
-						  {% if active_nav == "inventory" %} aria-current='page'{% endif %}>
-				Inventory
-			</a>
-		</li>
-        <li>
-			<a href="/" class="nav-link px-2 link-body-emphasis
-					{% if active_nav == "customers" %} active{% endif %}"
-						  {% if active_nav == "customers" %} aria-current='page'{% endif %}>
-				Customers
-			</a>
-		</li>
-        <li>
-			<a href="#" class="nav-link px-2 link-body-emphasis
-					{% if active_nav == "products" %} active{% endif %}"
-						  {% if active_nav == "products" %} aria-current='page'{% endif %}>
-				Products
-			</a>
-		</li>
       </ul>
 
       {% if request.user.is_authenticated %}
@@ -43,13 +22,12 @@
       <div class="dropdown text-end">
         <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
 			{% if user.profile.avatar %}
-			<img src="/media/{{ user.profile.avatar }}" alt="{{ user.username }}" width="32" height="32" class="rounded-circle">
+			  <img src="/media/{{ user.profile.avatar }}" alt="{{ user.username }}" width="32" height="32" class="rounded-circle">
 			{% else %}
 			{{ user.username }}
 			{% endif %}
         </a>
         <ul class="dropdown-menu text-small">
-          <li><a class="dropdown-item" href="{% url 'settings' %}">Settings</a></li>
           <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
           <li><hr class="dropdown-divider"></li>
           <li><a class="dropdown-item" href="{% url 'logout' %}">Sign out</a></li>
