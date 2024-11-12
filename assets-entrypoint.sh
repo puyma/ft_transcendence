@@ -2,6 +2,9 @@
 
 set -x
 
+mkdir -p static/webfonts
+cp --recursive node_modules/\@fortawesome/fontawesome-free/webfonts/* static/webfonts/
+
 for item in assets/*
 do
 	mkdir -p "static/`dirname $item`"

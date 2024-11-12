@@ -28,6 +28,7 @@ For 42's API to work it is necessary to add the DOMAIN_URL + route to oauth call
 
 In order to fully erase database's contents (if postgres's user is not mapped on your system) `make purgedb` can be run.
 
+<!--
 # Conventions
 
 ## Commit messages
@@ -38,11 +39,8 @@ Commit messages should be as follows:
 - `~ | <commit>` : Modified something
 - `+ | <commit>` : Added something
 
-<!--
-
 ## Code formatters
 
 - ECMAScript: Prettier
 - Python: Black
-
 -->

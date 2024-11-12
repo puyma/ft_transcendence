@@ -68,6 +68,16 @@ urlpatterns = [
 		name='del_account',
 		),
     path(
+        'profile/stats/', 
+        views.StatsView.as_view(),
+        name='stats'
+        ),
+    path(
+        'profile/friends/',
+        views.FriendsView.as_view(),
+        name='friends'
+        ),
+    path(
 		'settings/',
 		views.ProfileView.as_view(),
 		name='settings',
@@ -77,6 +87,14 @@ urlpatterns = [
 		views.TournamentView.as_view(),
 		name='tournament',
 		),
+    path(
+		'tournament/register', 
+		views.TournamentRegisterView.as_view(),
+		name='tournament_register',
+		),
+    path('tournament/tournament_order/',
+        views.TournamentOrderView.as_view(), 
+        name='tournament_order'),
     path(
 		'double_play/',
 		views.double_play_view,
