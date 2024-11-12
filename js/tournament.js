@@ -157,7 +157,7 @@ export class Tournament {
             }
         }
 
-        this.showRoundMatches(this.matches);
+        await this.showRoundMatches(this.matches);
 
         // Jugar cada partido de manera secuencial
         for (let match of this.matches) {
@@ -186,12 +186,27 @@ export class Tournament {
       }
   }
 
-  showRoundMatches(matches, messageManager) {
+  async showRoundMatches(matches) {
     const matchList = matches.map(([player1, player2]) => `${player1} vs ${player2}`).join('<br>');
-    console.log(`lalala Round matches:\n${matchList}`);
-    // const messageManager = new MessageManager();
-    this.messageManager.showMessage(`Round matches:<br>${matchList}`, '#00FF00');
+    this.messageManager.showMessage(`Round matches:<br>${matchList}<br>Press any key to continue`, '#FFFFFF');
+    
+    // espera a tocar alguna tecla
+    await new Promise((resolve) => {
+        const handleKeyPress = (evt) => {
+            this.messageManager.hideMessage(); 
+            document.removeEventListener('keydown', handleKeyPress);
+            resolve(); 
+        };
+        document.addEventListener('keydown', handleKeyPress, { once: true }); 
+    });
   }
+
+  // showRoundMatches(matches, messageManager) {
+  //   const matchList = matches.map(([player1, player2]) => `${player1} vs ${player2}`).join('<br>');
+  //   console.log(`lalala Round matches:\n${matchList}`);
+  //   // const messageManager = new MessageManager();
+  //   this.messageManager.showMessage(`Round matches:<br>${matchList}`, '#00FF00');
+  // }
 
   determineWinner() {
     const winner = Object.keys(this.winCounts).reduce((a, b) =>

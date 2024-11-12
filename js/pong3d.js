@@ -20,21 +20,42 @@ export class MessageManager {
     //     document.getElementById('main').insertAdjacentElement('afterbegin', this.messageElement);
     // }
 
+    // createMessageElement() {
+    //     // Crear el contenedor del mensaje
+    //     this.messageElement = document.createElement('div');
+    //     this.messageElement.id = "pong-message";
+    //     this.messageElement.style.position = 'fixed'; // Fijar en la pantalla, no dentro de un elemento específico
+    //     this.messageElement.style.top = '0'; // Posición desde el borde superior
+    //     this.messageElement.style.left = '0'; // Posición desde el borde izquierdo
+    //     this.messageElement.style.width = '100%'; // Que ocupe todo el ancho de la pantalla
+    //     this.messageElement.style.padding = '10px'; // Añadir un poco de padding para separación visual
+    //     this.messageElement.style.backgroundColor = 'rgba(255, 255, 255, 0.8)'; // Fondo blanco semitransparente para destacar el mensaje
+    //     this.messageElement.style.textAlign = 'center'; // Centrar el texto dentro del div
+    //     this.messageElement.style.fontSize = '24px';
+    //     this.messageElement.style.color = '#0000FF';
+    //     this.messageElement.style.zIndex = '1000'; // Asegurar que el mensaje esté al frente
+    
+    //     document.getElementById('main').insertAdjacentElement('afterbegin', this.messageElement);
+    // }
+    
     createMessageElement() {
-        // Crear el contenedor del mensaje
         this.messageElement = document.createElement('div');
         this.messageElement.id = "pong-message";
-        this.messageElement.style.position = 'fixed'; // Fijar en la pantalla, no dentro de un elemento específico
-        this.messageElement.style.top = '0'; // Posición desde el borde superior
-        this.messageElement.style.left = '0'; // Posición desde el borde izquierdo
-        this.messageElement.style.width = '100%'; // Que ocupe todo el ancho de la pantalla
-        this.messageElement.style.padding = '10px'; // Añadir un poco de padding para separación visual
-        this.messageElement.style.backgroundColor = 'rgba(255, 255, 255, 0.8)'; // Fondo blanco semitransparente para destacar el mensaje
-        this.messageElement.style.textAlign = 'center'; // Centrar el texto dentro del div
-        this.messageElement.style.fontSize = '24px';
-        this.messageElement.style.color = '#0000FF';
-        this.messageElement.style.zIndex = '1000'; // Asegurar que el mensaje esté al frente
-    
+        
+        this.messageElement.style.position = 'fixed';
+        this.messageElement.style.top = '0'; 
+        this.messageElement.style.left = '0'; 
+        this.messageElement.style.width = '100vw'; 
+        this.messageElement.style.height = '100vh'; 
+        this.messageElement.style.backgroundColor = 'black'; 
+        this.messageElement.style.color = 'white'; 
+        this.messageElement.style.fontSize = '24px'; 
+        this.messageElement.style.display = 'flex'; 
+        this.messageElement.style.alignItems = 'center'; 
+        this.messageElement.style.justifyContent = 'center'; 
+        this.messageElement.style.zIndex = '1000'; 
+        this.messageElement.style.textAlign = 'center'; 
+        
         document.getElementById('main').insertAdjacentElement('afterbegin', this.messageElement);
     }
     
