@@ -62,6 +62,9 @@ function event_handler_form(event) {
 
 function initPlay() {
   const startGame = document.getElementById("playGame");
+  // get players dinamically form tournament page WIP
+  // const players = JSON.parse(document.getElementById('playerData').textContent);
+  // console.log(players);
   if (startGame) {
     startGame.addEventListener("click", (event) => {
       event.preventDefault();

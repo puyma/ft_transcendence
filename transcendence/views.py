@@ -179,15 +179,57 @@ class PasswordResetCompleteView ( auth_views.PasswordResetCompleteView ):
 		context['page'] = 'tr/pages/password_reset_complete.html'
 		return ( context )
 
-## LEGACY CODE ---- ##
+class TournamentView(generic.TemplateView):
+    template_name = 'tr/base.html'
+    
+    def get(self, request, *args, **kwargs):
+        num_participants = request.session.get('num_participants', None)
+        context = super().get_context_data(**kwargs)
+        context['num_participants'] = num_participants
+        context['page'] = 'tr/pages/tournament.html'
+        return self.render_to_response(context)
 
-class TournamentView ( generic.TemplateView ):
-	template_name = 'tr/base.html'
+    def post(self, request, *args, **kwargs):
+        num_participants = int(request.POST.get('num_participants'))
+        request.session['num_participants'] = num_participants
+        return redirect('tournament_register')
 
-	def get_context_data ( self, **kwargs ):
-		context = super().get_context_data( **kwargs )
-		context['page'] = 'tr/pages/tournament.html'
-		return ( context )
+class TournamentRegisterView(generic.TemplateView):
+    template_name = 'tr/base.html'
+    
+    def get(self, request, *args, **kwargs):
+        num_participants = request.session.get('num_participants')
+        participant_range = range(num_participants) if num_participants else []
+        context = super().get_context_data(**kwargs)
+        context['num_participants'] = num_participants
+        context['participant_range'] = participant_range
+        context['page'] = 'tr/pages/tournament_register.html'
+        return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        num_participants = request.session.get('num_participants')
+        aliases = {f"alias_{i+1}": request.POST.get(f"alias_{i+1}") for i in range(num_participants)}
+        alias_values = list(aliases.values())
+        if len(alias_values) != len(set(alias_values)):
+            # If duplicates found, add error message and re-render the form
+            messages.error(request, "Each alias must be unique. Please correct the duplicates.")
+            return redirect('tournament_register')
+        request.session['aliases'] = aliases
+        return redirect('tournament_order')
+
+class TournamentOrderView(generic.TemplateView):
+    template_name = 'tr/base.html'
+    
+    def get(self, request, *args, **kwargs):
+        num_participants = request.session.get('num_participants')
+        aliases = request.session.get('aliases', {})
+        if isinstance(aliases, dict):
+            aliases = list(aliases.values())
+        context = super().get_context_data(**kwargs)
+        context['num_participants'] = num_participants
+        context['aliases'] = aliases
+        context['page'] = 'tr/pages/tournament_order.html'
+        return self.render_to_response(context)
 
 class PlayView ( generic.TemplateView ):
 	template_name = 'tr/base.html'
@@ -241,7 +283,6 @@ def pong_view ( request ):
 		'page': "tr/pages/pong.html",
     }
     return ( render( request, 'tr/base.html', context ) )
-
 
 class StatsView(generic.TemplateView):
     template_name = "tr/base.html"

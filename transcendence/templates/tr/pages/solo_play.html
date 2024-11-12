@@ -1,15 +1,22 @@
-  <div 
-    class="d-flex flex-column justify-content-center align-items-center"
-    style="min-height: 100vh"
-  >
-      <div class="d-grid gap-3 justify-content-center align-items-center">
-        <a
-          href="https://auth.42.fr/auth/realms/students-42/protocol/openid-connect/auth?client_id=intra&redirect_uri=https%3A%2F%2Fprofile.intra.42.fr%2Fusers%2Fauth%2Fkeycloak_student%2Fcallback&response_type=code&state=e02b16dd004f35462384e63c88d090b7cd845c5fb9b95e7a"
-          class="btn btn-light btn-lg mx-3"
-          role="button"
-          >LOG IN 42</a
-        >
-        <a
+{% if request.user.is_authenticated %}
+  <div class="vertical"></div>
+  <div class="container d-flex justify-content-center align-items-center vh-100 position-relative">
+    <div class="row justify-content-center align-items-center flex-nowrap" style="z-index: 3; position: relative; background-color: rgb(0, 0, 0);">
+      <div class="d-flex flex-column align-items-center my-4">
+        <h1 class="text-white display-3">Ready to play?</h1>
+        <h2 class="text-white">{{ request.user.username }} vs Computer</h2>
+        <a href="{% url 'pong' %}" class="text-decoration-none">
+          <i class="fas fa-play-circle text-white mt-3" style="font-size: 72px;"></i>
+        </a>  
+      </div>
+    </div>
+  </div>
+{% else %}
+<div class="position-absolute top-50 start-50 translate-middle text-center">
+  <div class="d-grid gap-3">
+    <a 
+    href="{% url 'login' %}?next={% url 'solo_play' %}" class="btn btn-light btn-lg mx-3"  role="button">LOG IN </a>
+    <a
           data-ajax=true
           href="{% url 'play' %}"
           id="anonymousLink"
@@ -17,5 +24,7 @@
           role="button"
           >ANONYMOUS</a
         >
-    </div>
   </div>
+</div>
+
+{% endif %}
