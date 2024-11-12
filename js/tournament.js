@@ -131,14 +131,6 @@ export class Tournament {
         let nextRound = [];
         this.matches = [];
 
-        // Si la cantidad de jugadores es impar, hacer pasar a uno aleatorio a la siguiente ronda
-        // if (round.length % 2 !== 0) {
-        //     const randomIndex = Math.floor(Math.random() * round.length);
-        //     const autoAdvancePlayer = round.splice(randomIndex, 1)[0]; // Eliminar jugador de la lista
-        //     nextRound.push(autoAdvancePlayer);
-        //     console.log(`El jugador ${autoAdvancePlayer} avanza automáticamente a la siguiente ronda.`);
-        // }
-
         if (round.length % 2 !== 0) {
           let randomIndex;
           let autoAdvancePlayer;
@@ -157,36 +149,32 @@ export class Tournament {
           round.splice(randomIndex, 1);
       }
 
-        // Configuración de los partidos para la ronda actual
+        // partidos ronda actual
         for (let i = 0; i < round.length; i += 2) {
             if (round[i + 1]) {
                 this.matches.push([round[i], round[i + 1]]);
             }
         }
 
+        this.showRoundMatches(this.matches);
+
         // Jugar cada partido de manera secuencial
         for (let match of this.matches) {
             const winner = await new Promise((resolve) => {
-                this.playMatch(match[0], match[1], resolve); // Resolver con el ganador
+                this.playMatch(match[0], match[1], resolve);
             });
 
             console.log(`Ganador entre ${match[0]} y ${match[1]} es ${winner}`);
 
-            // Mostrar mensaje del ganador
-            // const messageManager = new MessageManager();
-            // messageManager.showMessage(`Ganador: ${winner}. Press 'n' para el siguiente partido.`, '#00FF00'); // Mensaje de ganador
-
-            // Esperar a que el jugador presione 'n' para continuar al siguiente partido
             await new Promise(resolve => this.handleNextMatch(resolve));
 
             nextRound.push(winner); // Agregar al siguiente round
         }
 
-        // Prepararse para la siguiente ronda
         round = nextRound;
 
         // Espera de un tiempo antes de mostrar el siguiente mensaje o avanzar
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Esperar 1 segundo entre rondas para mostrar el mensaje
+        await new Promise(resolve => setTimeout(resolve, 1000)); 
     
         if (round.length === 1)
         {
@@ -197,8 +185,12 @@ export class Tournament {
       }
   }
 
-
-
+  showRoundMatches(matches) {
+    const matchList = matches.map(([player1, player2]) => `${player1} vs ${player2}`).join('<br>');
+    console.log(`Round matches:\n${matchList}`);
+    const messageManager = new MessageManager();
+    messageManager.showMessage(`Round matches:<br>${matchList}`, '#00FF00');
+  }
 
   determineWinner() {
     const winner = Object.keys(this.winCounts).reduce((a, b) =>
