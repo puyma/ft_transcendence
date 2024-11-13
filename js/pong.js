@@ -372,10 +372,19 @@ export class Game {
     let winner = this.user.score >= 1 ? this.player1 : this.player2;
 
     if (this.gameMode === "solo_play" || this.gameMode === "double_play") {
-      this.message.showMessage(`${winner} Wins! Press 'R' to Restart`);
-      document.addEventListener("keydown", (evt) => this.resetGame(evt), {
-        once: true,
-      });
+      this.message.showMessage(`${winner} Wins! Press 'R' to Restart or 'Esc' to finish`);
+      // document.addEventListener("keydown", (evt) => this.resetGame(evt), {
+      //   once: true,
+      // });
+      const handleKeyPress = (evt) => {
+        if (evt.key === 'R' || evt.key === 'r') {
+          this.resetGame(evt);  // Reiniciar el juego
+        } else if (evt.key === 'Escape') {
+          this.loadHomePage();  // Regresar a la página de inicio
+        }
+      };
+    
+      document.addEventListener("keydown", handleKeyPress, { once: true });
     }
 
     if (this.gameMode === "all_vs_all" || this.gameMode === "knockout") {
@@ -410,5 +419,18 @@ export class Game {
       this.gameStarted = false;
       this.init();
     }
+  }
+
+  loadHomePage() {
+    document.removeEventListener("keydown", this.handleEndTournament);
+    fetch("/")
+      .then((response) => response.text())
+      .then((html) => {
+        document.getElementById("main").innerHTML = html;
+        history.pushState({}, "", "/");
+      })
+      .catch((error) =>
+        console.error("Error al cargar la página de inicio:", error)
+      );
   }
 }
