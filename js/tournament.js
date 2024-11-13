@@ -1,6 +1,7 @@
 //TODO: if 1 pl -> 1 vs com
 //      if 2 pl -> double play
 //      if >= 3 -> tournament all_vs_all / knockout
+import { DataTextureLoader } from "three";
 import { Game } from "./pong";
 import { MessageManager } from "./pong3d";
 
@@ -84,50 +85,10 @@ export class Tournament {
     this.playNextMatch();
   }
 
-  // knockoutMatches() {
-  //   let round = [...this.players];
-  //   while (round.length > 1) {
-  //     let nextRound = [];
-  //     this.matches = [];
-
-  //     if (round.length % 2 !== 0) {
-  //       // si es impar hacer pasar a uno random a la sig ronda
-  //       const randomIndex = Math.floor(Math.random() * round.length);
-  //       const autoAdvancePlayer = round[randomIndex];
-  //       nextRound.push(autoAdvancePlayer);
-  //       console.log(
-  //         `El jugador ${autoAdvancePlayer} avanza automáticamente a la siguiente ronda.`
-  //       );
-
-  //       // eliminar el que avanza directo
-  //       round.splice(randomIndex, 1);
-  //     }
-  //     //prox matches
-  //     for (let i = 0; i < round.length; i += 2) {
-  //       if (round[i + 1]) {
-  //         this.matches.push([round[i], round[i + 1]]);
-  //       }
-  //     }
-
-  //     for (let match of this.matches) {
-  //       this.playMatch(match[0], match[1], (winner) => {
-  //         console.log(`Ganador entre ${match[0]} y ${match[1]} es ${winner}`);
-  //         nextRound.push(winner);
-  //       });
-  //     }
-  //     // next round
-  //     this.matches = [];
-  //     round = nextRound;
-  //     this.winners = [];
-  //   }
-  //   if (round.length === 1) {
-  //     console.log(`GANADOR TORNEO: ${round[0]}`);
-  //   }
-  // }
-
   async knockoutMatches() {
     let round = [...this.players];
     let previouslyAutoAdvanced = [];
+    let autoAdvancePlayer = null;
 
     while (round.length > 1) {
       let nextRound = [];
@@ -135,7 +96,6 @@ export class Tournament {
 
       if (round.length % 2 !== 0) {
         let randomIndex;
-        let autoAdvancePlayer;
 
         // check random player no haya pasado antes
         do {
@@ -149,7 +109,7 @@ export class Tournament {
           `El jugador ${autoAdvancePlayer} avanza automáticamente a la siguiente ronda.`
         );
         round.splice(randomIndex, 1);
-      }
+      } else autoAdvancePlayer = null;
 
       // partidos ronda actual
       for (let i = 0; i < round.length; i += 2) {
@@ -157,22 +117,19 @@ export class Tournament {
           this.matches.push([round[i], round[i + 1]]);
         }
       }
-      await this.showRoundMatches(this.matches);
+      await this.showRoundMatches(this.matches, autoAdvancePlayer);
 
       // jugar cada partido
       for (let match of this.matches) {
         const winner = await new Promise((resolve) => {
           this.playMatch(match[0], match[1], resolve);
         });
-
-        console.log(`Ganador entre ${match[0]} y ${match[1]} es ${winner}`);
-
+        // console.log(`Ganador entre ${match[0]} y ${match[1]} es ${winner}`);
         await new Promise((resolve) => this.handleNextMatch(resolve));
-
         nextRound.push(winner);
       }
       round = nextRound;
-      // Espera de un tiempo antes de mostrar el siguiente mensaje o avanzar
+      // espera antes de mostrar msj o seguir
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       if (round.length === 1) {
@@ -183,15 +140,16 @@ export class Tournament {
     }
   }
 
-  async showRoundMatches(matches) {
+  async showRoundMatches(matches, autoAdvancePlayer = null) {
     const matchList = matches
       .map(([player1, player2]) => `${player1} vs ${player2}`)
       .join("<br>");
-    this.messageManager.showMessage(
-      `Round matches:<br>${matchList}<br>Press any key to continue`,
-      "#FFFFFF"
-    );
-
+    let msg = `Round matches:<br>${matchList}`;
+    if (autoAdvancePlayer) {
+      msg += `<br><strong>Note: ${autoAdvancePlayer} advances automatically!</strong>`;
+    }
+    msg += `<br><span style="font-size: 0.8em">Press any key to continue</span>`;
+    this.messageManager.showMessage(msg, "#FFFFFF");
     // espera a tocar alguna tecla
     await new Promise((resolve) => {
       const handleKeyPress = (evt) => {
@@ -203,13 +161,6 @@ export class Tournament {
     });
   }
 
-  // showRoundMatches(matches, messageManager) {
-  //   const matchList = matches.map(([player1, player2]) => `${player1} vs ${player2}`).join('<br>');
-  //   console.log(`lalala Round matches:\n${matchList}`);
-  //   // const messageManager = new MessageManager();
-  //   this.messageManager.showMessage(`Round matches:<br>${matchList}`, '#00FF00');
-  // }
-
   determineWinner() {
     const winner = Object.keys(this.winCounts).reduce((a, b) =>
       this.winCounts[a] > this.winCounts[b] ? a : b
@@ -219,48 +170,6 @@ export class Tournament {
     );
     this.tournamentWinner = winner;
   }
-
-  // playNextMatch() {
-  //     if (this.matches.length === 0) {
-  //         console.log("Torneo terminado.");
-  //         if (this.mode === 'all_vs_all') {
-  //             this.determineWinner();
-  //         }
-  //         return;
-  //     }
-
-  //     const [player1, player2] = this.matches.shift();
-  //     // console.log(`Partido entre ${player1} y ${player2}`);
-  //     this.playMatch(player1, player2, (winner) => {
-  //         console.log(`Ganador entre ${player1} y ${player2} es ${winner}`);
-  //         this.winners.push(winner);
-  //         this.playNextMatch();
-  //     });
-  // }
-
-  // playMatch(player1, player2, onFinish) {
-  // //     // // Simula ganador aleatorio
-  // //     // const winner = Math.random() < 0.5 ? player1 : player2; // 50% de probabilidad
-  // //     // //agregar la partida ganada
-  // //     // this.winCounts[winner]++;
-  // //     // onFinish(winner);
-
-  // //     // PRUEBA
-  //     const game = new Game('canvas', this.mode, player1, player2);
-  //     game.init();
-
-  //     // Esperar a que el juego termine
-  //     const checkGameOver = setInterval(() => {
-  //         if (game.isGameOver) {
-  //             clearInterval(checkGameOver); // Detener chequeo
-  //             game.endGame((winner) => {
-  //                 console.log(`Ganador entre ${player1} y ${player2} es ${winner}`);
-  //                 this.winCounts[winner]++;
-  //                 onFinish(winner);
-  //             });
-  //         }
-  //     }, 100);
-  // }
 
   handleNextMatch(onNextMatch) {
     const handleKeyN = (evt) => {
@@ -273,60 +182,6 @@ export class Tournament {
     document.addEventListener("keydown", handleKeyN);
   }
 
-  //-------------------ULTIMA VERSION FUNCIONANDO
-  // playMatch(player1, player2, onFinish) {
-  //   const game = new Game("canvas", this.mode, player1, player2);
-  //   game.init();
-
-  //   const checkGameOver = setInterval(() => {
-  //     if (game.isGameOver) {
-  //       clearInterval(checkGameOver); // Detener chequeo
-  //       game.endGame((winner) => {
-  //         console.log(`Ganador entre ${player1} y ${player2} es ${winner}`);
-  //         this.winCounts[winner]++;
-  //         onFinish(winner);
-  //       }, this.handleNextMatch.bind(this));
-  //     }
-  //   }, 100);
-  // }
-
-  // playNextMatch() {
-  //   if (this.matches.length === 0) {
-  //     console.log("Torneo terminado.");
-
-  //     // Establece el ganador del torneo antes del último partido
-  //     if (this.mode === "all_vs_all") {
-  //       this.determineWinner();
-  //     } else if (this.mode === "knockout" && this.winners.length > 0) {
-  //       this.tournamentWinner = this.winners[this.winners.length - 1];
-  //     }
-  //     console.log("WINNERRRRR: ", this.tournamentWinner);
-  //     const finalGame = new Game("canvas", this.mode, null, null); // Creamos una instancia de juego final sin jugadores reales
-  //     finalGame.endGame(
-  //       () => {},
-  //       () => {},
-  //       true, // Indicamos que es el último "partido" o mensaje final
-  //       this.tournamentWinner // Pasamos el ganador del torneo
-  //     );
-
-  //     return;
-  //   }
-
-  //   const [player1, player2] = this.matches.shift();
-  //   console.log(`Partido entre ${player1} y ${player2}`);
-
-  //   this.playMatch(player1, player2, (winner) => {
-  //     console.log(`Ganador entre ${player1} y ${player2} es ${winner}`);
-  //     this.winners.push(winner);
-
-  //     this.handleNextMatch(() => {
-  //       this.playNextMatch();
-  //     });
-  //   });
-  // }
-  //-----------------------------------------------
-
-  //-------------------------PRUEBA
   playMatch(player1, player2, onFinish) {
     const game = new Game("canvas", this.mode, player1, player2);
     game.init();
