@@ -80,6 +80,7 @@ export class Tournament {
         );
       }
     }
+    this.showRoundMatches(this.matches);
     this.playNextMatch();
   }
 
