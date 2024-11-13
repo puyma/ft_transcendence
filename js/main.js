@@ -79,7 +79,7 @@ function initPlay() {
         console.error("<main> element not found.");
         return;
       }
-      const players = ["mica", "marti", "ana"];
+      const players = ["mica", "clara", "ana", "marti", "ferran"];
       const tournament = new Tournament(players);
       tournament.startTournament();
     });

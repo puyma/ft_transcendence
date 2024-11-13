@@ -1,7 +1,9 @@
 //TODO: if 1 pl -> 1 vs com
 //      if 2 pl -> double play
 //      if >= 3 -> tournament all_vs_all / knockout
-import { Game, Message } from "./pong";
+import { DataTextureLoader } from "three";
+import { Game } from "./pong";
+import { MessageManager } from "./pong3d";
 
 export class Tournament {
   constructor(players) {
@@ -16,6 +18,7 @@ export class Tournament {
     this.players.forEach((player) => {
       this.winCounts[player] = 0;
     });
+    this.messageManager = new MessageManager();
   }
 
   setMode() {
@@ -78,48 +81,84 @@ export class Tournament {
         );
       }
     }
+    this.showRoundMatches(this.matches);
     this.playNextMatch();
   }
 
-  knockoutMatches() {
+  async knockoutMatches() {
     let round = [...this.players];
+    let previouslyAutoAdvanced = [];
+    let autoAdvancePlayer = null;
+
     while (round.length > 1) {
       let nextRound = [];
       this.matches = [];
 
       if (round.length % 2 !== 0) {
-        // si es impar hacer pasar a uno random a la sig ronda
-        const randomIndex = Math.floor(Math.random() * round.length);
-        const autoAdvancePlayer = round[randomIndex];
+        let randomIndex;
+
+        // check random player no haya pasado antes
+        do {
+          randomIndex = Math.floor(Math.random() * round.length);
+          autoAdvancePlayer = round[randomIndex];
+        } while (previouslyAutoAdvanced.includes(autoAdvancePlayer));
+
         nextRound.push(autoAdvancePlayer);
+        previouslyAutoAdvanced.push(autoAdvancePlayer);
         console.log(
           `El jugador ${autoAdvancePlayer} avanza automáticamente a la siguiente ronda.`
         );
-
-        // eliminar el que avanza directo
         round.splice(randomIndex, 1);
-      }
-      //prox matches
+      } else autoAdvancePlayer = null;
+
+      // partidos ronda actual
       for (let i = 0; i < round.length; i += 2) {
         if (round[i + 1]) {
           this.matches.push([round[i], round[i + 1]]);
         }
       }
+      await this.showRoundMatches(this.matches, autoAdvancePlayer);
 
+      // jugar cada partido
       for (let match of this.matches) {
-        this.playMatch(match[0], match[1], (winner) => {
-          console.log(`Ganador entre ${match[0]} y ${match[1]} es ${winner}`);
-          nextRound.push(winner);
+        const winner = await new Promise((resolve) => {
+          this.playMatch(match[0], match[1], resolve);
         });
+        // console.log(`Ganador entre ${match[0]} y ${match[1]} es ${winner}`);
+        await new Promise((resolve) => this.handleNextMatch(resolve));
+        nextRound.push(winner);
       }
-      // next round
-      this.matches = [];
       round = nextRound;
-      this.winners = [];
+      // espera antes de mostrar msj o seguir
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      if (round.length === 1) {
+        this.tournamentWinner = round[0];
+        this.finishTournament();
+        return;
+      }
     }
-    if (round.length === 1) {
-      console.log(`GANADOR TORNEO: ${round[0]}`);
+  }
+
+  async showRoundMatches(matches, autoAdvancePlayer = null) {
+    const matchList = matches
+      .map(([player1, player2]) => `${player1} vs ${player2}`)
+      .join("<br>");
+    let msg = `Round matches:<br>${matchList}`;
+    if (autoAdvancePlayer) {
+      msg += `<br><strong>Note: ${autoAdvancePlayer} advances automatically!</strong>`;
     }
+    msg += `<br><span style="font-size: 0.8em">Press any key to continue</span>`;
+    this.messageManager.showMessage(msg, "#FFFFFF");
+    // espera a tocar alguna tecla
+    await new Promise((resolve) => {
+      const handleKeyPress = (evt) => {
+        this.messageManager.hideMessage();
+        document.removeEventListener("keydown", handleKeyPress);
+        resolve();
+      };
+      document.addEventListener("keydown", handleKeyPress, { once: true });
+    });
   }
 
   determineWinner() {
@@ -136,6 +175,7 @@ export class Tournament {
     const handleKeyN = (evt) => {
       if (evt.code === "KeyN") {
         document.removeEventListener("keydown", handleKeyN);
+        this.messageManager.hideMessage();
         if (onNextMatch) onNextMatch();
       }
     };
@@ -145,44 +185,20 @@ export class Tournament {
   playMatch(player1, player2, onFinish) {
     const game = new Game("canvas", this.mode, player1, player2);
     game.init();
-
     const checkGameOver = setInterval(() => {
       if (game.isGameOver) {
-        clearInterval(checkGameOver); // Detener chequeo
+        clearInterval(checkGameOver);
         game.endGame((winner) => {
-          console.log(`Ganador entre ${player1} y ${player2} es ${winner}`);
           this.winCounts[winner]++;
           onFinish(winner);
-        }, this.handleNextMatch.bind(this));
+        });
       }
     }, 100);
   }
 
   playNextMatch() {
-    // if (this.matches.length === 0) {
-    //     console.log("Torneo terminado.");
-    //     if (this.mode === 'all_vs_all') {
-    //         this.determineWinner();
-    //     }
-    //     return ;
-    // }
     if (this.matches.length === 0) {
-      console.log("Torneo terminado.");
-
-      if (this.mode === "all_vs_all") {
-        this.determineWinner();
-      } else if (this.mode === "knockout" && this.winners.length > 0) {
-        this.tournamentWinner = this.winners[this.winners.length - 1];
-      }
-      console.log("WINNERRRRR: ", this.tournamentWinner);
-      const finalGame = new Game("canvas", this.mode, null, null); // chapuza para escribir el msg final
-      finalGame.endGame(
-        () => {},
-        () => {},
-        true, // true para el ultimo partido
-        this.tournamentWinner
-      );
-
+      this.finishTournament();
       return;
     }
 
@@ -190,66 +206,53 @@ export class Tournament {
     console.log(`Partido entre ${player1} y ${player2}`);
 
     this.playMatch(player1, player2, (winner) => {
-      console.log(`Ganador entre ${player1} y ${player2} es ${winner}`);
       this.winners.push(winner);
       this.handleNextMatch(() => {
         this.playNextMatch();
       });
     });
   }
+
+  finishTournament() {
+    if (this.mode === "all_vs_all") {
+      this.determineWinner();
+    }
+    console.log("WINNERRRRR: ", this.tournamentWinner);
+    this.messageManager.showMessage(
+      `Tournament winner: ${this.tournamentWinner}<br>Press 'R' to retry or 'Esc' to finish`,
+      "#FF0000"
+    ); // Ejemplo con color rojo
+    document.addEventListener("keydown", this.handleEndTournament.bind(this), {
+      once: true,
+    });
+  }
+
+  handleEndTournament(event) {
+    if (event.key === "R" || event.key === "r") {
+      this.retryTournament();
+    } else if (event.key === "Escape") {
+      this.loadHomePage();
+    }
+  }
+
+  retryTournament() {
+    document.removeEventListener("keydown", this.handleEndTournament);
+    this.matches = [];
+    this.rounds = [];
+    this.tournamentWinner = null;
+    this.startTournament();
+  }
+
+  loadHomePage() {
+    document.removeEventListener("keydown", this.handleEndTournament);
+    fetch("/")
+      .then((response) => response.text())
+      .then((html) => {
+        document.getElementById("main").innerHTML = html;
+        history.pushState({}, "", "/");
+      })
+      .catch((error) =>
+        console.error("Error al cargar la página de inicio:", error)
+      );
+  }
 }
-
-//PROBANDO
-// playMatch(player1, player2, onFinish) {
-//     const game = new Game("canvas", this.mode, player1, player2);
-//     game.init();
-
-//     const checkGameOver = setInterval(() => {
-//         if (game.isGameOver) {
-//             clearInterval(checkGameOver);
-//             game.endGame((winner) => {
-//                 console.log(`Ganador entre ${player1} y ${player2} es ${winner}`);
-//                 this.winCounts[winner]++;
-//                 onFinish(winner);
-//             });
-//         }
-//     }, 100);
-// }
-
-// playNextMatch() {
-//     if (this.matches.length === 0) {
-//         this.finishTournament();
-//         return;
-//     }
-
-//     const [player1, player2] = this.matches.shift();
-//     console.log(`Partido entre ${player1} y ${player2}`);
-
-//     this.playMatch(player1, player2, (winner) => {
-//         this.winners.push(winner);
-//         this.handleNextMatch(() => {
-//             this.playNextMatch();
-//         });
-//     });
-// }
-
-// // Método para terminar el torneo y mostrar el mensaje final
-// finishTournament() {
-//     if (this.mode === "all_vs_all") {
-//         this.determineWinner();
-//     } else if (this.mode === "knockout" && this.winners.length > 0) {
-//         this.tournamentWinner = this.winners[this.winners.length - 1];
-//     }
-
-//     console.log("WINNERRRRR: ", this.tournamentWinner);
-//     this.showFinalMessage();
-// }
-
-// // Muestra el mensaje final del ganador del torneo
-// showFinalMessage() {
-//     const message = new Message(this.ctx, this.dpr, this.scaleFactor); 
-//     message.showMessage(`Tournament winner: ${this.tournamentWinner}`);
-// }
-
-
-// }
