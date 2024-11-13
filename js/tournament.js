@@ -76,9 +76,9 @@ export class Tournament {
     for (let i = 0; i < this.players.length; i++) {
       for (let j = i + 1; j < this.players.length; j++) {
         this.matches.push([this.players[i], this.players[j]]);
-        console.log(
-          `Partido programado: ${this.players[i]} vs ${this.players[j]}`
-        );
+        // console.log(
+        //   `Partido programado: ${this.players[i]} vs ${this.players[j]}`
+        // );
       }
     }
     this.showRoundMatches(this.matches);
@@ -105,9 +105,9 @@ export class Tournament {
 
         nextRound.push(autoAdvancePlayer);
         previouslyAutoAdvanced.push(autoAdvancePlayer);
-        console.log(
-          `El jugador ${autoAdvancePlayer} avanza automáticamente a la siguiente ronda.`
-        );
+        // console.log(
+        //   `${autoAdvancePlayer} avanza automaticamente a prox ronda.`
+        // );
         round.splice(randomIndex, 1);
       } else autoAdvancePlayer = null;
 
@@ -164,9 +164,6 @@ export class Tournament {
   determineWinner() {
     const winner = Object.keys(this.winCounts).reduce((a, b) =>
       this.winCounts[a] > this.winCounts[b] ? a : b
-    );
-    console.log(
-      `El ganador del torneo por cantidad de partidos ganados es: ${winner}`
     );
     this.tournamentWinner = winner;
   }

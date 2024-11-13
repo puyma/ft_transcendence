@@ -369,7 +369,7 @@ export class Game {
 
   endGame(onFinish, onNextMatch) {
     this.isGameOver = true;
-    let winner = this.user.score >= 2 ? this.player1 : this.player2;
+    let winner = this.user.score >= 1 ? this.player1 : this.player2;
 
     if (this.gameMode === "solo_play" || this.gameMode === "double_play") {
       this.message.showMessage(`${winner} Wins! Press 'R' to Restart`);
