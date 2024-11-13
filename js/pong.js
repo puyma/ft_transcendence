@@ -422,7 +422,6 @@ export class Game {
   }
 
   loadHomePage() {
-    document.removeEventListener("keydown", this.handleEndTournament);
     fetch("/")
       .then((response) => response.text())
       .then((html) => {

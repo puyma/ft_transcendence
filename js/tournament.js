@@ -218,7 +218,7 @@ export class Tournament {
     this.messageManager.showMessage(
       `Tournament winner: ${this.tournamentWinner}<br>Press 'R' to retry or 'Esc' to finish`,
       "#FF0000"
-    ); // Ejemplo con color rojo
+    ); 
     document.addEventListener("keydown", this.handleEndTournament.bind(this), {
       once: true,
     });
