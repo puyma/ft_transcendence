@@ -2,30 +2,53 @@ import * as THREE from 'three';
 
 let numberOfPlayers = 1;  // Supongamos que se obtiene dinámicamente de la lógica del juego
 
-class MessageManager {
+export class MessageManager {
     constructor() {
         this.messageElement = null; // Elemento del mensaje en el DOM
     }
 
+    // createMessageElement() {
+    //     // Crear el contenedor del mensaje
+    //     this.messageElement = document.createElement('div');
+    //     this.messageElement.id = "pong-message";
+    //     this.messageElement.style.position = 'absolute';
+    //     this.messageElement.style.top = '20%';
+    //     this.messageElement.style.left = '50%';
+    //     this.messageElement.style.transform = 'translate(-50%, -50%)';
+    //     this.messageElement.style.fontSize = '24px';
+    //     this.messageElement.style.color = '#0000FF';
+    //     document.getElementById('main').insertAdjacentElement('afterbegin', this.messageElement);
+    // }
+    
     createMessageElement() {
-        // Crear el contenedor del mensaje
         this.messageElement = document.createElement('div');
         this.messageElement.id = "pong-message";
+        
         this.messageElement.style.position = 'absolute';
-        this.messageElement.style.top = '20%';
-        this.messageElement.style.left = '50%';
-        this.messageElement.style.transform = 'translate(-50%, -50%)';
-        this.messageElement.style.fontSize = '24px';
-        this.messageElement.style.color = '#0000FF';
+        this.messageElement.style.top = '0'; 
+        this.messageElement.style.left = '0'; 
+        this.messageElement.style.width = '100vw'; 
+        this.messageElement.style.height = '100vh'; 
+        this.messageElement.style.backgroundColor = 'black'; 
+        this.messageElement.style.color = 'white'; 
+        this.messageElement.style.fontSize = '24px'; 
+        this.messageElement.style.display = 'flex'; 
+        this.messageElement.style.alignItems = 'center'; 
+        this.messageElement.style.flexDirection = 'column';
+        this.messageElement.style.justifyContent = 'center'; 
+        this.messageElement.style.zIndex = '1000'; 
+        this.messageElement.style.textAlign = 'center'; 
+        
         document.getElementById('main').insertAdjacentElement('afterbegin', this.messageElement);
     }
+    
 
     showMessage(text, color = '#0000FF') {
         if (!this.messageElement) {
             this.createMessageElement(); // Crear el elemento si no existe
         }
         this.messageElement.style.color = color;
-        this.messageElement.style.display = '';
+        this.messageElement.style.display = 'flex';
         this.messageElement.innerHTML = text;
     }
 

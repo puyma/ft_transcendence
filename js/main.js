@@ -59,35 +59,36 @@ function event_handler_form(event) {
   // update history
   return;
 }
+
 function initPlay() {
-  // Fetch player aliases for the tournament from the JSON script, if available
   const tournamentAliases = document.getElementById("playerData")
     ? JSON.parse(document.getElementById("playerData").textContent)
     : [];
 
-  // Get all game mode buttons
   const gameButtons = document.querySelectorAll("[id$='Play']");
 
   gameButtons.forEach(button => {
     button.addEventListener("click", (event) => {
       event.preventDefault();
 
-      // Get the selected mode and players from the data attributes
-      const mode = button.getAttribute("data-mode");
+      let mode = button.getAttribute("data-mode");
       let players;
 
       if (mode === "tournament") {
-        // Use the JSON data for tournament mode
         players = tournamentAliases;
-      } else if (mode === "solo") {
-        // Use the data-players attribute for solo mode
+        if (players.length > 3) {
+          mode = "knockout";
+        }
+        else {
+          mode = "all_vs_all";
+        }
+      } else if (mode === "solo_play") {
         players = button.getAttribute("data-players").split(",");
       } else if (mode == "double_play")
         players = button.getAttribute('data-players').split(",");
 
       console.log(`Mode: ${mode}, Players:`, players);
-
-      // Create and set up the canvas
+      // if (mode == 2d)
       let canvas = document.createElement("canvas");
       canvas.id = "canvas";
       canvas.style.width = `${window.innerWidth}px`;
@@ -102,58 +103,11 @@ function initPlay() {
         console.error("<main> element not found.");
         return;
       }
-
-      // Initialize the game do it better this main !!
-      const tournament = new Tournament(players);
+      const tournament = new Tournament(players, "2d", mode);
       tournament.startTournament();
     });
   });
 }
-
-
-document.addEventListener("DOMContentLoaded", initPlay);
-
-
-// function initPlay() {
-//   const startGame = document.getElementById("playGame");
-//   // get players dinamically form tournament page WIP
-//   // const players = JSON.parse(document.getElementById('playerData').textContent);
-//   // console.log(players);
-//   if (startGame) {
-//     startGame.addEventListener("click", (event) => {
-//       event.preventDefault();
-//       let canvas = document.createElement("canvas");
-//       canvas.id = "canvas";
-//       canvas.style.width = `${window.innerWidth}px`;
-//       canvas.style.height = `${window.innerHeight}px`;
-//       canvas.width = window.innerWidth * window.devicePixelRatio;
-//       canvas.height = window.innerHeight * window.devicePixelRatio;
-
-//       const main = document.querySelector("main");
-//       if (main) {
-//         main.replaceChildren(canvas);
-//       } else {
-//         console.error("<main> element not found.");
-//         return;
-//       }
-//       const players = ["mica", "clara", "ana"];
-//       const tournament = new Tournament(players);
-//       tournament.startTournament();
-//     });
-//   }
-// }
-// const tournamentMode = document.getElementById('tournamentMode');
-// if (tournamentMode) {
-// 	tournamentMode.addEventListener('click', (event) => {
-// 		event.preventDefault();
-// 		const players = ['Player 1', 'Player 2', 'Player 3', 'Player 4', 'Player 5'];
-// 		const tournament = new Tournament(players);
-// 		tournament.startTournament();
-// 	});
-// }
-
-// __main__
-// Execute once DOM is loaded
 
 function main() {
   router = window.router = new Router();
