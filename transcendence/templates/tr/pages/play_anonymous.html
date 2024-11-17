@@ -1,0 +1,22 @@
+<!-- Vertical Line -->
+<div class="vertical"></div>
+
+<!-- Main Container with Dark Background and Centered Content -->
+<div class="container d-flex justify-content-center align-items-center vh-100 position-relative">
+  <div class="row justify-content-center align-items-center flex-nowrap" style="z-index: 3; position: relative; background-color: rgb(0, 0, 0);">
+    <div class="d-flex flex-column align-items-center my-4">
+      
+      <!-- Header -->
+      <h1 class="text-white display-3 mb-4">Hello Anonymous</h1>
+      
+      <!-- Play Button with Font Awesome Icon -->
+      <a href="{% url 'play' %}" class="text-decoration-none"
+        id="soloPlay" 
+        data-mode="solo" 
+        data-players="Anonymous,Computer"
+        data-ajax="true">
+        <i class="fas fa-play-circle text-white mt-3" style="font-size: 72px;"></i>
+      </a>
+    </div>
+  </div>
+</div>

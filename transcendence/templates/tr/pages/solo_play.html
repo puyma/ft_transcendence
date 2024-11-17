@@ -5,8 +5,10 @@
       <div class="d-flex flex-column align-items-center my-4">
         <h1 class="text-white display-3">Ready to play?</h1>
         <h2 class="text-white">{{ request.user.username }} vs Computer</h2>
-        <a href="{% url 'pong' %}" class="text-decoration-none">
-          <i class="fas fa-play-circle text-white mt-3" style="font-size: 72px;"></i>
+          <i class="fas fa-play-circle text-white mt-3" style="font-size: 72px;" class="text-decoration-none"
+          id="soloPlay" 
+          data-mode="solo" 
+          data-players="{{ request.user.username }},Computer"></i>
         </a>  
       </div>
     </div>
@@ -14,8 +16,7 @@
 {% else %}
 <div class="position-absolute top-50 start-50 translate-middle text-center">
   <div class="d-grid gap-3">
-    <a 
-    href="{% url 'login' %}?next={% url 'solo_play' %}" class="btn btn-light btn-lg mx-3"  role="button">LOG IN </a>
+    <a href="{% url 'login' %}?next={% url 'solo_play' %}" class="btn btn-light btn-lg mx-3"  role="button">LOG IN </a>
     <a
           data-ajax=true
           href="{% url 'play' %}"
