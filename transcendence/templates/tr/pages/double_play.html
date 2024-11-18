@@ -88,24 +88,22 @@ function addEventListeners() {
     playAnonymousBtn.addEventListener('click', function() {
         // Add query parameter for Player 1 without affecting Player 2's state
         const urlParams = new URLSearchParams(window.location.search);
-        urlParams.set('anonymous', 'true'); // Set anonymous flag for Player 1
-        window.history.pushState({}, '', `${location.pathname}?${urlParams}`); // Update the URL with the new parameter
-        window.location.reload(); // Force a page reload
+        urlParams.set('anonymous', 'true');
+        window.history.pushState({}, '', `${location.pathname}?${urlParams}`);
+        window.location.reload();
     });
   }
 
   if (playAnonymousBtn2) {
     playAnonymousBtn2.addEventListener('click', function() {
-        // Add query parameter for Player 2 without affecting Player 1's state
         const urlParams = new URLSearchParams(window.location.search);
-        urlParams.set('anonymous2', 'true'); // Set anonymous flag for Player 2
-        window.history.pushState({}, '', `${location.pathname}?${urlParams}`); // Update the URL with the new parameter
-        window.location.reload(); // Force a page reload
+        urlParams.set('anonymous2', 'true');
+        window.history.pushState({}, '', `${location.pathname}?${urlParams}`);
+        window.location.reload();
     });
   }
 }
 
-// Function to update the page state based on URL parameters
 function updatePageState() {
     // Check for "anonymous" and "anonymous2" parameters in the URL
     const urlParams = new URLSearchParams(window.location.search);

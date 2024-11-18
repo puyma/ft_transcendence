@@ -377,12 +377,11 @@ class FriendsView(generic.TemplateView):
         return redirect('friends')
 
 def double_play_view(request):
-    # Check if Player 1 is logged in
     is_player1_anonymous = request.GET.get('anonymous') == 'true'
     is_player2_anonymous = request.GET.get('anonymous2') == 'true'
     
     player1 = request.user if request.user.is_authenticated else None
-    player2 = None  # Initialize player2 to None at the start
+    player2 = None
     context = {
         "title": "P4ngP2ong",
         "lang": "en",
@@ -390,9 +389,8 @@ def double_play_view(request):
         "page": 'tr/pages/double_play.html',
         "is_anonymous": is_player1_anonymous,
         "is_player2_anonymous": is_player2_anonymous,
-        "player1": player1,  # Include player1 in the context
+        "player1": player1,
         "player2": player2,
-        # "player2_verified": None,  # Default to None
     }
     if is_player1_anonymous:
         player1 = "guest"
@@ -400,10 +398,7 @@ def double_play_view(request):
         player2 = "guest2"
     context['player1'] = player1
     context['player2'] = player2
-    
-    print("player1 begininng is: " ,player1)
-    print("player2 begiginig is: " , player2)
-    # Handle Player 2 authentication if they're not anonymous
+
     if request.method == 'POST' and not is_player2_anonymous:
         player2_username = request.POST.get('player2_username', '').strip()
         player2_password = request.POST.get('player2_password', '').strip()
@@ -414,11 +409,7 @@ def double_play_view(request):
                 user = authenticate(request, username=player2_username, password=player2_password)
                 if user is not None:
                     messages.success(request, f'Player 2 verified: {player2_username}. Ready to play!')
-                    context['player2'] = player2.username # Add player2 to context
-                    print("player1 is: " ,player1)
-                    print("player2 is: " , player2)
-                    # context['player2_verified'] = player2.username  # Set player2_verified in context
-                    # return render(request, 'tr/base.html', context)  # Pass context to render
+                    context['player2'] = player2.username
                 else:
                     messages.error(request, 'Incorrect password. Please try again.')
             except User.DoesNotExist:
@@ -426,16 +417,7 @@ def double_play_view(request):
 
 
     if context['player1'] and context['player2']:
-        print("imhereeeeeeeeee")
-        context['play_enabled'] = True  # Enable play button
-    else:
-        print("elseeeeee e e ee ")
-        
-        context['play_enabled'] = False  # Keep play button disabled
-
-    print("player1 is final: " ,player1)
-    print("player2 is final: " , player2)
-    print("player1 anonymous is final: " ,is_player1_anonymous)
-    print("player2 anonymous is final: " , is_player2_anonymous)
-    # Render the page with updated context
+        context['play_enabled'] = True
+    else:        
+        context['play_enabled'] = False
     return render(request, 'tr/base.html', context)
