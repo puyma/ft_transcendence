@@ -10,6 +10,7 @@ export class Tournament {
     this.players = players;
     this.matches = [];
     this.winners = [];
+    this.gameType = gameType;
     this.mode = mode;
     this.winCounts = {};
     this.tournamentWinner = null;
@@ -45,7 +46,7 @@ export class Tournament {
   soloPlayGame() {
     console.log(this.mode);
     // if gameType == 2d
-    const game = new Game("canvas", this.mode, this.players[0], "Computer");
+    const game = new Game("canvas", this.mode, this.players[0], this.players[1]);
     game.init();
   }
 

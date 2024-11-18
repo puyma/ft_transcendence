@@ -66,12 +66,13 @@ function initPlay() {
     : [];
 
   const gameButtons = document.querySelectorAll("[id$='Play']");
-
+  console.log("holaaaaaaaa");
   gameButtons.forEach(button => {
     button.addEventListener("click", (event) => {
       event.preventDefault();
 
       let mode = button.getAttribute("data-mode");
+      let gameType = button.getAttribute("data-type"); // "2d" or "3d"
       let players;
 
       if (mode === "tournament") {
@@ -87,8 +88,8 @@ function initPlay() {
       } else if (mode == "double_play")
         players = button.getAttribute('data-players').split(",");
 
-      console.log(`Mode: ${mode}, Players:`, players);
-      // if (mode == 2d)
+      console.log(`Mode: ${mode}, Game Type: ${gameType}, Players:`, players);
+
       let canvas = document.createElement("canvas");
       canvas.id = "canvas";
       canvas.style.width = `${window.innerWidth}px`;
