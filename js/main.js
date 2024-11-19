@@ -64,13 +64,10 @@ function initPlay() {
   const tournamentAliases = document.getElementById("playerData")
     ? JSON.parse(document.getElementById("playerData").textContent)
     : [];
-
   const gameButtons = document.querySelectorAll("[id$='Play']");
-  console.log("holaaaaaaaa");
   gameButtons.forEach(button => {
     button.addEventListener("click", (event) => {
       event.preventDefault();
-
       let mode = button.getAttribute("data-mode");
       let gameType = button.getAttribute("data-type"); // "2d" or "3d"
       let players;

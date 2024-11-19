@@ -43,15 +43,12 @@ class Message {
 }
 
 export class Game {
-  constructor(canvasId, mode, play1, play2) {
+  constructor(canvasId, mode, player1, player2) {
     this.canvas = document.getElementById(canvasId);
     this.ctx = this.canvas ? this.canvas.getContext("2d") : null;
 
     this.dpr = window.devicePixelRatio || 1;
     this.gameMode = mode;
-    this.player1 = play1;
-    if (this.gameMode === "solo_play") this.player2 = "Computer";
-    else this.player2 = play2;
     this.scaleFactor = 1.5;
     this.user = this.createPaddle(
       0,
@@ -68,6 +65,8 @@ export class Game {
       this.canvas.height / 2 / this.dpr,
       "WHITE"
     );
+    this.user.name = player1;
+    this.com.name = player2;
 
     this.net = {
       x: this.canvas.width / 2 / this.dpr - 1,
@@ -126,7 +125,7 @@ export class Game {
     this.canvas.focus();
 
     this.message.showMessage(
-      `Next Match: ${this.player1} vs ${this.player2}, Press Space to start`
+      `Next Match: ${this.user.name} vs ${this.com.name}, Press Space to start`
     );
     document.addEventListener("keydown", (evt) => {
       if (evt.code === "Space" && !this.gameStarted) {
@@ -369,13 +368,60 @@ export class Game {
 
   endGame(onFinish, onNextMatch) {
     this.isGameOver = true;
-    let winner = this.user.score >= 1 ? this.player1 : this.player2;
+    let winner = this.user.score >= this.com.score ? this.user : this.com;
+    let loser = this.user.score < this.com.score ? this.user : this.com;
+
+    console.log("Winner: ", winner.name, "Points: ", winner.score);
+    console.log("Loser: ", loser.name, "Points: ", loser.score);
 
     if (this.gameMode === "solo_play" || this.gameMode === "double_play") {
-      this.message.showMessage(`${winner} Wins! Press 'R' to Restart or 'Esc' to finish`);
+      this.message.showMessage(`${winner.name} Wins! Press 'R' to Restart or 'Esc' to finish`);
       // document.addEventListener("keydown", (evt) => this.resetGame(evt), {
       //   once: true,
       // });
+      // Send match data to backend
+      const csrfToken = getCSRFToken(); // Ensure this function correctly fetches the CSRF token
+
+      fetch('/solo_play/save_match/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrfToken, // CSRF token is included in the header
+        },
+        body: JSON.stringify({
+          winner: winner.name,
+          loser: loser.name,
+          winner_points: winner.score,
+          loser_points: loser.score,
+        })
+      })
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            return response.json().then(data => {
+              throw new Error(data.message || 'An error occurred');
+            });
+          }
+        })
+        .then(data => {
+          if (data.status === 'success') {
+            console.log('Match saved successfully:', data);
+            // Perform any actions that should happen after a successful save
+          } else {
+            console.error('Error saving match:', data.message);
+            // Handle the error (user might not be logged in, etc.)
+          }
+        })
+        .catch(error => {
+          if (error.message === 'User not authenticated') {
+            console.log('User is not logged in, match not saved');
+            // Optionally: Inform the user to log in or redirect to login
+          } else {
+            console.error('Unexpected error:', error);
+          }
+        });
+
       const handleKeyPress = (evt) => {
         if (evt.key === 'R' || evt.key === 'r') {
           this.resetGame(evt);  // Reiniciar el juego
@@ -383,12 +429,12 @@ export class Game {
           this.loadHomePage();  // Regresar a la página de inicio
         }
       };
-    
+
       document.addEventListener("keydown", handleKeyPress, { once: true });
     }
 
     if (this.gameMode === "all_vs_all" || this.gameMode === "knockout") {
-      this.message.showMessage(`${winner} Wins! Press 'N' for Next Match`);
+      this.message.showMessage(`${winner.name} Wins! Press 'N' for Next Match`);
       if (onNextMatch) onNextMatch();
     }
 
@@ -433,3 +479,14 @@ export class Game {
       );
   }
 }
+
+
+function getCSRFToken() {
+  const csrfToken = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('csrftoken='))
+    ?.split('=')[1];
+  return csrfToken || ''; // Return the token or empty string if not found
+}
+
+const csrfToken = getCSRFToken();

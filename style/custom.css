@@ -28,12 +28,25 @@ main {
     letter-spacing: var(--bs-letter-spacing);
 }
 
+canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    image-rendering: pixelated;
+    outline: none;
+    overflow: hidden;
+}
+
 .vertical {
     border-left: 6px dashed rgb(255, 255, 255);
     height: 100%;
     position: absolute;
     left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+    z-index: 2;
 }
+
 
 .table {
     width: 100%;
@@ -59,6 +72,11 @@ main {
     }
 }
 
+.scrollable {
+    height: 300px;
+    overflow: scroll;
+}
+
 .btn-custom {
     background-color: transparent;
     border: 2px solid white;
@@ -71,4 +89,14 @@ main {
 .btn-custom:hover {
     background-color: white;
     color: black;
+}
+
+.nav-link {
+    font-size: 1.1rem;
+    transition: background-color 0.3s ease;
+}
+
+.nav-link:hover {
+    background-color: #495057;
+    text-decoration: none;
 }

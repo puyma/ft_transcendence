@@ -35,9 +35,6 @@ class Profile(models.Model):
     def set_offline(self):
         self.is_online = False
         self.save()
-    
-    def get_online_friends(self):
-        return self.get_friends().filter(is_online=True)
 
     def get_friends_num(self):
         return self.get_friends().count()

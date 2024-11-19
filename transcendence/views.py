@@ -13,13 +13,14 @@ from . import forms
 from .providers import fortytwo
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
-from django.contrib.auth.models import User
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
 from .models import Profile, Relationship
 from .models import Match
 from django.contrib.auth import authenticate
-
+from django.http import JsonResponse
+import json
+from django.contrib.auth.models import User
 
 
 # https://django-advanced-training.readthedocs.io/en/latest/features/class-based-views/
@@ -248,14 +249,6 @@ class PlayView ( generic.TemplateView ):
 		context['page'] = 'tr/pages/tournament.html'
 		return ( context )
 
-class GameView ( generic.TemplateView ):
-	template_name = 'tr/pages/pong.html'
-	
-	def get_context_data ( self, **kwargs ):
-		context = super().get_context_data( **kwargs )
-		context['page'] = 'tr/pages/pong.html'
-		return ( context )
-
 def solo_play_view ( request ):
 
 	context = {
@@ -275,14 +268,6 @@ def play_view ( request ):
     }
     return ( render ( request, 'tr/base.html', context ) )
 
-def pong_view ( request ):
-    context = {
-		"title":"P4ngP2ong",
-		"lang":"en",
-        "username": "clara",
-		'page': "tr/pages/pong.html",
-    }
-    return ( render( request, 'tr/base.html', context ) )
 
 class StatsView(generic.TemplateView):
     template_name = "tr/base.html"
@@ -318,6 +303,8 @@ class FriendsView(generic.TemplateView):
             search_results = Profile.objects.filter(
                 Q(user__username__icontains=search_query) & 
                 ~Q(user=self.request.user)
+                & ~Q(user__username__in=["Computer", "Guest"])  # Exclude restricted usernames
+
             )
         else:
             search_results = None
@@ -330,16 +317,15 @@ class FriendsView(generic.TemplateView):
             receiver=user_profile, status='send'
         ).select_related('sender')
         
-        friends_list = user_profile.get_friends()
-
         sent_requests_usernames = [req.receiver.user.username for req in friend_requests_sent]
+        friends_usernames = [friend.user.username for friend in user_profile.get_friends()]
 
+        context["friends_usernames"] = friends_usernames
         context["profile"] = user_profile
         context["search_results"] = search_results
         context["friend_requests_sent"] = friend_requests_sent
         context["friend_requests_received"] = friend_requests_received
         context["sent_requests_usernames"] = sent_requests_usernames
-        context["friends_list"] = friends_list
         return context
 	
     def post(self, request, *args, **kwargs):
@@ -421,3 +407,48 @@ def double_play_view(request):
     else:        
         context['play_enabled'] = False
     return render(request, 'tr/base.html', context)
+
+# store varibales in the games database
+def save_match(request):
+    if not request.user.is_authenticated:
+        print("User not authenticated")
+        return JsonResponse({'status': 'success', 'message': 'User not authenticated, match not saved'}, status=200)
+    
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            print("Request body received:", request.body)
+            print("Parsed JSON data:", data)
+
+            winner_username = data.get('winner')
+            loser_username = data.get('loser')
+            winner_points = data.get('winner_points')
+            loser_points = data.get('loser_points')
+            
+            if winner_username == "guest2":
+                winner_username = "Guest"
+            if loser_username == "guest2":
+                loser_username = "Guest"
+            if not winner_username or not loser_username or winner_points is None or loser_points is None:
+                return JsonResponse({'status': 'error', 'message': 'Missing data'}, status=400)
+
+            try:
+                winner = User.objects.get(username=winner_username)
+                loser = User.objects.get(username=loser_username)
+            except User.DoesNotExist:
+                return JsonResponse({'status': 'error', 'message': 'User not found'}, status=404)
+
+            match = Match.objects.create(
+                winner_username=winner,
+                loser_username=loser,
+                winner_points=winner_points,
+                loser_points=loser_points
+            )
+            return JsonResponse({'status': 'success', 'match_id': match.id})
+
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid JSON format'}, status=400)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)

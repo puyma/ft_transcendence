@@ -110,14 +110,6 @@ urlpatterns = [
 		views.play_view,
 		name='play',
 		),
-    path(
-		'solo_play/play/pong/',
-		views.pong_view,
-		name='pong',
-		),
-    path(
-		'pong/play/solo', views.GameView.as_view(),
-		),
 	path(
 		'oauth/callback/', fortytwo.do_provider_login,
 		),
@@ -130,6 +122,8 @@ urlpatterns = [
 	path(
 		'pong/users/<str:username>/', views.HomepageView.as_view(),
 		),
+    path('solo_play/save_match/', views.save_match, name='save_match'),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # handle404...
