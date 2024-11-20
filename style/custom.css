@@ -28,6 +28,7 @@ body {
 
 header, main, footer {
 	display: flex;
+	flex-direction: column;
 }
 
 main {
@@ -41,6 +42,11 @@ main {
 h1 {
     font-weight: 600;
     letter-spacing: var(--bs-letter-spacing);
+}
+
+.avatar {
+	object-fit: cover;
+	object-position: top;
 }
 
 .vertical {

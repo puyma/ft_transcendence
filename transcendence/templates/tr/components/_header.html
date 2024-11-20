@@ -1,51 +1,87 @@
 {% load static %}
 
-<header class="p-3 border-bottom">
+<header class="p-4">
 
-  <div class="container">
-    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-		<!--
-      <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 link-body-emphasis text-decoration-none">
-        <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap"><use xlink:href="#bootstrap"/></svg>
-      </a>
-		-->
-
-      <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-		  <li><a href="/" data-ajax="true" class="nav-link px-2
-					{% if active_nav == "home" %} active{% endif %}"
-						  {% if active_nav == "home" %} aria-current='page'{% endif %}>
-				  Home
-			  </a>
-		  </li>
-      </ul>
-
-      {% if request.user.is_authenticated %}
-
-      <div class="dropdown text-end">
-        <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-			{% if user.profile.avatar %}
-			  <img src="/media/{{ user.profile.avatar }}" alt="{{ user.username }}" width="32" height="32" class="rounded-circle">
-			{% else %}
-			{{ user.username }}
-			{% endif %}
-        </a>
-        <ul class="dropdown-menu text-small">
-          <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
-          <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item" href="{% url 'logout' %}">Sign out</a></li>
-        </ul>
+  <div class="container text-center">
+    <div class="row align-items-center">
+      <div class="col"></div>
+      <div class="col col-8">
+        <a class="text-decoration-none text-reset display-1" 
+           data-ajax="true" 
+           href="/">PONG GAME</a>
       </div>
+      <div class="col">
 
-      {% else %}
 
-      <div class="text-end">
-        <a href="{% url 'login' %}" class="btn btn-outline-light me-2" role="button" data-ajax="true">Login</a>
-        <a href="{% url 'signup' %}" class="btn btn-outline-warning" role="button" data-ajax="true">Sign-up</a>
-        <!-- <button type="button" class="btn btn-warning">Sign-up</button> -->
+        {% if request.user.is_authenticated %}
+
+        <div class="btn-group text-end">
+          <a href="#" 
+             class="d-block link-body-emphasis text-decoration-none dropdown-toggle" 
+             data-bs-toggle="dropdown" 
+             aria-expanded="false">
+            {% if user.profile.avatar %}
+            <img src="/media/{{ user.profile.avatar }}" 
+                 alt="{{ user.username }}" 
+                 width="32" 
+                 height="32" 
+                 class="rounded-circle avatar">
+            {% else %}
+            {{ user.username }}
+            {% endif %}
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end text-small">
+            <li>
+              <a class="dropdown-item" 
+                 data-ajax="true" 
+                 href="{% url 'profile' %}">
+                Profile
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li>
+              <a class="dropdown-item" 
+                 data-ajax="true" 
+                 href="{% url 'logout' %}">
+                Sign out
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        {% else %}
+
+        <div class="btn-group text-end">
+          <a href="#"
+             class="d-block link-body-emphasis text-decoration-none"
+             data-bs-toggle="dropdown"
+             aria-expanded="false">
+            <i class="fas fa-circle-user"></i>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end text-small">
+            <li>
+              <a class="dropdown-item" 
+                 data-ajax="true" 
+                 href="{% url 'login' %}">
+                Login
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" 
+                 data-ajax="true" 
+                 href="{% url 'signup' %}">
+                Signup
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        {% endif %}
+
       </div>
-
-      {% endif %}
-
     </div>
   </div>
+
 </header>
