@@ -1,6 +1,6 @@
 {% if request.user.is_authenticated %}
   <div class="vertical"></div>
-  <div class="container d-flex justify-content-center align-items-center vh-100 position-relative">
+  <div class="container d-flex justify-content-center align-items-center position-relative">
     <div class="row justify-content-center align-items-center flex-nowrap" style="z-index: 3; position: relative; background-color: rgb(0, 0, 0);">
       <div class="d-flex flex-column align-items-center my-4">
         <h1 class="text-white display-3">Ready to play?</h1>
@@ -32,7 +32,7 @@
   </div>
 
   {% else %}
-  <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+  <div class="container d-flex justify-content-center align-items-center">
     <div class="row justify-content-center align-items-center w-100">
       <div class="col-4">
         <div class="d-flex flex-column align-items-center text-center">
