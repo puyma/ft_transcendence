@@ -18,6 +18,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
 from .models import Profile, Relationship
 from .models import Match
+from django.contrib.auth import authenticate
+
 
 
 # https://django-advanced-training.readthedocs.io/en/latest/features/class-based-views/
@@ -190,7 +192,14 @@ class TournamentView(generic.TemplateView):
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
-        num_participants = int(request.POST.get('num_participants'))
+        num_participants = int(request.POST.get('num_participants', 0))
+
+        # Backend validation
+        if num_participants < 3:
+            messages.error(request, "The number of participants must be at least 3.")
+            return redirect('tournament')  # Reload the current page
+
+        # If validation passes, save to session and redirect
         request.session['num_participants'] = num_participants
         return redirect('tournament_register')
 
@@ -247,15 +256,6 @@ class GameView ( generic.TemplateView ):
 		context['page'] = 'tr/pages/pong.html'
 		return ( context )
 
-def double_play_view ( request ):
-    context = {
-		"title":"P4ngP2ong",
-		"lang":"en",
-        "username": "clara",
-		'page': 'tr/pages/double_play.html',
-    }
-    return ( render( request, 'tr/base.html', context) )
-
 def solo_play_view ( request ):
 
 	context = {
@@ -271,7 +271,7 @@ def play_view ( request ):
 		"title":"P4ngP2ong",
 		"lang":"en",
         "username": "clara",
-		'page': 'tr/pages/play.html',
+		'page': 'tr/pages/play_anonymous.html',
     }
     return ( render ( request, 'tr/base.html', context ) )
 
@@ -375,3 +375,49 @@ class FriendsView(generic.TemplateView):
             messages.success(request, "Friend removed successfully.")
 
         return redirect('friends')
+
+def double_play_view(request):
+    is_player1_anonymous = request.GET.get('anonymous') == 'true'
+    is_player2_anonymous = request.GET.get('anonymous2') == 'true'
+    
+    player1 = request.user if request.user.is_authenticated else None
+    player2 = None
+    context = {
+        "title": "P4ngP2ong",
+        "lang": "en",
+        "username": "clara",
+        "page": 'tr/pages/double_play.html',
+        "is_anonymous": is_player1_anonymous,
+        "is_player2_anonymous": is_player2_anonymous,
+        "player1": player1,
+        "player2": player2,
+    }
+    if is_player1_anonymous:
+        player1 = "guest"
+    if is_player2_anonymous:
+        player2 = "guest2"
+    context['player1'] = player1
+    context['player2'] = player2
+
+    if request.method == 'POST' and not is_player2_anonymous:
+        player2_username = request.POST.get('player2_username', '').strip()
+        player2_password = request.POST.get('player2_password', '').strip()
+
+        if player2_username and player2_password:
+            try:
+                player2 = User.objects.get(username=player2_username)
+                user = authenticate(request, username=player2_username, password=player2_password)
+                if user is not None:
+                    messages.success(request, f'Player 2 verified: {player2_username}. Ready to play!')
+                    context['player2'] = player2.username
+                else:
+                    messages.error(request, 'Incorrect password. Please try again.')
+            except User.DoesNotExist:
+                messages.error(request, 'User not found. Please try again.')
+
+
+    if context['player1'] and context['player2']:
+        context['play_enabled'] = True
+    else:        
+        context['play_enabled'] = False
+    return render(request, 'tr/base.html', context)

@@ -1,46 +1,135 @@
-  <div class="vertical"></div>
-  <div
-    class="container d-flex justify-content-center align-items-center"
-    style="min-height: 100vh"
-  >
-    <div class="row justify-content-center align-items-center flex-nowrap">
-      <div>
-        <div class="d-flex flex-column align-items-center">
-          <h1 class="text-white mb-3">PLAYER 1</h1>
-          <div class="d-grid gap-2 justify-content-center align-content-center">
-            <a
-              href="https://auth.42.fr/auth/realms/students-42/protocol/openid-connect/auth?client_id=intra&redirect_uri=https%3A%2F%2Fprofile.intra.42.fr%2Fusers%2Fauth%2Fkeycloak_student%2Fcallback&response_type=code&state=e02b16dd004f35462384e63c88d090b7cd845c5fb9b95e7a"
-              class="btn btn-light"
-              role="button"
-              >LOG IN 42</a
-            >
-            <a href="{% url 'pong' %}" 
-			   class="btn btn-light" 
-			   role="button"
-			   data-ajax="true"
-              >ANONYMOUS</a
-            >
-          </div>
+<div class="vertical"></div>
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh">
+  <div class="row justify-content-center align-items-center w-100">
+    <!-- PLAYER 1 -->
+    <div class="col-4">
+      <div class="d-flex flex-column align-items-center">
+        <h1 class="text-white mb-3">PLAYER 1</h1>
+        <div class="d-grid gap-2 justify-content-center align-content-center">
+          {% if player1 and player1 != "guest" %}
+            <span class="text-white mb-2">{{ player1.username }}</span>
+          {% elif player1 == "guest" %}
+            <span class="text-white mb-2">Hello, Guest</span>
+          {% else %}
+            <button id="playAnonymousBtn" class="btn btn-secondary btn-lg w-100 mt-3">PLAY AS GUEST</button>
+            <a href="{% url 'signup' %}?next={% url 'double_play' %}" class="btn btn-light btn-lg w-100">REGISTER</a>
+            <p class="mt-4">
+              Already have an account? 
+              <a href="{% url 'login' %}?next={% url 'double_play' %}" class="link-primary">Log in</a>
+            </p>
+          {% endif %}
         </div>
       </div>
-      <div>
-        <div class="d-flex flex-column align-items-center">
-          <h1 class="text-white mb-3">PLAYER 2</h1>
-          <div class="d-grid gap-2 justify-content-center align-content-center">
-            <a
-              href="https://auth.42.fr/auth/realms/students-42/protocol/openid-connect/auth?client_id=intra&redirect_uri=https%3A%2F%2Fprofile.intra.42.fr%2Fusers%2Fauth%2Fkeycloak_student%2Fcallback&response_type=code&state=e02b16dd004f35462384e63c88d090b7cd845c5fb9b95e7al"
-              class="btn btn-light"
-              role="button"
-              >LOG IN 42</a
-            >
-            <a href="double_play.html" 
-			   class="btn btn-light" 
-			   role="button"
-			   data-ajax="true"
-              >ANONYMOUS {{ username }}</a
-            >
-          </div>
+    </div>
+
+    <!-- Play Button -->
+    <div class="col-2 d-flex flex-column justify-content-center align-items-center" style="z-index: 3; position: relative; background-color: rgb(0, 0, 0);">
+      <!-- 3D Button -->
+      <button
+      id="doublePlay"
+      data-mode="3d_play"
+      data-type="3d"
+      data-players="{{ player1 }},{{ player2 }}"
+      class="btn btn-sm mt-3 px-4 py-3"
+      style="font-size: 30px; background-color: rgb(159, 153, 153); border: none; border-radius: 15px;" 
+      {% if not play_enabled %}disabled{% endif %}>
+      3D
+      <i class="fa-regular fa-circle-play"></i>
+    </button>  
+      <button
+        id="doublePlay"
+        data-mode="double_play"
+        data-type="2d"
+        data-players="{{ player1 }},{{ player2 }}"
+        class="btn btn-sm my-3 px-4 py-3"
+        style="font-size: 30px; background-color: rgb(49, 99, 209); border: none; border-radius: 15px;" 
+        {% if not play_enabled %}disabled{% endif %}>
+        2D
+        <i class="fa-solid fa-circle-play"></i>
+      </button>
+  </div>
+  
+
+    <!-- PLAYER 2 -->
+    <div class="col-4">
+      <div class="d-flex flex-column align-items-center">
+        <h1 class="text-white mb-3 text-center">PLAYER 2</h1>
+        <div class="d-grid gap-3 justify-content-center align-content-center">
+          {% if is_player2_anonymous %}
+            <span class="text-white mb-2">Hello, Guest2</span>
+          {% elif player2 %}
+            <span class="text-white mb-2">Hello, {{ player2 }}</span>
+          {% else %}
+            <button id="playAnonymousBtn2" class="btn btn-secondary btn-lg w-100 mt-3">PLAY AS GUEST2</button>
+            <form method="POST" class="mb-4">
+              {% csrf_token %}
+              <div class="mb-3">
+                <input type="text" name="player2_username" class="form-control form-control-lg" placeholder="Username" required>
+              </div>
+              <div class="mb-3">
+                <input type="password" name="player2_password" class="form-control form-control-lg" placeholder="Password" required>
+              </div>
+              <button type="submit" class="btn btn-primary btn-lg w-100">VERIFY PLAYER 2</button>
+            </form>
+          {% endif %}
         </div>
       </div>
     </div>
   </div>
+</div>
+
+<script>
+// Function to add event listeners dynamically
+function addEventListeners() {
+  const playAnonymousBtn = document.getElementById('playAnonymousBtn');
+  const playAnonymousBtn2 = document.getElementById('playAnonymousBtn2');
+
+  if (playAnonymousBtn) {
+    playAnonymousBtn.addEventListener('click', function() {
+        // Add query parameter for Player 1 without affecting Player 2's state
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('anonymous', 'true');
+        window.history.pushState({}, '', `${location.pathname}?${urlParams}`);
+        window.location.reload();
+    });
+  }
+
+  if (playAnonymousBtn2) {
+    playAnonymousBtn2.addEventListener('click', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('anonymous2', 'true');
+        window.history.pushState({}, '', `${location.pathname}?${urlParams}`);
+        window.location.reload();
+    });
+  }
+}
+
+function updatePageState() {
+    // Check for "anonymous" and "anonymous2" parameters in the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const isPlayer1Anonymous = urlParams.get('anonymous') === 'true';
+    const isPlayer2Anonymous = urlParams.get('anonymous2') === 'true';
+
+    // Update the visibility of the "anonymous" messages
+    const anonymousMessage = document.getElementById('anonymousMessage');
+    const playAnonymousBtn = document.getElementById('playAnonymousBtn');
+    const playAnonymousBtn2 = document.getElementById('playAnonymousBtn2');
+
+    if (isPlayer1Anonymous) {
+        anonymousMessage.style.display = 'block'; // Show message for Player 1 as anonymous
+    } else {
+        anonymousMessage.style.display = 'none'; // Hide message for Player 1
+    }
+
+    if (isPlayer2Anonymous) {
+        playAnonymousBtn2.style.display = 'none'; // Hide "Play as Guest" button for Player 2 when playing anonymously
+    } else {
+        playAnonymousBtn2.style.display = 'block'; // Show "Play as Guest" button for Player 2
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    addEventListeners(); // Add event listeners
+    updatePageState(); // Update the page state based on current URL parameters
+});
+</script>

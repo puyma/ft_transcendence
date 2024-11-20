@@ -61,13 +61,35 @@ function event_handler_form(event) {
 }
 
 function initPlay() {
-  const startGame = document.getElementById("playGame");
-  // get players dinamically form tournament page WIP
-  // const players = JSON.parse(document.getElementById('playerData').textContent);
-  // console.log(players);
-  if (startGame) {
-    startGame.addEventListener("click", (event) => {
+  const tournamentAliases = document.getElementById("playerData")
+    ? JSON.parse(document.getElementById("playerData").textContent)
+    : [];
+
+  const gameButtons = document.querySelectorAll("[id$='Play']");
+  console.log("holaaaaaaaa");
+  gameButtons.forEach(button => {
+    button.addEventListener("click", (event) => {
       event.preventDefault();
+
+      let mode = button.getAttribute("data-mode");
+      let gameType = button.getAttribute("data-type"); // "2d" or "3d"
+      let players;
+
+      if (mode === "tournament") {
+        players = tournamentAliases;
+        if (players.length > 3) {
+          mode = "knockout";
+        }
+        else {
+          mode = "all_vs_all";
+        }
+      } else if (mode === "solo_play") {
+        players = button.getAttribute("data-players").split(",");
+      } else if (mode == "double_play")
+        players = button.getAttribute('data-players').split(",");
+
+      console.log(`Mode: ${mode}, Game Type: ${gameType}, Players:`, players);
+
       let canvas = document.createElement("canvas");
       canvas.id = "canvas";
       canvas.style.width = `${window.innerWidth}px`;
@@ -82,24 +104,11 @@ function initPlay() {
         console.error("<main> element not found.");
         return;
       }
-      const players = ["mica", "clara"];
-      const tournament = new Tournament(players);
+      const tournament = new Tournament(players, "2d", mode);
       tournament.startTournament();
     });
-  }
-  // const tournamentMode = document.getElementById('tournamentMode');
-  // if (tournamentMode) {
-  // 	tournamentMode.addEventListener('click', (event) => {
-  // 		event.preventDefault();
-  // 		const players = ['Player 1', 'Player 2', 'Player 3', 'Player 4', 'Player 5'];
-  // 		const tournament = new Tournament(players);
-  // 		tournament.startTournament();
-  // 	});
-  // }
+  });
 }
-
-// __main__
-// Execute once DOM is loaded
 
 function main() {
   router = window.router = new Router();
