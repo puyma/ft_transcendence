@@ -46,7 +46,12 @@ export class Tournament {
   soloPlayGame() {
     console.log(this.mode);
     // if gameType == 2d
-    const game = new Game("canvas", this.mode, this.players[0], this.players[1]);
+    const game = new Game(
+      "canvas",
+      this.mode,
+      this.players[0],
+      this.players[1],
+    );
     game.init();
   }
 
@@ -55,7 +60,7 @@ export class Tournament {
       "canvas",
       this.mode,
       this.players[0],
-      this.players[1]
+      this.players[1],
     );
     game.init();
   }
@@ -151,7 +156,7 @@ export class Tournament {
 
   determineWinner() {
     const winner = Object.keys(this.winCounts).reduce((a, b) =>
-      this.winCounts[a] > this.winCounts[b] ? a : b
+      this.winCounts[a] > this.winCounts[b] ? a : b,
     );
     this.tournamentWinner = winner;
   }
@@ -205,7 +210,7 @@ export class Tournament {
     console.log("WINNERRRRR: ", this.tournamentWinner);
     this.messageManager.showMessage(
       `Tournament winner: ${this.tournamentWinner}<br>Press 'R' to retry or 'Esc' to finish`,
-      "#FF0000"
+      "#FF0000",
     );
     document.addEventListener("keydown", this.handleEndTournament.bind(this), {
       once: true,
@@ -237,7 +242,7 @@ export class Tournament {
         history.pushState({}, "", "/");
       })
       .catch((error) =>
-        console.error("Error al cargar la página de inicio:", error)
+        console.error("Error al cargar la página de inicio:", error),
       );
   }
 }
