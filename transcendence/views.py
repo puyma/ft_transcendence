@@ -69,7 +69,6 @@ class LogoutView(auth_views.LogoutView):
         redirect_to = self.get_success_url()
         if redirect_to != request.get_full_path():
             return HttpResponseRedirect(redirect_to)
-        return redirect("home")
         return super().get(request, *args, **kwargs)
 
 
@@ -126,7 +125,7 @@ class ProfileView(LoginRequiredMixin, TemplateView):
             #     profile = request.user.profile
             # print("Uploaded Avatar File:", profile_form.cleaned_data['avatar'])
             # print(" New Avatar URL:", profile.avatar.url)
-            messages.success(request, "Your profile is updated successfully")
+            messages.success(request, "Profile updated successfully.")
             return redirect("profile")
 
         context = self.get_context_data()
@@ -141,7 +140,7 @@ def profile_delete(request):
     auth.logout(request)
     User = auth.get_user_model()
     User.objects.filter(pk=user_pk).delete()
-    messages.success(request, "account delete successfully")
+    messages.success(request, "Account deleted successfully.")
     return redirect("home")
 
 

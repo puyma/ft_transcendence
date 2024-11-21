@@ -57,16 +57,6 @@ class SignupForm(forms.ModelForm):
 
 
 class UpdateUserForm(forms.ModelForm):
-    first_name = forms.CharField(
-        max_length=100,
-        required=False,
-        widget=forms.TextInput(attrs={"class": "form-control"}),
-    )
-    last_name = forms.CharField(
-        max_length=100,
-        required=False,
-        widget=forms.TextInput(attrs={"class": "form-control"}),
-    )
     username = forms.CharField(
         max_length=100,
         required=True,
@@ -78,10 +68,20 @@ class UpdateUserForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ["first_name", "last_name", "username", "email"]
+        fields = ["username", "email"]
 
 
 class UpdateProfileForm(forms.ModelForm):
+    first_name = forms.CharField(
+        max_length=100,
+        required=False,
+        widget=forms.TextInput(attrs={"class": "form-control"}),
+    )
+    last_name = forms.CharField(
+        max_length=100,
+        required=False,
+        widget=forms.TextInput(attrs={"class": "form-control"}),
+    )
     avatar = forms.ImageField(
         widget=forms.FileInput(attrs={"class": "form-control-file"}), required=False
     )
@@ -95,7 +95,7 @@ class UpdateProfileForm(forms.ModelForm):
 
     class Meta:
         model = Profile
-        fields = ["avatar", "avatar_url", "bio"]
+        fields = ["first_name", "last_name", "avatar", "avatar_url", "bio"]
 
     def clean_avatar(self):
         avatar = self.cleaned_data.get("avatar")
