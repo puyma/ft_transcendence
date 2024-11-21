@@ -17,7 +17,7 @@ from django.db.models import Q
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     avatar = models.ImageField(
-        default="profile_images/default.jpg", upload_to="profile_images"
+        default="profile_images/default.png", upload_to="profile_images"
     )
     avatar_url = models.URLField(max_length=500, blank=True, null=True)
     bio = models.TextField(default="No bio available.")
@@ -100,11 +100,11 @@ class Profile(models.Model):
 
     @property
     def avatar_image(self):
-        if self.avatar and self.avatar.name != "profile_images/default.jpg":
+        if self.avatar and self.avatar.name != "profile_images/default.png":
             return self.avatar.url
         if self.avatar_url:
             return self.avatar_url
-        return "/media/profile_images/default.jpg"
+        return "/media/profile_images/default.png"
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
