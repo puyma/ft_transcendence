@@ -29,7 +29,7 @@ class Router {
   }
 
   init() {
-    console.log("router: initialized");
+    /*window.console.log("router: initialized");*/
     this.pre_load();
     this.post_load();
     return;
@@ -79,7 +79,7 @@ class Router {
         try {
           obj.func(event);
         } catch (err) {
-          console.error(err);
+          window.console.error(err);
         }
       }
     });
@@ -110,7 +110,7 @@ class Router {
   }
 
   pre_load() {
-    console.log("fn: pre_load");
+    /*window.console.log("fn: pre_load");*/
     if (this.pre_load_events.length === 0) return;
     this.pre_load_events.forEach((fn) => {
       try {
@@ -123,7 +123,7 @@ class Router {
   }
 
   post_load() {
-    console.log("fn: post_load");
+    /*window.console.log("fn: post_load");*/
     if (this.post_load_events.length === 0) return;
     this.post_load_events.forEach((fn) => {
       try {
@@ -196,7 +196,7 @@ class Router {
         try_replace_content("footer", data);
       })
       .catch((err) => {
-        console.log(err);
+        window.console.log(err);
       });
     return this.form_data;
   }
