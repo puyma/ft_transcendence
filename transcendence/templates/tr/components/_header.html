@@ -2,86 +2,90 @@
 
 <header class="p-4">
 
-  <div class="container text-center">
-    <div class="row align-items-center">
-      <div class="col"></div>
-      <div class="col col-8">
-        <a class="text-decoration-none text-reset display-1" 
-           data-ajax="true" 
-           href="/">PONG GAME</a>
-      </div>
-      <div class="col">
+	<div class="container text-center">
+		<div class="row align-items-center">
+			<div class="col"></div>
+			<div class="col col-8">
+				<a class="text-decoration-none text-reset display-1" 
+				   data-ajax="true" 
+				   href="/">PONG GAME</a>
+			</div>
+			<div class="col">
 
 
-        {% if request.user.is_authenticated %}
+				{% if request.user.is_authenticated %}
 
-        <div class="btn-group text-end">
-          <a href="#" 
-             class="d-block link-body-emphasis text-decoration-none dropdown" 
-             data-bs-toggle="dropdown" 
-             aria-expanded="false">
-            {% if user.profile.avatar %}
-            <img src="/media/{{ user.profile.avatar }}" 
-                 alt="{{ user.username }}" 
-                 width="32" 
-                 height="32" 
-                 class="rounded-circle avatar">
-            {% else %}
-            {{ user.username }}
-            {% endif %}
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end text-small">
-            <li>
-              <a class="dropdown-item" 
-                 data-ajax="true" 
-                 href="{% url 'profile' %}">
-                Profile
-              </a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-            <li>
-              <a class="dropdown-item" 
-                 data-ajax="true" 
-                 href="{% url 'logout' %}">
-                Sign out
-              </a>
-            </li>
-          </ul>
-        </div>
+				<div class="btn-group text-end">
+					<a href="#" 
+					   class="d-block link-body-emphasis text-decoration-none dropdown" 
+					   data-bs-toggle="dropdown" 
+					   aria-expanded="false">
+						{% if user.profile.avatar %}
+						<img src="/media/{{ user.profile.avatar }}" 
+							 alt="{{ user.username }}" 
+							 width="32" 
+							 height="32" 
+							 class="rounded-circle avatar">
+						{% else %}
+						{{ user.username }}
+						{% endif %}
+					</a>
+					<ul class="dropdown-menu dropdown-menu-end text-small">
+						<li>
+							<a class="dropdown-item" 
+							   data-ajax="true" 
+							   href="{% url 'profile' %}">
+								Profile
+							</a>
+						</li>
+						<li>
+							<hr class="dropdown-divider">
+						</li>
+						<li>
+							<form id="logout-form" 
+								  method="post" 
+								  action="{% url 'logout' %}"
+								  data-ajax="true">
+								{% csrf_token %}
+								<input type="submit" 
+								class="dropdown-item" 
+								value="Sign out" />
+							</form>
+						</li>
+					</ul>
+				</div>
 
-        {% else %}
+				{% else %}
 
-        <div class="btn-group text-end">
-          <a href="#"
-             class="d-block link-body-emphasis text-decoration-none"
-             data-bs-toggle="dropdown"
-             aria-expanded="false">
-            <i class="fas fa-2xl fa-circle-user"></i>
-          </a>
-          <ul class="dropdown-menu dropdown-menu-end text-small">
-            <li>
-              <a class="dropdown-item" 
-                 data-ajax="true" 
-                 href="{% url 'login' %}">
-                Login
-              </a>
-            </li>
-            <li>
-              <a class="dropdown-item" 
-                 data-ajax="true" 
-                 href="{% url 'signup' %}">
-                Signup
-              </a>
-            </li>
-          </ul>
-        </div>
+				<div class="btn-group text-end">
+					<a href="#"
+					   class="d-block link-body-emphasis text-decoration-none"
+					   data-bs-toggle="dropdown"
+					   aria-expanded="false">
+						<i class="fas fa-2xl fa-circle-user"></i>
+					</a>
+					<ul class="dropdown-menu dropdown-menu-end text-small">
+						<li>
+							<a class="dropdown-item" 
+							   data-ajax="true" 
+							   href="{% url 'login' %}">
+								Login
+							</a>
+						</li>
+						<li>
+							<a class="dropdown-item" 
+							   data-ajax="true" 
+							   href="{% url 'signup' %}">
+								Signup
+							</a>
+						</li>
+					</ul>
+				</div>
 
-        {% endif %}
+				{% endif %}
 
-      </div>
-    </div>
-  </div>
+			</div>
+		</div>
+	</div>
 
 </header>

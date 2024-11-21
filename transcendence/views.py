@@ -35,6 +35,7 @@ class HomepageView(generic.TemplateView):
 
 
 class LoginView(auth_views.LoginView):
+    http_method_names = ["get", "post"]
     redirect_authenticated_user = True
     template_name = "tr/base.html"
 
@@ -48,15 +49,10 @@ class LoginView(auth_views.LoginView):
         return context
 
 
-@login_required
-def do_logout(request):
-    auth.logout(request)
-    messages.success(request, "proper logout")
-    return redirect("home")
 
-
+#@login_required
 class LogoutView(auth_views.LogoutView):
-    http_method_names = ["post", "get"]
+    http_method_names = ["post"]
     template_name = "tr/base.html"
 
     def get_context_data(self, **kwargs):
@@ -65,10 +61,15 @@ class LogoutView(auth_views.LogoutView):
         return context
 
     def get(self, request, *args, **kwargs):
+        return redirect("home")
+
+    def post(self, request, *args, **kwargs):
         auth.logout(request)
+        messages.success(request, "Successfully logged out.")
         redirect_to = self.get_success_url()
         if redirect_to != request.get_full_path():
             return HttpResponseRedirect(redirect_to)
+        return redirect("home")
         return super().get(request, *args, **kwargs)
 
 
