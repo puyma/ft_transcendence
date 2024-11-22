@@ -1,30 +1,29 @@
+from django import db
 from django import urls
-from django.urls import reverse_lazy
 from django.contrib import auth
 from django.contrib import messages
-from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 from django.shortcuts import render
 from django.shortcuts import redirect
+from django.shortcuts import render
+from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy
 from django.views import generic
-from .forms import LoginForm, SignupForm, UpdateUserForm, UpdateProfileForm
-from . import forms
-from .providers import fortytwo
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import TemplateView
-from django.contrib.auth.models import User
-from django.shortcuts import render, get_object_or_404, redirect
-from django.db.models import Q
-from .models import Profile, Relationship
+
+from .forms import LoginForm
+from .forms import SignupForm
+from .forms import UpdateUserForm
+from .forms import UpdateProfileForm
 from .models import Match
-from django.contrib.auth import authenticate
-
-
-# https://django-advanced-training.readthedocs.io/en/latest/features/class-based-views/
+from .models import Profile
+from .models import Relationship
+from .providers import fortytwo
 
 
 class HomepageView(generic.TemplateView):
+    http_method_names = ["get"]
     template_name = "tr/base.html"
 
     def get_context_data(self, **kwargs):
@@ -34,7 +33,8 @@ class HomepageView(generic.TemplateView):
         return context
 
 
-class LoginView(auth_views.LoginView):
+class LoginView(auth.views.LoginView):
+    authentication_form = LoginForm
     http_method_names = ["get", "post"]
     redirect_authenticated_user = True
     template_name = "tr/base.html"
@@ -42,16 +42,13 @@ class LoginView(auth_views.LoginView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["page"] = "tr/pages/login.html"
-        context["form"] = LoginForm()
         context["provider_42_login"] = fortytwo.get_login_url(
             "42", {"state": self.request.COOKIES.get("csrftoken")}
         )
         return context
 
 
-
-#@login_required
-class LogoutView(auth_views.LogoutView):
+class LogoutView(auth.views.LogoutView):
     http_method_names = ["post"]
     template_name = "tr/base.html"
 
@@ -87,7 +84,9 @@ class SignupView(generic.FormView):
         if form.is_valid():
             user = form.save()
             auth.login(
-                request, user, backend="django.contrib.auth.backends.ModelBackend"
+                request,
+                user,
+                backend="django.contrib.auth.backends.ModelBackend",
             )
             return redirect(self.success_url)
         return self.form_invalid(form)
@@ -99,17 +98,21 @@ class SignupView(generic.FormView):
 
 @login_required
 def profile_dashboard(request):
-    return render(request, "tr/pages/base.html", {"page": "tr/pages/profile.html"})
+    return render(
+        request, "tr/pages/base.html", {"page": "tr/pages/profile.html"}
+    )
 
 
-class ProfileView(LoginRequiredMixin, TemplateView):
+class ProfileView(LoginRequiredMixin, generic.TemplateView):
     template_name = "tr/base.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["page"] = "tr/pages/profile.html"
         context["user_form"] = UpdateUserForm(instance=self.request.user)
-        context["profile_form"] = UpdateProfileForm(instance=self.request.user.profile)
+        context["profile_form"] = UpdateProfileForm(
+            instance=self.request.user.profile
+        )
         return context
 
     def post(self, request, *args, **kwargs):
@@ -144,7 +147,7 @@ def profile_delete(request):
     return redirect("home")
 
 
-class PasswordChangeView(auth_views.PasswordChangeView):
+class PasswordChangeView(auth.views.PasswordChangeView):
     template_name = "tr/base.html"
 
     def get_context_data(self, **kwargs):
@@ -153,7 +156,7 @@ class PasswordChangeView(auth_views.PasswordChangeView):
         return context
 
 
-class PasswordChangeDoneView(auth_views.PasswordChangeDoneView):
+class PasswordChangeDoneView(auth.views.PasswordChangeDoneView):
     template_name = "tr/base.html"
 
     def get_context_data(self, **kwargs):
@@ -162,7 +165,7 @@ class PasswordChangeDoneView(auth_views.PasswordChangeDoneView):
         return context
 
 
-class PasswordResetView(auth_views.PasswordResetView):
+class PasswordResetView(auth.views.PasswordResetView):
     template_name = "tr/base.html"
 
     def get_context_data(self, **kwargs):
@@ -171,7 +174,7 @@ class PasswordResetView(auth_views.PasswordResetView):
         return context
 
 
-class PasswordResetDoneView(auth_views.PasswordResetDoneView):
+class PasswordResetDoneView(auth.views.PasswordResetDoneView):
     template_name = "tr/base.html"
 
     def get_context_data(self, **kwargs):
@@ -180,7 +183,7 @@ class PasswordResetDoneView(auth_views.PasswordResetDoneView):
         return context
 
 
-class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
+class PasswordResetConfirmView(auth.views.PasswordResetConfirmView):
     template_name = "tr/base.html"
 
     def get_context_data(self, **kwargs):
@@ -189,7 +192,7 @@ class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
         return context
 
 
-class PasswordResetCompleteView(auth_views.PasswordResetCompleteView):
+class PasswordResetCompleteView(auth.views.PasswordResetCompleteView):
     template_name = "tr/base.html"
 
     def get_context_data(self, **kwargs):
@@ -213,7 +216,9 @@ class TournamentView(generic.TemplateView):
 
         # Backend validation
         if num_participants < 3:
-            messages.error(request, "The number of participants must be at least 3.")
+            messages.error(
+                request, "The number of participants must be at least 3."
+            )
             return redirect("tournament")  # Reload the current page
 
         # If validation passes, save to session and redirect
@@ -243,7 +248,8 @@ class TournamentRegisterView(generic.TemplateView):
         if len(alias_values) != len(set(alias_values)):
             # If duplicates found, add error message and re-render the form
             messages.error(
-                request, "Each alias must be unique. Please correct the duplicates."
+                request,
+                "Each alias must be unique. Please correct the duplicates.",
             )
             return redirect("tournament_register")
         request.session["aliases"] = aliases
@@ -330,7 +336,8 @@ class StatsView(generic.TemplateView):
         context["total_win_points"] = profile.total_win_points()
         context["total_loss_points"] = profile.total_loss_points()
         context["match_history"] = Match.objects.filter(
-            Q(winner_username=self.request.user) | Q(loser_username=self.request.user)
+            db.models.Q(winner_username=self.request.user)
+            | db.models.Q(loser_username=self.request.user)
         ).order_by("-created_at")
         return context
 
@@ -347,7 +354,8 @@ class FriendsView(generic.TemplateView):
         search_query = self.request.GET.get("search", "")
         if search_query:
             search_results = Profile.objects.filter(
-                Q(user__username__icontains=search_query) & ~Q(user=self.request.user)
+                db.models.Q(user__username__icontains=search_query)
+                & ~db.models.Q(user=self.request.user)
             )
         else:
             search_results = None
@@ -380,10 +388,12 @@ class FriendsView(generic.TemplateView):
         user_profile = request.user.profile
 
         if action == "send_request":
-            profile_to_add = get_object_or_404(Profile, user__username=username)
+            profile_to_add = get_object_or_404(
+                Profile, user__username=username
+            )
             Relationship.objects.filter(
-                Q(sender=user_profile, receiver=profile_to_add)
-                | Q(sender=profile_to_add, receiver=user_profile)
+                db.models.Q(sender=user_profile, receiver=profile_to_add)
+                | db.models.Q(sender=profile_to_add, receiver=user_profile)
             ).delete()
 
             Relationship.objects.create(
@@ -391,7 +401,9 @@ class FriendsView(generic.TemplateView):
             )
 
         elif action == "accept_request":
-            sender_profile = get_object_or_404(Profile, user__username=username)
+            sender_profile = get_object_or_404(
+                Profile, user__username=username
+            )
             relationship = get_object_or_404(
                 Relationship,
                 sender=sender_profile,
@@ -402,10 +414,12 @@ class FriendsView(generic.TemplateView):
             relationship.save()
 
         elif action == "remove_friend":
-            friend_profile = get_object_or_404(Profile, user__username=username)
+            friend_profile = get_object_or_404(
+                Profile, user__username=username
+            )
             Relationship.objects.filter(
-                Q(sender=user_profile, receiver=friend_profile)
-                | Q(sender=friend_profile, receiver=user_profile)
+                db.models.Q(sender=user_profile, receiver=friend_profile)
+                | db.models.Q(sender=friend_profile, receiver=user_profile)
             ).delete()
             messages.success(request, "Friend removed successfully.")
 
@@ -442,8 +456,10 @@ def double_play_view(request):
         if player2_username and player2_password:
             try:
                 player2 = User.objects.get(username=player2_username)
-                user = authenticate(
-                    request, username=player2_username, password=player2_password
+                user = auth.authenticate(
+                    request,
+                    username=player2_username,
+                    password=player2_password,
                 )
                 if user is not None:
                     messages.success(
@@ -452,7 +468,9 @@ def double_play_view(request):
                     )
                     context["player2"] = player2.username
                 else:
-                    messages.error(request, "Incorrect password. Please try again.")
+                    messages.error(
+                        request, "Incorrect password. Please try again."
+                    )
             except User.DoesNotExist:
                 messages.error(request, "User not found. Please try again.")
 

@@ -6,7 +6,10 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("transcendence", "0002_profile_is_online_profile_last_active_and_more"),
+        (
+            "transcendence",
+            "0002_profile_is_online_profile_last_active_and_more",
+        ),
     ]
 
     operations = [
@@ -14,7 +17,8 @@ class Migration(migrations.Migration):
             model_name="profile",
             name="avatar",
             field=models.ImageField(
-                default="profile_images/default.png", upload_to="profile_images"
+                default="profile_images/default.png",
+                upload_to="profile_images",
             ),
         ),
     ]

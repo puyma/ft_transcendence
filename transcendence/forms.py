@@ -1,20 +1,25 @@
+import os
+
+from django import core
 from django import forms
 from django.conf import settings
 from django.contrib import auth
-from django.contrib.auth.models import User
+
 from .models import Profile
-from django.core.exceptions import ValidationError
-import os
 
 
-class LoginForm(forms.Form):
+class LoginForm(auth.forms.AuthenticationForm):
+    """
+        Override username and password fields
+    from auth.forms.AuthenticationForm
+    in order to customize it's appeareance.
+    """
 
     username = forms.CharField(
         label="Username",
         max_length=255,
         widget=forms.TextInput(attrs={"class": "form-control"}),
     )
-
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={"class": "form-control mb-3"}),
     )
@@ -30,12 +35,16 @@ class SignupForm(forms.ModelForm):
 
     password = forms.CharField(
         label="Password",
-        widget=forms.PasswordInput(attrs={"class": "form-control uniform-input"}),
+        widget=forms.PasswordInput(
+            attrs={"class": "form-control uniform-input"}
+        ),
     )
 
     password_confirm = forms.CharField(
         label="Repeat password",
-        widget=forms.PasswordInput(attrs={"class": "form-control uniform-input"}),
+        widget=forms.PasswordInput(
+            attrs={"class": "form-control uniform-input"}
+        ),
     )
 
     class Meta:
@@ -67,7 +76,7 @@ class UpdateUserForm(forms.ModelForm):
     )
 
     class Meta:
-        model = User
+        model = auth.models.User
         fields = ["username", "email"]
 
 
@@ -83,7 +92,8 @@ class UpdateProfileForm(forms.ModelForm):
         widget=forms.TextInput(attrs={"class": "form-control"}),
     )
     avatar = forms.ImageField(
-        widget=forms.FileInput(attrs={"class": "form-control-file"}), required=False
+        widget=forms.FileInput(attrs={"class": "form-control-file"}),
+        required=False,
     )
     avatar_url = forms.URLField(
         widget=forms.TextInput(attrs={"class": "form-control"}), required=False
@@ -102,11 +112,11 @@ class UpdateProfileForm(forms.ModelForm):
         if avatar:
             max_size = 2 * 1024 * 1024  # 2MB
             if avatar.size > max_size:
-                raise ValidationError("Image size must not exceed 950 KB.")
+                raise core.exceptions.ValidationError("Image size must not exceed 950 KB.")
             valid_extensions = [".jpg", ".jpeg", ".png", ".gif"]
             ext = os.path.splitext(avatar.name)[1].lower()
             if ext not in valid_extensions:
-                raise ValidationError(
+                raise core.exceptions.ValidationError(
                     "Unsupported file format. Allowed formats are: JPG, JPEG, PNG, GIF."
                 )
         return avatar

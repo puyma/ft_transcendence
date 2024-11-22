@@ -33,7 +33,12 @@ class MatchAdmin(admin.ModelAdmin):
         "winner_points",
         "loser_points",
     )
-    fields = ("winner_username", "loser_username", "winner_points", "loser_points")
+    fields = (
+        "winner_username",
+        "loser_username",
+        "winner_points",
+        "loser_points",
+    )
 
 
 admin.site.unregister(User)

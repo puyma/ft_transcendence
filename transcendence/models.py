@@ -1,33 +1,29 @@
-from django.conf import settings
-from django.contrib.auth.models import User
-from django.db import models
-from django.db.models import signals
-from django.dispatch import receiver
 from PIL import Image
+
+from django import db
+from django import core
+from django.conf import settings
+from django.contrib import auth
+from django.dispatch import receiver
 from django.utils import timezone
-from django.core.exceptions import ValidationError
-from django.contrib.auth.signals import user_logged_in, user_logged_out
-from django.db.models import Sum
-from django.db.models import Q
-
-# we have the profile class that is linked with the USER class (table) and to access to the first name, last name and email with
-# property --- print(profile.first_name)  # This will return profile.user.first_name
 
 
-class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    avatar = models.ImageField(
+class Profile(db.models.Model):
+    user = db.models.OneToOneField(
+        auth.models.User, on_delete=db.models.CASCADE
+    )
+    avatar = db.models.ImageField(
         default="profile_images/default.png", upload_to="profile_images"
     )
-    avatar_url = models.URLField(max_length=500, blank=True, null=True)
-    bio = models.TextField(default="No bio available.")
-    is_online = models.BooleanField(default=False)
-    last_active = models.DateTimeField(null=True, blank=True)
+    avatar_url = db.models.URLField(max_length=500, blank=True, null=True)
+    bio = db.models.TextField(default="No bio available.")
+    is_online = db.models.BooleanField(default=False)
+    last_active = db.models.DateTimeField(null=True, blank=True)
 
     def get_friends(self):
         return Profile.objects.filter(
-            Q(receiver__sender=self, receiver__status="accepted")
-            | Q(sender__receiver=self, sender__status="accepted")
+            db.models.Q(receiver__sender=self, receiver__status="accepted")
+            | db.models.Q(sender__receiver=self, sender__status="accepted")
         )
 
     def set_online(self):
@@ -64,7 +60,7 @@ class Profile(models.Model):
     def total_win_points(self):
         return (
             Match.objects.filter(winner_username=self.user).aggregate(
-                Sum("winner_points")
+                db.models.Sum("winner_points")
             )["winner_points__sum"]
             or 0
         )
@@ -72,7 +68,7 @@ class Profile(models.Model):
     def total_loss_points(self):
         return (
             Match.objects.filter(loser_username=self.user).aggregate(
-                Sum("loser_points")
+                db.models.Sum("loser_points")
             )["loser_points__sum"]
             or 0
         )
@@ -117,14 +113,16 @@ STATUS_CHOICES = (
 )
 
 
-class Relationship(models.Model):
-    sender = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="sender")
-    receiver = models.ForeignKey(
-        Profile, on_delete=models.CASCADE, related_name="receiver"
+class Relationship(db.models.Model):
+    sender = db.models.ForeignKey(
+        Profile, on_delete=db.models.CASCADE, related_name="sender"
     )
-    status = models.CharField(max_length=8, choices=STATUS_CHOICES)
-    updated = models.DateTimeField(auto_now=True)
-    created = models.DateTimeField(auto_now_add=True)
+    receiver = db.models.ForeignKey(
+        Profile, on_delete=db.models.CASCADE, related_name="receiver"
+    )
+    status = db.models.CharField(max_length=8, choices=STATUS_CHOICES)
+    updated = db.models.DateTimeField(auto_now=True)
+    created = db.models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ("sender", "receiver")
@@ -134,7 +132,9 @@ class Relationship(models.Model):
 
     def save(self, *args, **kwargs):
         if self.sender == self.receiver:
-            raise ValidationError("You cannot add yourself as a friend.")
+            raise core.exceptions.ValidationError(
+                "You cannot add yourself as a friend."
+            )
 
         # Check if there's an existing reciprocal request two send requests
         reciprocal_request = Relationship.objects.filter(
@@ -153,51 +153,57 @@ class Relationship(models.Model):
         self.save()
 
 
-@receiver(signals.post_save, sender=User)
+@receiver(db.models.signals.post_save, sender=auth.models.User)
 def create_profile__user(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
 
 
-@receiver(signals.post_save, sender=User)
+@receiver(db.models.signals.post_save, sender=auth.models.User)
 def save_profile__user(sender, instance, update_fields, **kwargs):
     instance.profile.save()
 
 
-@receiver(signals.post_save, sender=Relationship)
+@receiver(db.models.signals.post_save, sender=Relationship)
 def post_save_add_to_friends(sender, instance, created, **kwargs):
     if created and instance.status == "accepted":
         pass
 
 
-@receiver(user_logged_in)
+@receiver(auth.signals.user_logged_in)
 def set_user_online(sender, user, request, **kwargs):
     user.profile.set_online()
 
 
-@receiver(user_logged_out)
+@receiver(auth.signals.user_logged_out)
 def set_user_offline(sender, user, request, **kwargs):
     user.profile.set_offline()
     user.profile.last_active = timezone.now()
     user.profile.save()
 
 
-# @receiver( signals.post_save, sender=Profile )
+# @receiver(db.models.signals.post_save, sender=Profile )
 # def save_profile__profile ( sender, instance, update_fields, **kwargs ):
 # 	return
-@receiver(signals.post_save, sender=Profile)
+@receiver(db.models.signals.post_save, sender=Profile)
 def save_profile__profile(sender, instance, update_fields, **kwargs):
     return
 
 
-class Match(models.Model):
-    id = models.AutoField(primary_key=True)
-    winner_username = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="won_matches", null=True
+class Match(db.models.Model):
+    id = db.models.AutoField(primary_key=True)
+    winner_username = db.models.ForeignKey(
+        auth.models.User,
+        on_delete=db.models.CASCADE,
+        related_name="won_matches",
+        null=True,
     )
-    loser_username = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="lost_matches", null=True
+    loser_username = db.models.ForeignKey(
+        auth.models.User,
+        on_delete=db.models.CASCADE,
+        related_name="lost_matches",
+        null=True,
     )
-    winner_points = models.IntegerField(default=0)
-    loser_points = models.IntegerField(default=0)
-    created_at = models.DateTimeField(default=timezone.now)
+    winner_points = db.models.IntegerField(default=0)
+    loser_points = db.models.IntegerField(default=0)
+    created_at = db.models.DateTimeField(default=timezone.now)

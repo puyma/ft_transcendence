@@ -125,7 +125,9 @@ class AuthBackend42(BaseBackend):
         if token is None:
             return None
         params = {"Authorization": f"Bearer {token}"}
-        response = requests.request("GET", f"{self.endpoint}/v2/me", headers=params)
+        response = requests.request(
+            "GET", f"{self.endpoint}/v2/me", headers=params
+        )
         me = response.json()
         # check response if OK
         # else return None

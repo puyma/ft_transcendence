@@ -21,7 +21,10 @@ class Migration(migrations.Migration):
                 ("id", models.AutoField(primary_key=True, serialize=False)),
                 ("winner_points", models.IntegerField(default=0)),
                 ("loser_points", models.IntegerField(default=0)),
-                ("created_at", models.DateTimeField(default=django.utils.timezone.now)),
+                (
+                    "created_at",
+                    models.DateTimeField(default=django.utils.timezone.now),
+                ),
                 (
                     "loser_username",
                     models.ForeignKey(
@@ -57,10 +60,14 @@ class Migration(migrations.Migration):
                 (
                     "avatar",
                     models.ImageField(
-                        default="profile_images/default.jpg", upload_to="profile_images"
+                        default="profile_images/default.jpg",
+                        upload_to="profile_images",
                     ),
                 ),
-                ("avatar_url", models.URLField(blank=True, max_length=500, null=True)),
+                (
+                    "avatar_url",
+                    models.URLField(blank=True, max_length=500, null=True),
+                ),
                 ("bio", models.TextField(default="No bio available.")),
                 ("is_online", models.BooleanField(default=False)),
                 ("last_active", models.DateTimeField(blank=True, null=True)),
