@@ -10,16 +10,24 @@
 						<form id="login-form" method="post" data-ajax="true">
 
 							{% csrf_token %}
+							
+                            {% if form.non_field_errors %}
+								<div class="alert alert-danger" role="alert">
+								{% for key, error in form.errors.items %}
+									{{ error.as_text }}
+								{% endfor %}
+								</div>
+							{% endif %}
 
 							<div class="mb-3">
 								{{ form.username.label_tag }}
 								{{ form.username }}
-								{{ form.username.errors }}
+								{{ form.username.errors.as_text }}
 							</div>
 							<div class="mb-3">
 								{{ form.password.label_tag }}
 								{{ form.password }}
-								{{ form.password.errors }}
+								{{ form.password.errors.as_text }}
 							</div>
 							<div class="text-start mb-3">
 								<a href="{% url 'password_reset' %}" 
@@ -27,14 +35,6 @@
 									Forgotten your password?
 								</a>
 							</div>
-
-							{% if form.non_field_errors %}
-								<div class="alert alert-danger" role="alert">
-								{% for key, error in form.errors.items %}
-									{{ error.as_text }}
-								{% endfor %}
-								</div>
-							{% endif %}
 
 							<div class="row justify-content-center mt-4">
 								<div class="col-md-6">

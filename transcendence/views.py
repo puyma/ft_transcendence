@@ -1,24 +1,15 @@
 from django import db
 from django import urls
+from django import shortcuts
 from django.contrib import auth
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.models import User
-from django.shortcuts import render
-from django.shortcuts import redirect
-from django.shortcuts import render
-from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views import generic
 
-from .forms import LoginForm
-from .forms import SignupForm
-from .forms import UpdateUserForm
-from .forms import UpdateProfileForm
-from .models import Match
-from .models import Profile
-from .models import Relationship
+from . import forms
+from . import models
 from .providers import fortytwo
 
 
@@ -34,7 +25,7 @@ class HomepageView(generic.TemplateView):
 
 
 class LoginView(auth.views.LoginView):
-    authentication_form = LoginForm
+    authentication_form = forms.LoginForm
     http_method_names = ["get", "post"]
     redirect_authenticated_user = True
     template_name = "tr/base.html"
@@ -58,7 +49,7 @@ class LogoutView(auth.views.LogoutView):
         return context
 
     def get(self, request, *args, **kwargs):
-        return redirect("home")
+        return shortcuts.redirect("home")
 
     def post(self, request, *args, **kwargs):
         auth.logout(request)
@@ -70,7 +61,7 @@ class LogoutView(auth.views.LogoutView):
 
 
 class SignupView(generic.FormView):
-    form_class = SignupForm
+    form_class = forms.SignupForm
     success_url = reverse_lazy("home")
     template_name = "tr/base.html"
 
@@ -88,7 +79,7 @@ class SignupView(generic.FormView):
                 user,
                 backend="django.contrib.auth.backends.ModelBackend",
             )
-            return redirect(self.success_url)
+            return shortcuts.redirect(self.success_url)
         return self.form_invalid(form)
 
     def form_invalid(self, form):
@@ -96,28 +87,21 @@ class SignupView(generic.FormView):
         return self.render_to_response(context)
 
 
-@login_required
-def profile_dashboard(request):
-    return render(
-        request, "tr/pages/base.html", {"page": "tr/pages/profile.html"}
-    )
-
-
-class ProfileView(LoginRequiredMixin, generic.TemplateView):
+class ProfileView(auth.mixins.LoginRequiredMixin, generic.TemplateView):
     template_name = "tr/base.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["page"] = "tr/pages/profile.html"
-        context["user_form"] = UpdateUserForm(instance=self.request.user)
-        context["profile_form"] = UpdateProfileForm(
+        context["user_form"] = forms.UpdateUserForm(instance=self.request.user)
+        context["profile_form"] = forms.UpdateProfileForm(
             instance=self.request.user.profile
         )
         return context
 
     def post(self, request, *args, **kwargs):
-        user_form = UpdateUserForm(request.POST, instance=request.user)
-        profile_form = UpdateProfileForm(
+        user_form = forms.UpdateUserForm(request.POST, instance=request.user)
+        profile_form = forms.UpdateProfileForm(
             request.POST, request.FILES, instance=request.user.profile
         )
 
@@ -129,7 +113,7 @@ class ProfileView(LoginRequiredMixin, generic.TemplateView):
             # print("Uploaded Avatar File:", profile_form.cleaned_data['avatar'])
             # print(" New Avatar URL:", profile.avatar.url)
             messages.success(request, "Profile updated successfully.")
-            return redirect("profile")
+            return shortcuts.redirect("profile")
 
         context = self.get_context_data()
         context["user_form"] = user_form
@@ -141,10 +125,10 @@ class ProfileView(LoginRequiredMixin, generic.TemplateView):
 def profile_delete(request):
     user_pk = request.user.pk
     auth.logout(request)
-    User = auth.get_user_model()
-    User.objects.filter(pk=user_pk).delete()
+    user = auth.get_user_model()
+    user.objects.filter(pk=user_pk).delete()
     messages.success(request, "Account deleted successfully.")
-    return redirect("home")
+    return shortcuts.redirect("home")
 
 
 class PasswordChangeView(auth.views.PasswordChangeView):
@@ -219,11 +203,11 @@ class TournamentView(generic.TemplateView):
             messages.error(
                 request, "The number of participants must be at least 3."
             )
-            return redirect("tournament")  # Reload the current page
+            return shortcuts.redirect("tournament")  # Reload the current page
 
         # If validation passes, save to session and redirect
         request.session["num_participants"] = num_participants
-        return redirect("tournament_register")
+        return shortcuts.redirect("tournament_register")
 
 
 class TournamentRegisterView(generic.TemplateView):
@@ -251,9 +235,9 @@ class TournamentRegisterView(generic.TemplateView):
                 request,
                 "Each alias must be unique. Please correct the duplicates.",
             )
-            return redirect("tournament_register")
+            return shortcuts.redirect("tournament_register")
         request.session["aliases"] = aliases
-        return redirect("tournament_order")
+        return shortcuts.redirect("tournament_order")
 
 
 class TournamentOrderView(generic.TemplateView):
@@ -297,7 +281,7 @@ def solo_play_view(request):
         "username": "clara",
         "page": "tr/pages/solo_play.html",
     }
-    return render(request, "tr/base.html", context)
+    return shortcuts.render(request, "tr/base.html", context)
 
 
 def play_view(request):
@@ -307,7 +291,7 @@ def play_view(request):
         "username": "clara",
         "page": "tr/pages/play_anonymous.html",
     }
-    return render(request, "tr/base.html", context)
+    return shortcuts.render(request, "tr/base.html", context)
 
 
 def pong_view(request):
@@ -317,7 +301,7 @@ def pong_view(request):
         "username": "clara",
         "page": "tr/pages/pong.html",
     }
-    return render(request, "tr/base.html", context)
+    return shortcuts.render(request, "tr/base.html", context)
 
 
 class StatsView(generic.TemplateView):
@@ -335,7 +319,7 @@ class StatsView(generic.TemplateView):
         context["loss_percentage"] = profile.loss_percentage()
         context["total_win_points"] = profile.total_win_points()
         context["total_loss_points"] = profile.total_loss_points()
-        context["match_history"] = Match.objects.filter(
+        context["match_history"] = models.Match.objects.filter(
             db.models.Q(winner_username=self.request.user)
             | db.models.Q(loser_username=self.request.user)
         ).order_by("-created_at")
@@ -353,18 +337,18 @@ class FriendsView(generic.TemplateView):
         # Handle search query
         search_query = self.request.GET.get("search", "")
         if search_query:
-            search_results = Profile.objects.filter(
+            search_results = models.Profile.objects.filter(
                 db.models.Q(user__username__icontains=search_query)
                 & ~db.models.Q(user=self.request.user)
             )
         else:
             search_results = None
 
-        friend_requests_sent = Relationship.objects.filter(
+        friend_requests_sent = models.Relationship.objects.filter(
             sender=user_profile, status="send"
         ).select_related("receiver")
 
-        friend_requests_received = Relationship.objects.filter(
+        friend_requests_received = models.Relationship.objects.filter(
             receiver=user_profile, status="send"
         ).select_related("sender")
 
@@ -388,24 +372,24 @@ class FriendsView(generic.TemplateView):
         user_profile = request.user.profile
 
         if action == "send_request":
-            profile_to_add = get_object_or_404(
-                Profile, user__username=username
+            profile_to_add = shortcuts.get_object_or_404(
+                models.Profile, user__username=username
             )
-            Relationship.objects.filter(
+            models.Relationship.objects.filter(
                 db.models.Q(sender=user_profile, receiver=profile_to_add)
                 | db.models.Q(sender=profile_to_add, receiver=user_profile)
             ).delete()
 
-            Relationship.objects.create(
+            models.Relationship.objects.create(
                 sender=user_profile, receiver=profile_to_add, status="send"
             )
 
         elif action == "accept_request":
-            sender_profile = get_object_or_404(
-                Profile, user__username=username
+            sender_profile = shortcuts.get_object_or_404(
+                models.Profile, user__username=username
             )
-            relationship = get_object_or_404(
-                Relationship,
+            relationship = shortcuts.get_object_or_404(
+                models.Relationship,
                 sender=sender_profile,
                 receiver=user_profile,
                 status="send",
@@ -414,16 +398,16 @@ class FriendsView(generic.TemplateView):
             relationship.save()
 
         elif action == "remove_friend":
-            friend_profile = get_object_or_404(
-                Profile, user__username=username
+            friend_profile = shortcuts.get_object_or_404(
+                models.Profile, user__username=username
             )
-            Relationship.objects.filter(
+            models.Relationship.objects.filter(
                 db.models.Q(sender=user_profile, receiver=friend_profile)
                 | db.models.Q(sender=friend_profile, receiver=user_profile)
             ).delete()
             messages.success(request, "Friend removed successfully.")
 
-        return redirect("friends")
+        return shortcuts.redirect("friends")
 
 
 def double_play_view(request):
@@ -455,7 +439,7 @@ def double_play_view(request):
 
         if player2_username and player2_password:
             try:
-                player2 = User.objects.get(username=player2_username)
+                player2 = auth.models.User.objects.get(username=player2_username)
                 user = auth.authenticate(
                     request,
                     username=player2_username,
@@ -471,11 +455,11 @@ def double_play_view(request):
                     messages.error(
                         request, "Incorrect password. Please try again."
                     )
-            except User.DoesNotExist:
+            except auth.models.User.DoesNotExist:
                 messages.error(request, "User not found. Please try again.")
 
     if context["player1"] and context["player2"]:
         context["play_enabled"] = True
     else:
         context["play_enabled"] = False
-    return render(request, "tr/base.html", context)
+    return shortcuts.render(request, "tr/base.html", context)
