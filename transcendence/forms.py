@@ -18,9 +18,11 @@ class LoginForm(auth.forms.AuthenticationForm):
     username = forms.CharField(
         label="Username",
         max_length=255,
+        required=True,
         widget=forms.TextInput(attrs={"class": "form-control"}),
     )
     password = forms.CharField(
+        required=True,
         widget=forms.PasswordInput(attrs={"class": "form-control mb-3"}),
     )
 

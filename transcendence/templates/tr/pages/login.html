@@ -14,10 +14,12 @@
 							<div class="mb-3">
 								{{ form.username.label_tag }}
 								{{ form.username }}
+								{{ form.username.errors }}
 							</div>
 							<div class="mb-3">
 								{{ form.password.label_tag }}
 								{{ form.password }}
+								{{ form.password.errors }}
 							</div>
 							<div class="text-start mb-3">
 								<a href="{% url 'password_reset' %}" 
@@ -26,10 +28,10 @@
 								</a>
 							</div>
 
-							{% if form.errors %}
+							{% if form.non_field_errors %}
 								<div class="alert alert-danger" role="alert">
-								{% for key, value in form.errors.items %}
-									{{ value }}
+								{% for key, error in form.errors.items %}
+									{{ error.as_text }}
 								{% endfor %}
 								</div>
 							{% endif %}
