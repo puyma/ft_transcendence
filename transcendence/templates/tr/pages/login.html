@@ -1,58 +1,61 @@
-<h1 class="text-center mt-5">Login</h1>
+<div class="mask d-flex align-items-center h-100 gradient-custom-3">
+	<div class="container h-100">
+		<div class="row d-flex justify-content-center align-items-center h-100">
+			<div class="col-12 col-md-9 col-lg-7 col-xl-6">
+				<div class="card">
+					<div class="card-body p-5">
 
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-md-6">
-      <form id="login-form" method="post" data-ajax="true">
-        
-        {% csrf_token %}
-        
-        {% if form.errors %}
-        <div class="alert alert-danger" role="alert">
-          Hey, there are errors in the form. Please check and try again.
-        </div>
-        {% endif %}
-        
-        {% if user_does_not_exist %}
-        <div class="alert alert-warning" role="alert">
-          The user does not exist or the password is incorrect.
-        </div>
-        {% endif %}
-        
-        <div class="mb-3">
-          {{ form.username.label_tag }}
-          {{ form.username }}
-        </div>
-        
-        <div class="mb-3">
-          {{ form.password.label_tag }}
-          {{ form.password }}
-        </div>
-        <!-- Forgotten Password Link -->
-      <div class="text-end mb-3">
-        <a href="{% url 'password_reset' %}" class="link-primary text-decoration-none">
-          Forgotten your password?
-        </a>
-      </div>
+						<h2 class="text-center mt-5">Login</h2>
 
-        
-        <div class="row justify-content-center mt-4">
-          <div class="col-md-6">
-            <input type="submit" class="btn btn-primary btn-lg w-100" value="Log in">
-          </div>
-        </div>
-        
-        <div class="row justify-content-center mt-3">
-          <div class="col-md-6 text-center">
-            <button type="button"
-              class="btn btn-light btn-lg w-100"
-              data-login-provider=true
-              data-login-provider-url="{{ provider_42_login }}">
-              Log in with 42
-            </button>
-          </div>
-        </div>
-      </form>
-    </div>
-  </div>
+						<form id="login-form" method="post" data-ajax="true">
+
+							{% csrf_token %}
+							
+                            {% if form.non_field_errors %}
+								<div class="alert alert-danger" role="alert">
+								{% for key, error in form.errors.items %}
+									{{ error.as_text }}
+								{% endfor %}
+								</div>
+							{% endif %}
+
+							<div class="mb-3">
+								{{ form.username.label_tag }}
+								{{ form.username }}
+								{{ form.username.errors.as_text }}
+							</div>
+							<div class="mb-3">
+								{{ form.password.label_tag }}
+								{{ form.password }}
+								{{ form.password.errors.as_text }}
+							</div>
+							<div class="text-start mb-3">
+								<a href="{% url 'password_reset' %}" 
+								   class="link-primary text-decoration-none">
+									Forgotten your password?
+								</a>
+							</div>
+
+							<div class="row justify-content-center mt-4">
+								<div class="col-md-6">
+									<input type="submit" class="btn btn-primary btn-lg w-100" value="Log in">
+								</div>
+							</div>
+
+							<div class="row justify-content-center mt-3">
+								<div class="col-md-6 text-center">
+									<button type="button"
+											class="btn btn-light btn-lg w-100"
+											data-login-provider=true
+											data-login-provider-url="{{ provider_42_login }}">
+										Log in with 42
+									</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>

@@ -2,9 +2,10 @@ import { Button } from "bootstrap";
 import { Collapse } from "bootstrap";
 import { Dropdown } from "bootstrap";
 import { Toast } from "bootstrap";
+
 import { Router } from "./router.js";
-import { Game } from "./pong";
-import { Tournament } from "./tournament";
+import { Game } from "./pong.js";
+import { Tournament } from "./tournament.js";
 import { Game as Game3D } from "./pong3d.js";
 
 // variables
@@ -17,19 +18,10 @@ import { Game as Game3D } from "./pong3d.js";
 // @fn		setup_login_providers
 // @return	{void}
 
-function setup_login_providers() {
-  const elements = document.querySelectorAll("[data-login-provider=true]");
-
-  if (!elements) {
-    return;
-  }
-  elements.forEach((element) => {
-    const url = element.getAttribute("data-login-provider-url");
-    element.addEventListener("click", (event) => {
-      event.preventDefault();
-      window.open(url, "_self");
-    });
-  });
+function event_handler_login_provider(event) {
+  const href = event.target.getAttribute("data-login-provider-url");
+  event.preventDefault();
+  window.open(href, "_self");
   return;
 }
 
@@ -98,7 +90,7 @@ function initPlay() {
       if (main) {
         main.replaceChildren(canvas);
       } else {
-        console.error("<main> element not found.");
+        /*console.error("<main> element not found.");*/
         return;
       }
       const tournament = new Tournament(players, "2d", mode);
@@ -109,19 +101,24 @@ function initPlay() {
 
 function main() {
   router = window.router = new Router();
-  router.attach([setup_login_providers], "pre");
   router.attach([initPlay], "post");
   router.add_event(
     window.document,
     "click",
     'a[data-ajax="true"]',
-    event_handler_anchor
+    event_handler_anchor,
+  );
+  router.add_event(
+    window.document,
+    "click",
+    'button[data-login-provider="true"]',
+    event_handler_login_provider,
   );
   router.add_event(
     window.document,
     "submit",
     'form[data-ajax="true"]',
-    event_handler_form
+    event_handler_form,
   );
   //router.add_event(window.router, 'get', , );
   //router.add_event(window.router, 'history', , );

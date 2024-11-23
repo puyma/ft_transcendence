@@ -32,7 +32,7 @@ class Message {
       this.ctx.fillText(
         this.messageText,
         this.ctx.canvas.width / 2 / this.dpr,
-        this.ctx.canvas.height / 2 / this.dpr
+        this.ctx.canvas.height / 2 / this.dpr,
       );
     }
   }
@@ -53,17 +53,17 @@ export class Game {
     this.user = this.createPaddle(
       0,
       this.canvas.height / 2 / this.dpr - 50 * this.scaleFactor,
-      "RED"
+      "RED",
     );
     this.com = this.createPaddle(
       this.canvas.width / this.dpr - 10 * this.scaleFactor,
       this.canvas.height / 2 / this.dpr - 50 * this.scaleFactor,
-      "RED"
+      "RED",
     );
     this.ball = this.createBall(
       this.canvas.width / 2 / this.dpr,
       this.canvas.height / 2 / this.dpr,
-      "WHITE"
+      "WHITE",
     );
     this.user.name = player1;
     this.com.name = player2;
@@ -154,7 +154,7 @@ export class Game {
       Math.round(x),
       Math.round(y),
       Math.round(w),
-      Math.round(h)
+      Math.round(h),
     );
   }
 
@@ -182,7 +182,7 @@ export class Game {
         this.net.y + i,
         this.net.width,
         this.net.height,
-        this.net.color
+        this.net.color,
       );
     }
   }
@@ -193,40 +193,40 @@ export class Game {
       0,
       this.canvas.width / this.dpr,
       this.canvas.height / this.dpr,
-      "BLACK"
+      "BLACK",
     );
     this.drawNet();
     this.drawText(
       this.user.score,
       this.canvas.width / 4 / this.dpr,
       this.canvas.height / 5 / this.dpr,
-      "WHITE"
+      "WHITE",
     );
     this.drawText(
       this.com.score,
       (3 * this.canvas.width) / 4 / this.dpr,
       this.canvas.height / 5 / this.dpr,
-      "WHITE"
+      "WHITE",
     );
     this.drawRectangle(
       this.user.x,
       this.user.y,
       this.user.width,
       this.user.height,
-      this.user.color
+      this.user.color,
     );
     this.drawRectangle(
       this.com.x,
       this.com.y,
       this.com.width,
       this.com.height,
-      this.com.color
+      this.com.color,
     );
     this.drawCircle(
       this.ball.x,
       this.ball.y,
       this.ball.radius,
-      this.ball.color
+      this.ball.color,
     );
 
     if (!this.gameStarted || this.isGameOver) {
@@ -244,7 +244,7 @@ export class Game {
     } else if (evt.key === "s") {
       this.user.y = Math.min(
         this.user.y + paddleSpeed,
-        canvasHeight - this.user.height
+        canvasHeight - this.user.height,
       );
     }
 
@@ -255,7 +255,7 @@ export class Game {
       } else if (evt.key === "ArrowDown") {
         this.com.y = Math.min(
           this.com.y + paddleSpeed,
-          canvasHeight - this.com.height
+          canvasHeight - this.com.height,
         );
       }
     }
@@ -423,12 +423,13 @@ export class Game {
         });
 
       const handleKeyPress = (evt) => {
-        if (evt.key === 'R' || evt.key === 'r') {
-          this.resetGame(evt);  // Reiniciar el juego
-        } else if (evt.key === 'Escape') {
-          this.loadHomePage();  // Regresar a la página de inicio
+        if (evt.key === "R" || evt.key === "r") {
+          this.resetGame(evt); // Reiniciar el juego
+        } else if (evt.key === "Escape") {
+          this.loadHomePage(); // Regresar a la página de inicio
         }
       };
+
 
       document.addEventListener("keydown", handleKeyPress, { once: true });
     }
@@ -475,7 +476,7 @@ export class Game {
         history.pushState({}, "", "/");
       })
       .catch((error) =>
-        console.error("Error al cargar la página de inicio:", error)
+        console.error("Error al cargar la página de inicio:", error),
       );
   }
 }

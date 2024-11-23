@@ -17,29 +17,44 @@
     /* changing the value dark for a black */
 }
 
-h1 {
-    font-weight: 600;
-    letter-spacing: var(--bs-letter-spacing);
+body {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    height: 100vh;
+    /*justify-content: space-between;*/
+    /*gap: 1em;*/
 }
 
-body {}
+header,
+main,
+footer {
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex-grow: 1;
+}
 
 main {
     letter-spacing: var(--bs-letter-spacing);
 }
 
-canvas {
-    display: block;
-    width: 100%;
-    height: 100%;
-    image-rendering: pixelated;
-    outline: none;
-    overflow: hidden;
+h1 {
+    font-weight: 600;
+    letter-spacing: var(--bs-letter-spacing);
+}
+
+.avatar {
+    object-fit: cover;
+    object-position: top;
 }
 
 .vertical {
     border-left: 6px dashed rgb(255, 255, 255);
-    height: 100%;
+    height: 80%;
+    /* TODO: adds overflow */
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
