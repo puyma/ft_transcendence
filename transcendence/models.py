@@ -4,13 +4,15 @@ from django import db
 from django import core
 from django.conf import settings
 from django.contrib import auth
+from django.contrib.auth import models as auth_models
+from django.contrib.auth import signals as auth_signals
 from django.dispatch import receiver
 from django.utils import timezone
 
 
 class Profile(db.models.Model):
     user = db.models.OneToOneField(
-        auth.models.User, on_delete=db.models.CASCADE
+        auth_models.User, on_delete=db.models.CASCADE
     )
     avatar = db.models.ImageField(
         default="profile_images/default.png", upload_to="profile_images"
@@ -153,13 +155,13 @@ class Relationship(db.models.Model):
         self.save()
 
 
-@receiver(db.models.signals.post_save, sender=auth.models.User)
+@receiver(db.models.signals.post_save, sender=auth_models.User)
 def create_profile__user(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
 
 
-@receiver(db.models.signals.post_save, sender=auth.models.User)
+@receiver(db.models.signals.post_save, sender=auth_models.User)
 def save_profile__user(sender, instance, update_fields, **kwargs):
     instance.profile.save()
 
@@ -170,12 +172,12 @@ def post_save_add_to_friends(sender, instance, created, **kwargs):
         pass
 
 
-@receiver(auth.signals.user_logged_in)
+@receiver(auth_signals.user_logged_in)
 def set_user_online(sender, user, request, **kwargs):
     user.profile.set_online()
 
 
-@receiver(auth.signals.user_logged_out)
+@receiver(auth_signals.user_logged_out)
 def set_user_offline(sender, user, request, **kwargs):
     user.profile.set_offline()
     user.profile.last_active = timezone.now()
@@ -193,13 +195,13 @@ def save_profile__profile(sender, instance, update_fields, **kwargs):
 class Match(db.models.Model):
     id = db.models.AutoField(primary_key=True)
     winner_username = db.models.ForeignKey(
-        auth.models.User,
+        auth_models.User,
         on_delete=db.models.CASCADE,
         related_name="won_matches",
         null=True,
     )
     loser_username = db.models.ForeignKey(
-        auth.models.User,
+        auth_models.User,
         on_delete=db.models.CASCADE,
         related_name="lost_matches",
         null=True,

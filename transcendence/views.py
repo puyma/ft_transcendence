@@ -2,10 +2,10 @@ from django import db
 from django import urls
 from django import shortcuts
 from django.contrib import auth
+from django.contrib.auth import mixins as auth_mixins
+from django.contrib.auth import models as auth_models
+from django.contrib.auth import views as auth_views
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
 from django.views import generic
 
 from . import forms
@@ -24,7 +24,7 @@ class HomepageView(generic.TemplateView):
         return context
 
 
-class LoginView(auth.views.LoginView):
+class LoginView(auth_views.LoginView):
     authentication_form = forms.LoginForm
     http_method_names = ["get", "post"]
     redirect_authenticated_user = True
@@ -39,7 +39,7 @@ class LoginView(auth.views.LoginView):
         return context
 
 
-class LogoutView(auth.views.LogoutView):
+class LogoutView(auth_views.LogoutView):
     http_method_names = ["post"]
     template_name = "tr/base.html"
 
@@ -47,9 +47,6 @@ class LogoutView(auth.views.LogoutView):
         context = super().get_context_data(**kwargs)
         context["page"] = "tr/pages/logout.html"
         return context
-
-    def get(self, request, *args, **kwargs):
-        return shortcuts.redirect("home")
 
     def post(self, request, *args, **kwargs):
         auth.logout(request)
@@ -61,14 +58,21 @@ class LogoutView(auth.views.LogoutView):
 
 
 class SignupView(generic.FormView):
+    http_method_names = ["get", "post"]
     form_class = forms.SignupForm
-    success_url = reverse_lazy("home")
+    success_url = urls.reverse_lazy("profile")
     template_name = "tr/base.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["page"] = "tr/pages/signup.html"
         return context
+
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return self.render_to_response(self.get_context_data())
+        else:
+            return shortcuts.redirect("profile")
 
     def post(self, request, *args, **kwargs):
         form = self.get_form()
@@ -79,15 +83,13 @@ class SignupView(generic.FormView):
                 user,
                 backend="django.contrib.auth.backends.ModelBackend",
             )
-            return shortcuts.redirect(self.success_url)
-        return self.form_invalid(form)
-
-    def form_invalid(self, form):
-        context = self.get_context_data(form=form)
-        return self.render_to_response(context)
+            return shortcuts.redirect(self.get_success_url())
+        else:
+            return self.form_invalid(form)
 
 
-class ProfileView(auth.mixins.LoginRequiredMixin, generic.TemplateView):
+class ProfileView(auth_mixins.LoginRequiredMixin, generic.TemplateView):
+    http_method_names = ["get", "post", "delete"]
     template_name = "tr/base.html"
 
     def get_context_data(self, **kwargs):
@@ -99,7 +101,16 @@ class ProfileView(auth.mixins.LoginRequiredMixin, generic.TemplateView):
         )
         return context
 
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        return self.render_to_response(context)
+
     def post(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            message.warning(request, "User not authorized!")
+            return shortcuts.redirect("home")
+        if request.POST.get("_method", "").lower() == "delete":
+            return self.delete(*args, **kwargs)
         user_form = forms.UpdateUserForm(request.POST, instance=request.user)
         profile_form = forms.UpdateProfileForm(
             request.POST, request.FILES, instance=request.user.profile
@@ -108,10 +119,6 @@ class ProfileView(auth.mixins.LoginRequiredMixin, generic.TemplateView):
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             profile_form.save()
-            # if profile_form.cleaned_data['avatar']: keep this lines till is all good he avatar tests !!
-            #     profile = request.user.profile
-            # print("Uploaded Avatar File:", profile_form.cleaned_data['avatar'])
-            # print(" New Avatar URL:", profile.avatar.url)
             messages.success(request, "Profile updated successfully.")
             return shortcuts.redirect("profile")
 
@@ -120,18 +127,31 @@ class ProfileView(auth.mixins.LoginRequiredMixin, generic.TemplateView):
         context["profile_form"] = profile_form
         return self.render_to_response(context)
 
-
-@login_required
-def profile_delete(request):
-    user_pk = request.user.pk
-    auth.logout(request)
-    user = auth.get_user_model()
-    user.objects.filter(pk=user_pk).delete()
-    messages.success(request, "Account deleted successfully.")
-    return shortcuts.redirect("home")
+    def delete(self, request, *args, **kwargs):
+        user_pk = request.user.pk
+        auth.logout(request)
+        user = auth.get_user_model()
+        user.objects.filter(pk=user_pk).delete()
+        messages.success(request, "Account deleted successfully.")
+        return shortcuts.redirect("home")
 
 
-class PasswordChangeView(auth.views.PasswordChangeView):
+class ProfileOtherView(generic.DetailView):
+    template_name = "tr/base.html"
+    model = auth_models.User
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page"] = "tr/pages/profile_external.html"
+        return context
+
+    def get_object(self):
+        return shortcuts.get_object_or_404(
+            auth_models.User, username=self.kwargs.get("username")
+        )
+
+
+class PasswordChangeView(auth_views.PasswordChangeView):
     template_name = "tr/base.html"
 
     def get_context_data(self, **kwargs):
@@ -140,7 +160,7 @@ class PasswordChangeView(auth.views.PasswordChangeView):
         return context
 
 
-class PasswordChangeDoneView(auth.views.PasswordChangeDoneView):
+class PasswordChangeDoneView(auth_views.PasswordChangeDoneView):
     template_name = "tr/base.html"
 
     def get_context_data(self, **kwargs):
@@ -149,7 +169,7 @@ class PasswordChangeDoneView(auth.views.PasswordChangeDoneView):
         return context
 
 
-class PasswordResetView(auth.views.PasswordResetView):
+class PasswordResetView(auth_views.PasswordResetView):
     template_name = "tr/base.html"
 
     def get_context_data(self, **kwargs):
@@ -158,7 +178,7 @@ class PasswordResetView(auth.views.PasswordResetView):
         return context
 
 
-class PasswordResetDoneView(auth.views.PasswordResetDoneView):
+class PasswordResetDoneView(auth_views.PasswordResetDoneView):
     template_name = "tr/base.html"
 
     def get_context_data(self, **kwargs):
@@ -167,7 +187,7 @@ class PasswordResetDoneView(auth.views.PasswordResetDoneView):
         return context
 
 
-class PasswordResetConfirmView(auth.views.PasswordResetConfirmView):
+class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
     template_name = "tr/base.html"
 
     def get_context_data(self, **kwargs):
@@ -176,7 +196,7 @@ class PasswordResetConfirmView(auth.views.PasswordResetConfirmView):
         return context
 
 
-class PasswordResetCompleteView(auth.views.PasswordResetCompleteView):
+class PasswordResetCompleteView(auth_views.PasswordResetCompleteView):
     template_name = "tr/base.html"
 
     def get_context_data(self, **kwargs):
@@ -439,7 +459,9 @@ def double_play_view(request):
 
         if player2_username and player2_password:
             try:
-                player2 = auth.models.User.objects.get(username=player2_username)
+                player2 = auth_models.User.objects.get(
+                    username=player2_username
+                )
                 user = auth.authenticate(
                     request,
                     username=player2_username,
@@ -455,7 +477,7 @@ def double_play_view(request):
                     messages.error(
                         request, "Incorrect password. Please try again."
                     )
-            except auth.models.User.DoesNotExist:
+            except auth_models.User.DoesNotExist:
                 messages.error(request, "User not found. Please try again.")
 
     if context["player1"] and context["player2"]:
