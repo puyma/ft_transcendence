@@ -130,6 +130,11 @@ urlpatterns = [
         "pong/users/<str:username>/",
         views.HomepageView.as_view(),
     ),
+    path(
+        'solo_play/save_match/', 
+        views.save_match, 
+        name='save_match'
+    ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # handle404...

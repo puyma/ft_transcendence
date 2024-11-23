@@ -6,9 +6,10 @@
       <div class="col-12 col-md-9 col-lg-7 col-xl-6">
         <div class="card">
           <div class="card-body p-5">
-
-            <h1 class="text-white display-3">Ready to play?</h1>
-            <h2 class="text-white">{{ request.user.username }} vs Computer</h2>
+            <div style="background-color: rgb(0, 0, 0); z-index: 3; position: relative;">
+              <h1 class="text-white text-center display-3">Ready to play?</h1>
+              <h2 class="text-white text-center">{{ request.user.username }} vs Computer</h2>
+            
             <div class="d-flex flex-column justify-content-center align-items-center" style="z-index: 3; position: relative; background-color: rgb(0, 0, 0);">
               <button
                   id="soloPlay"
@@ -31,6 +32,7 @@
                 <i class="fa-solid fa-circle-play"></i>
               </button>
             </div>
+          </div>
           </div>
         </div>
       </div>
