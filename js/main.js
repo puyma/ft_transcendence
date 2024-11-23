@@ -122,7 +122,6 @@ function main() {
     'form[data-ajax="true"]',
     event_handler_form,
   );
-  //router.add_event(window.router, 'get', , );
   //router.add_event(window.router, 'history', , );
   router.init();
   return;
