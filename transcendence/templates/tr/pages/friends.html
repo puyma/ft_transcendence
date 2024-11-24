@@ -15,39 +15,40 @@
             </div>
         </form>
 
-    <div class="search-results-list">
-        {% if search_results is not None %}
-            {% if search_results %}
-                <h3>Search Results</h3>
-                <div class="row">
-                    {% for result in search_results %}
-                        <div class="col-md-4 mb-3">
-                            <div class="card text-center">
-                                <img src="{{ result.avatar_image }}" alt="{{ result.user.username }}'s avatar" class="avatar card-img-top mx-auto mt-3" style="width: 100px; height: 100px; border-radius: 50%;">
-                                <div class="card-body">
-                                    <h5 class="card-title mt-2">{{ result.user.username }}</h5>
-                                    {% if result.user.username in sent_requests_usernames %}
-                                        <p>Already sent a request</p>
-                                    {% elif result.user.username in friends_usernames %}
-                                        <p>Already friends</p>
-                                    {% else %}
-                                        <form method="POST" action="{% url 'friends' %}">
-                                            {% csrf_token %}
-                                            <input type="hidden" name="username" value="{{ result.user.username }}">
-                                            <input type="hidden" name="action" value="send_request">
-                                            <button type="submit" class="btn btn-success">Add Friend</button>
-                                        </form>
-                                    {% endif %}
+        <div class="search-results-list">
+            {% if search_results is not None %}
+                {% if search_results %}
+                    <h3>Search Results</h3>
+                    <div class="row">
+                        {% for result in search_results %}
+                            <div class="col-md-4 mb-3">
+                                <div class="card text-center">
+                                    <img src="{{ result.avatar_image }}" alt="{{ result.user.username }}'s avatar" class="avatar card-img-top mx-auto mt-3" style="width: 100px; height: 100px; border-radius: 50%;">
+                                    <div class="card-body">
+                                        <h5 class="card-title mt-2">{{ result.user.username }}</h5>
+                                        {% if result.user.username in sent_requests_usernames %}
+                                            <p>Already sent a request</p>
+                                        {% elif result.user.username in friends_usernames %}
+                                            <p>Already friends</p>
+                                        {% else %}
+                                            <form method="POST" action="{% url 'friends' %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="username" value="{{ result.user.username }}">
+                                                <input type="hidden" name="action" value="send_request">
+                                                <button type="submit" class="btn btn-success">Add Friend</button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <p>No users found with that username.</p>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p>No users found with that username.</p>
+                {% endif %}
             {% endif %}
-        {% endif %}
-    </div>
+        </div>
+        
         
     <div id="my-friends-list" class="friends-list mt-4">
         <div class="row justify-content-center">

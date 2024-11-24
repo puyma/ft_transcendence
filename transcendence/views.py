@@ -7,10 +7,13 @@ from django.contrib.auth import models as auth_models
 from django.contrib.auth import views as auth_views
 from django.contrib import messages
 from django.views import generic
+import json
 
+from django.http import JsonResponse
 from . import forms
 from . import models
 from .providers import fortytwo
+from django.contrib.auth.models import User
 
 
 class HomepageView(generic.TemplateView):
@@ -354,7 +357,6 @@ class FriendsView(generic.TemplateView):
         context["page"] = "tr/pages/friends.html"
         user_profile = self.request.user.profile
 
-        # Handle search query
         search_query = self.request.GET.get("search", "")
         if search_query:
             search_results = models.Profile.objects.filter(
@@ -373,6 +375,7 @@ class FriendsView(generic.TemplateView):
         ).select_related("sender")
 
         friends_list = user_profile.get_friends()
+        friends_usernames = [friend.user.username for friend in friends_list]
 
         sent_requests_usernames = [
             req.receiver.user.username for req in friend_requests_sent
@@ -381,6 +384,7 @@ class FriendsView(generic.TemplateView):
         # context["friends_usernames"] = friends_usernames
         context["profile"] = user_profile
         context["search_results"] = search_results
+        context["friends_usernames"] = friends_usernames
         context["friend_requests_sent"] = friend_requests_sent
         context["friend_requests_received"] = friend_requests_received
         context["sent_requests_usernames"] = sent_requests_usernames
@@ -515,7 +519,7 @@ def save_match(request):
             except User.DoesNotExist:
                 return JsonResponse({'status': 'error', 'message': 'User not found'}, status=404)
 
-            match = Match.objects.create(
+            match = models.Match.objects.create(
                 winner_username=winner,
                 loser_username=loser,
                 winner_points=winner_points,

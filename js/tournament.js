@@ -8,7 +8,6 @@ import { MessageManager } from "./pong3d";
 export class Tournament {
   constructor(players, gameType, mode) {
     this.players = players;
-    console.log("players are:", players);
     this.matches = [];
     this.winners = [];
     this.gameType = gameType;
@@ -18,9 +17,7 @@ export class Tournament {
     let gameFinished = false;
 
     this.players.forEach((player) => {
-      console.log("win counfd class tournament: ", this.winCounts[player]);
       this.winCounts[player] = 0;
-      console.log("win counfd class tournament AFTER: ", this.winCounts[player]);
     });
     this.messageManager = new MessageManager();
   }
@@ -69,7 +66,6 @@ export class Tournament {
   }
 
   allVsAllMatches() {
-    console.log("inside allvs all players: ", this.players);
     for (let i = 0; i < this.players.length; i++) {
       for (let j = i + 1; j < this.players.length; j++) {
         this.matches.push([this.players[i], this.players[j]]);
@@ -159,28 +155,11 @@ export class Tournament {
   }
 
   determineWinner() {
-    Object.keys(this.winCounts).forEach(key => {
-      if (typeof key !== 'string') {
-        console.warn("Non-string key detected:", key);
-      }
-    });
-    const winner = Object.keys(this.winCounts).reduce((a, b) => {
-      const winsA = this.winCounts[a] || 0;
-      const winsB = this.winCounts[b] || 0;
-      return winsA > winsB ? a : b;
-    });
-    if (typeof winner === 'object') {
-      console.error("Winner is still an object:", winner);
-      this.tournamentWinner = winner?.name || "Unknown";
-    } else {
-      this.tournamentWinner = winner;
-    }
-    // const winner = Object.keys(this.winCounts).reduce((a, b) =>
-    //   this.winCounts[a] > this.winCounts[b] ? a : b,
-    // );
-    // this.tournamentWinner = winner;
+    const winner = Object.keys(this.winCounts).reduce((a, b) =>
+      this.winCounts[a] > this.winCounts[b] ? a : b,
+    );
+    this.tournamentWinner = winner;
   }
-
 
   handleNextMatch(onNextMatch) {
     const handleKeyN = (evt) => {
@@ -200,20 +179,12 @@ export class Tournament {
       if (game.isGameOver) {
         clearInterval(checkGameOver);
         game.endGame((winner) => {
-          // Ensure the winner is a string (player's name)
-          const winnerName = typeof winner === 'object' ? winner.name : winner;
-          console.log("Match winner:", winnerName);
-
-          // Update winCounts with the player's name
-          this.winCounts[winnerName] = (this.winCounts[winnerName] || 0) + 1;
-
-          // Finish the match with the winner's name
-          onFinish(winnerName);
+          this.winCounts[winner]++;
+          onFinish(winner);
         });
       }
     }, 100);
   }
-
 
   playNextMatch() {
     if (this.matches.length === 0) {
@@ -234,7 +205,6 @@ export class Tournament {
 
   finishTournament() {
     if (this.mode === "all_vs_all") {
-      console.log("kpasa lokooooo");
       this.determineWinner();
     }
     console.log("WINNERRRRR: ", this.tournamentWinner);
