@@ -18,26 +18,21 @@
 }
 
 body {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    height: 100vh;
-    /*justify-content: space-between;*/
-    /*gap: 1em;*/
+
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	height: 100vh;
 }
 
-header,
-main,
-footer {
-    display: flex;
-    flex-direction: column;
+header, main, footer {
+	display: flex;
+	flex-direction: column;
 }
 
 main {
-    flex-grow: 1;
-}
+	flex-grow: 1;
 
-main {
     letter-spacing: var(--bs-letter-spacing);
 }
 
@@ -47,14 +42,13 @@ h1 {
 }
 
 .avatar {
-    object-fit: cover;
-    object-position: top;
+	object-fit: cover;
+	object-position: top;
 }
 
 .vertical {
     border-left: 6px dashed rgb(255, 255, 255);
-    height: 80%;
-    /* TODO: adds overflow */
+    height: 80%; /* TODO: adds overflow */
     position: absolute;
     left: 50%;
     transform: translateX(-50%);

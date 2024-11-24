@@ -1,152 +1,142 @@
 {% load static %}
 
-{% if request.user.is_authenticated %}
-
 {% include 'tr/components/_navProfile.html' %}
-
-<!-- ERRORS IN THE profile FORM avatar iamge size and format-->
-{% if profile_form.errors %}
-
-<div class="container" style="max-width: 600px; margin: 20px auto;">
-	<div class="alert alert-danger">
-		{% for field in profile_form %}
-		{% for error in field.errors %}
-		{{ error }}
-		{% endfor %}
-		{% endfor %}
-		{% for error in profile_form.non_field_errors %}
-		{{ error }}
-		{% endfor %}
-	</div>
-</div>
-
-{% endif %}
-
-<!-- end ERRORS IN THE FORM -->
 
 <div class="container mt-5">
 
-	<div class="row justify-content-center mb-4">
-		<div class="col-md-4 text-center">
-			<img class="rounded-circle avatar"
-				 src="{{ request.user.profile.avatar_image }}"
-				 alt="User avatar" 
-				 style="height: 200px; width: 200px;">
-		</div>
-	</div>
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-4 text-center">
+            <img class="rounded-circle avatar"
+                 src="{{ request.user.profile.avatar_image }}"
+                 alt="User avatar" 
+                 style="height: 200px; width: 200px;">
+        </div>
+    </div>
 
-	<div class="form-content">
-		<div class="row justify-content-center mt-2">
-			<div class="col-md-8">
-				<form method="post" 
-					  enctype="multipart/form-data">
-					{% csrf_token %}
-					<div class="row mb-3">
-						<input type="file" 
-							   name="avatar" 
-							   id="id_avatar" 
-							   class="form-control-file" 
-							   onchange="updateFileName(this)">
-					</div>
-					<div class="row mb-3">
-						<div class="col-md-6">
-							<label for="username" 
-								   class="form-label">
-								Username
-							</label>
-							<input type="text" 
-								   class="form-control" 
-								   value="{{ user_form.username.value }}" 
-								   name="username">
-						</div>
-						<div class="col-md-6">
-							<label for="date" 
-								   class="form-label">
-								Date Joined
-							</label>
-							<input id="date" 
-								   type="text" 
-								   aria-label="Date Joined" 
-								   class="form-control" 
-								   value="{{ user.date_joined }}" 
-								   disabled>
-						</div>
-					</div>
+    <div class="form-content">
+        <div class="row justify-content-center mt-2">
+            <div class="col-md-8">
+                <form method="post" 
+                      enctype="multipart/form-data">
 
-					<div class="row mb-3">
-						<div class="col-md-6">
-							<label for="firstname" 
-								   class="form-label">
-								First Name
-							</label>
-							<input id="firstname" 
-								   type="text" 
-								   name="first_name" 
-								   aria-label="Firstname" 
-								   class="form-control" 
-								   value="{{ user_form.first_name.value }}">
-						</div>
-						<div class="col-md-6">
-							<label for="lastname" 
-								   class="form-label">
-								Last Name
-							</label>
-							<input id="lastname" 
-								   type="text" 
-								   name="last_name" 
-								   aria-label="Lastname" 
-								   class="form-control" 
-								   value="{{ user_form.last_name.value }}">
-						</div>
-					</div>
+                    {% csrf_token %}
 
-					<div class="row mb-3">
-						<div class="col-md-6">
-							<label for="email" 
-								   class="form-label">
-								Email
-							</label>
-							<input id="email" 
-								   type="text" 
-								   name="email" 
-								   aria-label="email" 
-								   class="form-control" 
-								   value="{{ user_form.email.value }}">
-						</div>
-						<div class="col-md-6">
-							<label for="bio" 
-								   class="form-label">
-								Bio
-							</label>
-							<input id="bio" 
-								   type="text" 
-								   name="bio" 
-								   aria-label="bio" 
-								   class="form-control" 
-								   value="{{ profile_form.bio.value }}">
-						</div>
-					</div>
 
-					<div class="row mb-3">
-						<div class="col-md-6">
-							<button type="submit" 
-									class="btn btn-dark">
-								Save Changes
-							</button>
-						</div>
-					</div>
-				</form>
+                    <div class="input-group mb-3">
+                        <input type="file"
+                               class="form-control" 
+                               name="avatar" 
+                               id="id_avatar" 
+                               onchange="updateFileName(this)">
+                    </div>
 
-				{% else %}
-				<div class="container mt-5 text-center">
-					<h1>Welcome to Our App</h1>
-					<p class="lead">Please <a href="{% url 'login' %}">
-						login
-					</a> to access your profile and other features.</p>
-				</div>
-				{% endif %}
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="username" 
+                                   class="form-label">
+                                {{ user_form.username.label }}
+                            </label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   value="{{ user_form.username.value }}" 
+                                   name="username">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="date" 
+                                   class="form-label">
+                                Date Joined
+                            </label>
+                            <input id="date" 
+                                   type="text" 
+                                   aria-label="Date Joined" 
+                                   class="form-control" 
+                                   value="{{ user.date_joined }}" 
+                                   disabled>
+                        </div>
+                    </div>
 
-			</div>
-		</div>
-	</div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="firstname" 
+                                   class="form-label">
+                                {{ user_form.first_name.label }}
+                            </label>
+                            <input id="firstname" 
+                                   type="text" 
+                                   name="first_name" 
+                                   aria-label="Firstname" 
+                                   class="form-control" 
+                                   value="{{ user_form.first_name.value }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="lastname" 
+                                   class="form-label">
+                                {{ user_form.last_name.label }}
+                            </label>
+                            <input id="lastname" 
+                                   type="text" 
+                                   name="last_name" 
+                                   aria-label="Lastname" 
+                                   class="form-control" 
+                                   value="{{ user_form.last_name.value }}">
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="email" 
+                                   class="form-label">
+                                {{ user_form.email.label }}
+                            </label>
+                            <input id="email" 
+                                   type="text" 
+                                   name="email" 
+                                   aria-label="email" 
+                                   class="form-control" 
+                                   value="{{ user_form.email.value }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="bio" 
+                                   class="form-label">
+                                {{ profile_form.bio.label }}
+                            </label>
+                            <input id="bio" 
+                                   type="text" 
+                                   name="bio" 
+                                   aria-label="bio" 
+                                   class="form-control" 
+                                   value="{{ profile_form.bio.value }}">
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <button type="submit" 
+                                    class="btn btn-dark">
+                                Save
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                {% if profile_form.errors %}
+                <div class="container">
+                    <div class="alert alert-danger">
+                        {% for field in profile_form %}
+                        {% for error in field.errors %}
+                        {{ error }}
+                        {% endfor %}
+                        {% endfor %}
+                        {% for error in profile_form.non_field_errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <p>active?: {{ user.is_active }}</p>
+
+            </div>
+        </div>
+    </div>
 </div>

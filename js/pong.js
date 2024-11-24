@@ -125,7 +125,7 @@ export class Game {
     this.canvas.focus();
 
     this.message.showMessage(
-      `Next Match: ${this.user.name} vs ${this.com.name}, Press Space to start`
+      `Next Match: ${this.player1} vs ${this.player2}, Press Space to start`,
     );
     document.addEventListener("keydown", (evt) => {
       if (evt.code === "Space" && !this.gameStarted) {
@@ -375,7 +375,9 @@ export class Game {
     console.log("Loser: ", loser.name, "Points: ", loser.score);
 
     if (this.gameMode === "solo_play" || this.gameMode === "double_play") {
-      this.message.showMessage(`${winner.name} Wins! Press 'R' to Restart or 'Esc' to finish`);
+      this.message.showMessage(
+        `${winner} Wins! Press 'R' to Restart or 'Esc' to finish`,
+      );
       // document.addEventListener("keydown", (evt) => this.resetGame(evt), {
       //   once: true,
       // });
@@ -429,7 +431,6 @@ export class Game {
           this.loadHomePage(); // Regresar a la página de inicio
         }
       };
-
 
       document.addEventListener("keydown", handleKeyPress, { once: true });
     }

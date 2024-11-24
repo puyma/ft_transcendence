@@ -1,5 +1,6 @@
 <div class="vertical"></div>
 <div class="d-flex justify-content-center h-100">
+<!--<div class="container d-flex justify-content-center align-items-center">-->
   <div class="row justify-content-center align-items-center w-100">
     <!-- PLAYER 1 -->
     <div class="col-4">
@@ -77,59 +78,3 @@
     </div>
   </div>
 </div>
-
-<script>
-// Function to add event listeners dynamically
-function addEventListeners() {
-  const playAnonymousBtn = document.getElementById('playAnonymousBtn');
-  const playAnonymousBtn2 = document.getElementById('playAnonymousBtn2');
-
-  if (playAnonymousBtn) {
-    playAnonymousBtn.addEventListener('click', function() {
-        // Add query parameter for Player 1 without affecting Player 2's state
-        const urlParams = new URLSearchParams(window.location.search);
-        urlParams.set('anonymous', 'true');
-        window.history.pushState({}, '', `${location.pathname}?${urlParams}`);
-        window.location.reload();
-    });
-  }
-
-  if (playAnonymousBtn2) {
-    playAnonymousBtn2.addEventListener('click', function() {
-        const urlParams = new URLSearchParams(window.location.search);
-        urlParams.set('anonymous2', 'true');
-        window.history.pushState({}, '', `${location.pathname}?${urlParams}`);
-        window.location.reload();
-    });
-  }
-}
-
-function updatePageState() {
-    // Check for "anonymous" and "anonymous2" parameters in the URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const isPlayer1Anonymous = urlParams.get('anonymous') === 'true';
-    const isPlayer2Anonymous = urlParams.get('anonymous2') === 'true';
-
-    // Update the visibility of the "anonymous" messages
-    const anonymousMessage = document.getElementById('anonymousMessage');
-    const playAnonymousBtn = document.getElementById('playAnonymousBtn');
-    const playAnonymousBtn2 = document.getElementById('playAnonymousBtn2');
-
-    if (isPlayer1Anonymous) {
-        anonymousMessage.style.display = 'block'; // Show message for Player 1 as anonymous
-    } else {
-        anonymousMessage.style.display = 'none'; // Hide message for Player 1
-    }
-
-    if (isPlayer2Anonymous) {
-        playAnonymousBtn2.style.display = 'none'; // Hide "Play as Guest" button for Player 2 when playing anonymously
-    } else {
-        playAnonymousBtn2.style.display = 'block'; // Show "Play as Guest" button for Player 2
-    }
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    addEventListeners(); // Add event listeners
-    updatePageState(); // Update the page state based on current URL parameters
-});
-</script>

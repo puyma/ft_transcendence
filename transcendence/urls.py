@@ -1,8 +1,6 @@
 from django.contrib import admin
-from django.contrib import auth
-from django.urls import path
 from django.conf import settings
-from django.conf.urls.static import static
+from django.urls import path
 
 from . import views
 from .providers import fortytwo
@@ -63,13 +61,12 @@ urlpatterns = [
         views.ProfileView.as_view(),
         name="profile",
     ),
-    path(
-        "profile/delete/",
-        views.profile_delete,
-        name="del_account",
-    ),
     path("profile/stats/", views.StatsView.as_view(), name="stats"),
     path("profile/friends/", views.FriendsView.as_view(), name="friends"),
+    path(
+        "profile/<str:username>/",
+        views.ProfileOtherView.as_view(),
+    ),
     path(
         "settings/",
         views.ProfileView.as_view(),
@@ -135,6 +132,6 @@ urlpatterns = [
         views.save_match, 
         name='save_match'
     ),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
 
 # handle404...

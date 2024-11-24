@@ -179,7 +179,6 @@ export class Tournament {
     //   this.winCounts[a] > this.winCounts[b] ? a : b,
     // );
     // this.tournamentWinner = winner;
-
   }
 
 

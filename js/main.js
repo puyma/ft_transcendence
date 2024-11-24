@@ -15,6 +15,35 @@ import { Game as Game3D } from "./pong3d.js";
 
 // functions
 
+function event_handler_double_play_btn(event) {
+  // Add query parameter for Player 1 without affecting Player 2's state
+  const urlParams = new URLSearchParams(window.location.search);
+  urlParams.set('anonymous', 'true');
+  window.history.pushState({}, '', `${location.pathname}?${urlParams}`);
+  //window.location.reload();
+  return ;
+}
+
+function event_handler_double_play_btn2(event) {
+  // Add query parameter for Player 1 without affecting Player 2's state
+  const urlParams = new URLSearchParams(window.location.search);
+  urlParams.set('anonymous2', 'true');
+  window.history.pushState({}, '', `${location.pathname}?${urlParams}`);
+  //window.location.reload();
+  return ;
+}
+
+function updatePageState() {
+    // Check for "anonymous" and "anonymous2" parameters in the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const isPlayer1Anonymous = urlParams.get('anonymous') === 'true';
+    const isPlayer2Anonymous = urlParams.get('anonymous2') === 'true';
+
+    // Update the visibility of the "anonymous" messages
+    const playAnonymousBtn = document.getElementById('playAnonymousBtn');
+    const playAnonymousBtn2 = document.getElementById('playAnonymousBtn2');
+}
+
 // @fn		setup_login_providers
 // @return	{void}
 
@@ -56,10 +85,13 @@ function initPlay() {
   const tournamentAliases = document.getElementById("playerData")
     ? JSON.parse(document.getElementById("playerData").textContent)
     : [];
+
   const gameButtons = document.querySelectorAll("[id$='Play']");
-  gameButtons.forEach(button => {
+  /*console.log("holaaaaaaaa");*/
+  gameButtons.forEach((button) => {
     button.addEventListener("click", (event) => {
       event.preventDefault();
+
       let mode = button.getAttribute("data-mode");
       let gameType = button.getAttribute("data-type"); // "2d" or "3d"
       let players;
@@ -68,16 +100,15 @@ function initPlay() {
         players = tournamentAliases;
         if (players.length > 3) {
           mode = "knockout";
-        }
-        else {
+        } else {
           mode = "all_vs_all";
         }
       } else if (mode === "solo_play") {
         players = button.getAttribute("data-players").split(",");
       } else if (mode == "double_play")
-        players = button.getAttribute('data-players').split(",");
+        players = button.getAttribute("data-players").split(",");
 
-      console.log(`Mode: ${mode}, Game Type: ${gameType}, Players:`, players);
+      /*console.log(`Mode: ${mode}, Game Type: ${gameType}, Players:`, players);*/
 
       let canvas = document.createElement("canvas");
       canvas.id = "canvas";
@@ -101,7 +132,7 @@ function initPlay() {
 
 function main() {
   router = window.router = new Router();
-  router.attach([initPlay], "post");
+  router.attach([initPlay, updatePageState], "post");
   router.add_event(
     window.document,
     "click",
@@ -120,8 +151,16 @@ function main() {
     'form[data-ajax="true"]',
     event_handler_form,
   );
-  //router.add_event(window.router, 'get', , );
-  //router.add_event(window.router, 'history', , );
+  router.add_event(
+    window.document,
+    "click",
+    'button#playAnonymousBtn',
+    event_handler_double_play_btn);
+  router.add_event(
+    window.document,
+    "click",
+    'button#playAnonymousBtn2',
+    event_handler_double_play_btn2);
   router.init();
   return;
 }
