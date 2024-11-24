@@ -15,6 +15,35 @@ import { Game as Game3D } from "./pong3d.js";
 
 // functions
 
+function event_handler_double_play_btn(event) {
+  // Add query parameter for Player 1 without affecting Player 2's state
+  const urlParams = new URLSearchParams(window.location.search);
+  urlParams.set('anonymous', 'true');
+  window.history.pushState({}, '', `${location.pathname}?${urlParams}`);
+  //window.location.reload();
+  return ;
+}
+
+function event_handler_double_play_btn2(event) {
+  // Add query parameter for Player 1 without affecting Player 2's state
+  const urlParams = new URLSearchParams(window.location.search);
+  urlParams.set('anonymous2', 'true');
+  window.history.pushState({}, '', `${location.pathname}?${urlParams}`);
+  //window.location.reload();
+  return ;
+}
+
+function updatePageState() {
+    // Check for "anonymous" and "anonymous2" parameters in the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const isPlayer1Anonymous = urlParams.get('anonymous') === 'true';
+    const isPlayer2Anonymous = urlParams.get('anonymous2') === 'true';
+
+    // Update the visibility of the "anonymous" messages
+    const playAnonymousBtn = document.getElementById('playAnonymousBtn');
+    const playAnonymousBtn2 = document.getElementById('playAnonymousBtn2');
+}
+
 // @fn		setup_login_providers
 // @return	{void}
 
@@ -103,7 +132,7 @@ function initPlay() {
 
 function main() {
   router = window.router = new Router();
-  router.attach([initPlay], "post");
+  router.attach([initPlay, updatePageState], "post");
   router.add_event(
     window.document,
     "click",
@@ -122,7 +151,16 @@ function main() {
     'form[data-ajax="true"]',
     event_handler_form,
   );
-  //router.add_event(window.router, 'history', , );
+  router.add_event(
+    window.document,
+    "click",
+    'button#playAnonymousBtn',
+    event_handler_double_play_btn);
+  router.add_event(
+    window.document,
+    "click",
+    'button#playAnonymousBtn2',
+    event_handler_double_play_btn2);
   router.init();
   return;
 }

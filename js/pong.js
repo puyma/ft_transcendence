@@ -1,7 +1,3 @@
-// TODO: space para empezar el juego
-//     set players, 1 y 2, si no hay 2 -> computer
-//     teclas para empezar a jugar y reset game
-
 class Message {
   constructor(ctx, dpr, scaleFactor) {
     this.ctx = ctx;
@@ -43,15 +39,13 @@ class Message {
 }
 
 export class Game {
-  constructor(canvasId, mode, play1, play2) {
+  constructor(canvasId, mode, player1, player2) {
     this.canvas = document.getElementById(canvasId);
     this.ctx = this.canvas ? this.canvas.getContext("2d") : null;
-
     this.dpr = window.devicePixelRatio || 1;
     this.gameMode = mode;
-    this.player1 = play1;
-    if (this.gameMode === "solo_play") this.player2 = "Computer";
-    else this.player2 = play2;
+    this.player1 = player1;
+    this.player2 = player2;
     this.scaleFactor = 1.5;
     this.user = this.createPaddle(
       0,
@@ -369,12 +363,59 @@ export class Game {
 
   endGame(onFinish, onNextMatch) {
     this.isGameOver = true;
-    let winner = this.user.score >= 1 ? this.player1 : this.player2;
+
+    let winner = this.user.score >= this.com.score ? this.player1 : this.player2;
+    let loser = this.user.score < this.com.score ? this.player1 : this.player2;
+    let winner_points = this.user.score >= this.com.score ? this.user.score : this.com.score;
+    let loser_points = this.user.score < this.com.score ? this.user.score : this.com.score;
+
+    // console.log("winner", winner, "loser", loser, "winn_points:", winner_points, "loser_points", loser_points);
 
     if (this.gameMode === "solo_play" || this.gameMode === "double_play") {
       this.message.showMessage(
         `${winner} Wins! Press 'R' to Restart or 'Esc' to finish`,
       );
+      const csrfToken = getCSRFToken(); // Ensure this function correctly fetches the CSRF token
+
+      fetch('/solo_play/save_match/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrfToken, // CSRF token is included in the header
+        },
+        body: JSON.stringify({
+          winner: winner,
+          loser: loser,
+          winner_points: winner_points,
+          loser_points: loser_points,
+        })
+      })
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            return response.json().then(data => {
+              throw new Error(data.message || 'An error occurred');
+            });
+          }
+        })
+        .then(data => {
+          if (data.status === 'success') {
+            console.log('Match saved successfully:', data);
+            // Perform any actions that should happen after a successful save
+          } else {
+            console.error('Error saving match:', data.message);
+            // Handle the error (user might not be logged in, etc.)
+          }
+        })
+        .catch(error => {
+          if (error.message === 'User not authenticated') {
+            console.log('User is not logged in, match not saved');
+            // Optionally: Inform the user to log in or redirect to login
+          } else {
+            console.error('Unexpected error:', error);
+          }
+        });
       // document.addEventListener("keydown", (evt) => this.resetGame(evt), {
       //   once: true,
       // });
@@ -435,3 +476,13 @@ export class Game {
       );
   }
 }
+
+function getCSRFToken() {
+  const csrfToken = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('csrftoken='))
+    ?.split('=')[1];
+  return csrfToken || ''; // Return the token or empty string if not found
+}
+
+const csrfToken = getCSRFToken();

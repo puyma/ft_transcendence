@@ -85,7 +85,6 @@ class UpdateUserForm(auth_forms.UserChangeForm):
         model = auth_models.User
         fields = ["username", "email", "first_name", "last_name"]
 
-
 class UpdateProfileForm(forms.ModelForm):
 
     avatar = forms.ImageField(
@@ -118,7 +117,7 @@ class UpdateProfileForm(forms.ModelForm):
             ext = os.path.splitext(avatar.name)[1].lower()
             if ext not in valid_extensions:
                 raise core.exceptions.ValidationError(
-                    "Unsupported file format. Allowed formats are: JPG, JPEG, PNG, GIF."
-                )
+                        "Unsupported file format. Allowed formats are: JPG, JPEG, PNG, GIF."
+                        )
         return avatar
     """

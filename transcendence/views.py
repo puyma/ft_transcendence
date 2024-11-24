@@ -7,10 +7,13 @@ from django.contrib.auth import models as auth_models
 from django.contrib.auth import views as auth_views
 from django.contrib import messages
 from django.views import generic
+import json
 
+from django.http import JsonResponse
 from . import forms
 from . import models
 from .providers import fortytwo
+from django.contrib.auth.models import User
 
 
 class HomepageView(generic.TemplateView):
@@ -354,7 +357,6 @@ class FriendsView(generic.TemplateView):
         context["page"] = "tr/pages/friends.html"
         user_profile = self.request.user.profile
 
-        # Handle search query
         search_query = self.request.GET.get("search", "")
         if search_query:
             search_results = models.Profile.objects.filter(
@@ -373,17 +375,19 @@ class FriendsView(generic.TemplateView):
         ).select_related("sender")
 
         friends_list = user_profile.get_friends()
+        friends_usernames = [friend.user.username for friend in friends_list]
 
         sent_requests_usernames = [
             req.receiver.user.username for req in friend_requests_sent
         ]
 
+        # context["friends_usernames"] = friends_usernames
         context["profile"] = user_profile
         context["search_results"] = search_results
+        context["friends_usernames"] = friends_usernames
         context["friend_requests_sent"] = friend_requests_sent
         context["friend_requests_received"] = friend_requests_received
         context["sent_requests_usernames"] = sent_requests_usernames
-        context["friends_list"] = friends_list
         return context
 
     def post(self, request, *args, **kwargs):
@@ -485,3 +489,47 @@ def double_play_view(request):
     else:
         context["play_enabled"] = False
     return shortcuts.render(request, "tr/base.html", context)
+
+def save_match(request):
+    if not request.user.is_authenticated:
+        print("User not authenticated")
+        return JsonResponse({'status': 'success', 'message': 'User not authenticated, match not saved'}, status=200)
+    
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            print("Request body received:", request.body)
+            print("Parsed JSON data:", data)
+
+            winner_username = data.get('winner')
+            loser_username = data.get('loser')
+            winner_points = data.get('winner_points')
+            loser_points = data.get('loser_points')
+            
+            if winner_username == "guest2":
+                winner_username = "Guest"
+            if loser_username == "guest2":
+                loser_username = "Guest"
+            if not winner_username or not loser_username or winner_points is None or loser_points is None:
+                return JsonResponse({'status': 'error', 'message': 'Missing data'}, status=400)
+
+            try:
+                winner = User.objects.get(username=winner_username)
+                loser = User.objects.get(username=loser_username)
+            except User.DoesNotExist:
+                return JsonResponse({'status': 'error', 'message': 'User not found'}, status=404)
+
+            match = models.Match.objects.create(
+                winner_username=winner,
+                loser_username=loser,
+                winner_points=winner_points,
+                loser_points=loser_points
+            )
+            return JsonResponse({'status': 'success', 'match_id': match.id})
+
+        except json.JSONDecodeError:
+            return JsonResponse({'status': 'error', 'message': 'Invalid JSON format'}, status=400)
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
