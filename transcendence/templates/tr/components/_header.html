@@ -11,28 +11,25 @@
 				   href="/">PONG GAME</a>
 			</div>
 			<div class="col">
-
-
 				{% if request.user.is_authenticated %}
-
 				<div class="btn-group text-end">
 					<a href="#" 
 					   class="d-block link-body-emphasis text-decoration-none dropdown" 
 					   data-bs-toggle="dropdown" 
 					   aria-expanded="false">
-						<p>{{ user.profile.avatar }}</p>
+					{% if user.profile.avatar %}
 						<img src="/media/{{ user.profile.avatar }}" 
 							 alt="{{ user.username }}" 
 							 width="32" 
 							 height="32" 
 							 class="rounded-circle avatar">
-						{% else %}
+					{% else %}
 						<img src="/static/assets/default_avatar.png" 
 							 alt="{{ user.username }}" 
 							 width="32" 
 							 height="32" 
 							 class="rounded-circle avatar">
-						{% endif %}
+				{% endif %}
 					</a>
 					<ul class="dropdown-menu dropdown-menu-end text-small">
 						<li>
