@@ -20,14 +20,18 @@
 					   class="d-block link-body-emphasis text-decoration-none dropdown" 
 					   data-bs-toggle="dropdown" 
 					   aria-expanded="false">
-						{% if user.profile.avatar %}
+						<p>{{ user.profile.avatar }}</p>
 						<img src="/media/{{ user.profile.avatar }}" 
 							 alt="{{ user.username }}" 
 							 width="32" 
 							 height="32" 
 							 class="rounded-circle avatar">
 						{% else %}
-						{{ user.username }}
+						<img src="/static/assets/default_avatar.png" 
+							 alt="{{ user.username }}" 
+							 width="32" 
+							 height="32" 
+							 class="rounded-circle avatar">
 						{% endif %}
 					</a>
 					<ul class="dropdown-menu dropdown-menu-end text-small">

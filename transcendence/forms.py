@@ -67,7 +67,7 @@ class UpdateUserForm(auth_forms.UserChangeForm):
         widget=forms.TextInput(attrs={"class": "form-control"}),
     )
     email = forms.EmailField(
-        required=True,
+        required=False,
         widget=forms.EmailInput(attrs={"class": "form-control"}),
     )
     first_name = forms.CharField(

@@ -8,6 +8,8 @@ from django.contrib.auth import models as auth_models
 from django.contrib.auth import signals as auth_signals
 from django.dispatch import receiver
 from django.utils import timezone
+from django.templatetags.static import static
+
 
 
 class Profile(db.models.Model):
@@ -15,7 +17,8 @@ class Profile(db.models.Model):
         auth_models.User, on_delete=db.models.CASCADE
     )
     avatar = db.models.ImageField(
-        default="profile_images/default.png", upload_to="profile_images"
+        upload_to="profile_images",
+        null=True,
     )
     avatar_url = db.models.URLField(max_length=500, blank=True, null=True)
     bio = db.models.TextField(default="No bio available.")
@@ -95,11 +98,12 @@ class Profile(db.models.Model):
 
     @property
     def avatar_image(self):
-        if self.avatar and self.avatar.name != "profile_images/default.png":
-            return self.avatar.url
+        if self.avatar:
+            return self.avatar.url  # Serve from MEDIA_URL
         if self.avatar_url:
-            return self.avatar_url
-        return "/media/profile_images/default.png"
+            return self.avatar_url  # External avatar
+        return static("assets/default_avatar.png")  # Default avatar from static
+
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
