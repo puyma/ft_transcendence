@@ -1,20 +1,31 @@
-<h1 class="text-center mt-5">Enter Number of Participants</h1>
+<div class="mask d-flex align-items-center h-100 gradient-custom-3">
+  <div class="container h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-12 col-md-9 col-lg-7 col-xl-6">
+        <div class="card">
+          <div class="card-body p-5">
 
-<div class="container mt-5">
-  <div class="row justify-content-center">
-    <div class="col-md-6">
-      <form method="post">
-        {% csrf_token %}
-        <div class="mb-3">
-          <label for="num_participants" class="form-label">Number of Participants</label>
-          <input type="number" name="num_participants" id="num_participants" 
-                 class="form-control" min="1" max="100" required>
-        </div>
+            <h2>Enter Number of Participants</h2>
 
-        <div class="d-grid gap-2">
-          <button type="submit" class="btn btn-primary btn-lg w-100">Next</button>
+            <form method="post">
+              {% csrf_token %}
+              <div class="mb-3">
+                <label for="num_participants" 
+                       class="form-label">Number of Participants</label>
+                <input type="number" 
+                       name="num_participants"               
+                       id="num_participants" 
+                       class="form-control" min="1" max="100" required>
+              </div>
+
+              <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary btn-lg w-100">Next</button>
+              </div>
+            </form>
+          </div>
         </div>
-      </form>
+      </div>
+
     </div>
   </div>
 </div>

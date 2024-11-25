@@ -6,11 +6,12 @@ import { Game } from "./pong";
 import { MessageManager } from "./pong3d";
 
 export class Tournament {
-  constructor(players) {
+  constructor(players, gameType, mode) {
     this.players = players;
     this.matches = [];
     this.winners = [];
-    this.mode = this.setMode();
+    this.gameType = gameType;
+    this.mode = mode;
     this.winCounts = {};
     this.tournamentWinner = null;
     let gameFinished = false;
@@ -19,20 +20,6 @@ export class Tournament {
       this.winCounts[player] = 0;
     });
     this.messageManager = new MessageManager();
-  }
-
-  setMode() {
-    const players = this.players.length;
-
-    if (players === 1) {
-      return "solo_play";
-    } else if (players === 2) {
-      return "double_play";
-    } else if (players === 3) {
-      return "all_vs_all";
-    } else {
-      return "knockout";
-    }
   }
 
   startTournament() {
@@ -58,7 +45,13 @@ export class Tournament {
 
   soloPlayGame() {
     console.log(this.mode);
-    const game = new Game("canvas", this.mode, this.players[0], "Computer");
+    // if gameType == 2d
+    const game = new Game(
+      "canvas",
+      this.mode,
+      this.players[0],
+      this.players[1],
+    );
     game.init();
   }
 
@@ -67,7 +60,7 @@ export class Tournament {
       "canvas",
       this.mode,
       this.players[0],
-      this.players[1]
+      this.players[1],
     );
     game.init();
   }
@@ -163,7 +156,7 @@ export class Tournament {
 
   determineWinner() {
     const winner = Object.keys(this.winCounts).reduce((a, b) =>
-      this.winCounts[a] > this.winCounts[b] ? a : b
+      this.winCounts[a] > this.winCounts[b] ? a : b,
     );
     this.tournamentWinner = winner;
   }
@@ -217,8 +210,8 @@ export class Tournament {
     console.log("WINNERRRRR: ", this.tournamentWinner);
     this.messageManager.showMessage(
       `Tournament winner: ${this.tournamentWinner}<br>Press 'R' to retry or 'Esc' to finish`,
-      "#FF0000"
-    ); 
+      "#FF0000",
+    );
     document.addEventListener("keydown", this.handleEndTournament.bind(this), {
       once: true,
     });
@@ -249,7 +242,7 @@ export class Tournament {
         history.pushState({}, "", "/");
       })
       .catch((error) =>
-        console.error("Error al cargar la página de inicio:", error)
+        console.error("Error al cargar la página de inicio:", error),
       );
   }
 }

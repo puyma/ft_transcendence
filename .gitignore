@@ -168,8 +168,3 @@ node_modules
 static/
 media/
 *.pem
-<<<<<<< HEAD
-
-=======
->>>>>>> 31-solving-paddles-problem
-migrations/

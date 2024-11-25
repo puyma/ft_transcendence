@@ -2,9 +2,10 @@ import { Button } from "bootstrap";
 import { Collapse } from "bootstrap";
 import { Dropdown } from "bootstrap";
 import { Toast } from "bootstrap";
+
 import { Router } from "./router.js";
-import { Game } from "./pong";
-import { Tournament } from "./tournament";
+import { Game } from "./pong.js";
+import { Tournament } from "./tournament.js";
 import { Game as Game3D } from "./pong3d.js";
 
 // variables
@@ -14,22 +15,42 @@ import { Game as Game3D } from "./pong3d.js";
 
 // functions
 
+function event_handler_double_play_btn(event) {
+  // Add query parameter for Player 1 without affecting Player 2's state
+  const urlParams = new URLSearchParams(window.location.search);
+  urlParams.set('anonymous', 'true');
+  window.history.pushState({}, '', `${location.pathname}?${urlParams}`);
+  //window.location.reload();
+  return ;
+}
+
+function event_handler_double_play_btn2(event) {
+  // Add query parameter for Player 1 without affecting Player 2's state
+  const urlParams = new URLSearchParams(window.location.search);
+  urlParams.set('anonymous2', 'true');
+  window.history.pushState({}, '', `${location.pathname}?${urlParams}`);
+  //window.location.reload();
+  return ;
+}
+
+function updatePageState() {
+    // Check for "anonymous" and "anonymous2" parameters in the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const isPlayer1Anonymous = urlParams.get('anonymous') === 'true';
+    const isPlayer2Anonymous = urlParams.get('anonymous2') === 'true';
+
+    // Update the visibility of the "anonymous" messages
+    const playAnonymousBtn = document.getElementById('playAnonymousBtn');
+    const playAnonymousBtn2 = document.getElementById('playAnonymousBtn2');
+}
+
 // @fn		setup_login_providers
 // @return	{void}
 
-function setup_login_providers() {
-  const elements = document.querySelectorAll("[data-login-provider=true]");
-
-  if (!elements) {
-    return;
-  }
-  elements.forEach((element) => {
-    const url = element.getAttribute("data-login-provider-url");
-    element.addEventListener("click", (event) => {
-      event.preventDefault();
-      window.open(url, "_self");
-    });
-  });
+function event_handler_login_provider(event) {
+  const href = event.target.getAttribute("data-login-provider-url");
+  event.preventDefault();
+  window.open(href, "_self");
   return;
 }
 
@@ -61,13 +82,34 @@ function event_handler_form(event) {
 }
 
 function initPlay() {
-  const startGame = document.getElementById("playGame");
-  // get players dinamically form tournament page WIP
-  // const players = JSON.parse(document.getElementById('playerData').textContent);
-  // console.log(players);
-  if (startGame) {
-    startGame.addEventListener("click", (event) => {
+  const tournamentAliases = document.getElementById("playerData")
+    ? JSON.parse(document.getElementById("playerData").textContent)
+    : [];
+
+  const gameButtons = document.querySelectorAll("[id$='Play']");
+  /*console.log("holaaaaaaaa");*/
+  gameButtons.forEach((button) => {
+    button.addEventListener("click", (event) => {
       event.preventDefault();
+
+      let mode = button.getAttribute("data-mode");
+      let gameType = button.getAttribute("data-type"); // "2d" or "3d"
+      let players;
+
+      if (mode === "tournament") {
+        players = tournamentAliases;
+        if (players.length > 3) {
+          mode = "knockout";
+        } else {
+          mode = "all_vs_all";
+        }
+      } else if (mode === "solo_play") {
+        players = button.getAttribute("data-players").split(",");
+      } else if (mode == "double_play")
+        players = button.getAttribute("data-players").split(",");
+
+      /*console.log(`Mode: ${mode}, Game Type: ${gameType}, Players:`, players);*/
+
       let canvas = document.createElement("canvas");
       canvas.id = "canvas";
       canvas.style.width = `${window.innerWidth}px`;
@@ -79,46 +121,46 @@ function initPlay() {
       if (main) {
         main.replaceChildren(canvas);
       } else {
-        console.error("<main> element not found.");
+        /*console.error("<main> element not found.");*/
         return;
       }
-      const players = ["mica", "clara"];
-      const tournament = new Tournament(players);
+      const tournament = new Tournament(players, "2d", mode);
       tournament.startTournament();
     });
-  }
-  // const tournamentMode = document.getElementById('tournamentMode');
-  // if (tournamentMode) {
-  // 	tournamentMode.addEventListener('click', (event) => {
-  // 		event.preventDefault();
-  // 		const players = ['Player 1', 'Player 2', 'Player 3', 'Player 4', 'Player 5'];
-  // 		const tournament = new Tournament(players);
-  // 		tournament.startTournament();
-  // 	});
-  // }
+  });
 }
-
-// __main__
-// Execute once DOM is loaded
 
 function main() {
   router = window.router = new Router();
-  router.attach([setup_login_providers], "pre");
-  router.attach([initPlay], "post");
+  router.attach([initPlay, updatePageState], "post");
   router.add_event(
     window.document,
     "click",
     'a[data-ajax="true"]',
-    event_handler_anchor
+    event_handler_anchor,
+  );
+  router.add_event(
+    window.document,
+    "click",
+    'button[data-login-provider="true"]',
+    event_handler_login_provider,
   );
   router.add_event(
     window.document,
     "submit",
     'form[data-ajax="true"]',
-    event_handler_form
+    event_handler_form,
   );
-  //router.add_event(window.router, 'get', , );
-  //router.add_event(window.router, 'history', , );
+  router.add_event(
+    window.document,
+    "click",
+    'button#playAnonymousBtn',
+    event_handler_double_play_btn);
+  router.add_event(
+    window.document,
+    "click",
+    'button#playAnonymousBtn2',
+    event_handler_double_play_btn2);
   router.init();
   return;
 }

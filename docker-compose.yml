@@ -38,16 +38,9 @@ services:
       DOMAIN_URL: ${DOMAIN_URL?err}
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      DEFAULT_FROM_EMAIL: no-reply@dump-ubuntu-barcelona
       STATIC_URL: /static/
       STATIC_ROOT: static
       MEDIA_URL: /media/
-      EMAIL_HOST: mailhog
-      EMAIL_USE_TLS: "False"
-      EMAIL_USE_SSL: "False"
-      EMAIL_PORT: 1025
-      EMAIL_USER: tr-mail@tr.mail
-      EMAIL_PASSWORD: tr-password
     expose:
       - 80
       - 443
@@ -87,7 +80,7 @@ services:
         restart: true
     expose:
       - 6379
-    image: redis:7.4-alpine
+    image: redis:7.4-alpine3.20
     networks:
       - tr-network
 
@@ -108,21 +101,12 @@ services:
       - ./:/usr/app/
     working_dir: /usr/app/
 
-  #mailhog:
-  #container_name: tr-mail
-  #expose:
-  #- 1025
-  #- 8025
-  #image: mailhog/mailhog:latest
-  #networks:
-  #- tr-network
-
   npm:
     container_name: tr-util-npm
     command: npm install
     environment:
       DEBUG: ${DEBUG:-false}
-    image: node:22.7-alpine3.19
+    image: node:22.7-alpine3.20
     volumes:
       - ./:/usr/app
     working_dir: /usr/app/
@@ -136,7 +120,7 @@ services:
     environment:
       DEBUG: ${DEBUG:-false}
     entrypoint: ./sass-entrypoint.sh
-    image: node:22.7-alpine3.19
+    image: node:22.7-alpine3.20
     volumes:
       - ./:/usr/app/
     working_dir: /usr/app/
@@ -162,7 +146,7 @@ services:
         restart: true
     environment:
       DEBUG: ${DEBUG:-false}
-    image: node:22.7-alpine3.19
+    image: node:22.7-alpine3.20
     volumes:
       - ./:/usr/app/
     working_dir: /usr/app/

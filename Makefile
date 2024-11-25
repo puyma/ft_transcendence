@@ -45,7 +45,13 @@ fclean: purgeall clean
 re: fclean up
 
 purgedb:
-	docker run --tty --rm --volume "$(shell pwd)":/ft postgres:alpine ash -c "rm -vr /ft/postgres_data"
+	docker run --tty --rm --volume "$(shell pwd)":/ft postgres:16.4-alpine3.20 ash -c "rm -vrf /ft/postgres_data"
 
-purgeall:
-	docker run --tty --rm --volume "$(shell pwd)":/ft node:22.7-alpine3.19 ash -c "rm -vr /ft/node_modules /ft/static"
+purgestatic:
+	docker run --tty --rm --volume "$(shell pwd)":/ft node:22.7-alpine3.19 ash -c "rm -vrf /ft/static"
+
+purgenodemodules:
+	docker run --tty --rm --volume "$(shell pwd)":/ft node:22.7-alpine3.19 ash -c "rm -vrf /ft/node_modules"
+
+purgeall: purgestatic purgenodemodules
+	docker run --tty --rm --volume "$(shell pwd)":/ft node:22.7-alpine3.19 ash -c "rm -vrf /ft/node_modules /ft/static"

@@ -25,7 +25,7 @@ module.exports = {
 					keep_classnames: true,
 					keep_fnames: true,
 					mangle: false,
-					module: false,
+					module: true,
 					nameCache: null,
 					//sourceMap: {},
 					format: {

@@ -1,12 +1,16 @@
 {% load static %}
-<nav class="navbar navbar-expand-lg transparent-navbar">
+<nav class="navbar navbar-expand-lg">
     <div class="container-fluid">
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <div class="d-flex flex-column flex-lg-row justify-content-center w-100"> <!-- Responsive flex layout -->
-                <a class="nav-link mb-2 mb-lg-0 me-lg-4" data-ajax="true" href="{% url 'profile' %}">Profile</a>
-                <a class="nav-link mb-2 mb-lg-0 me-lg-4" data-ajax="true" href="{% url 'stats' %}">Stats</a>
-                <a class="nav-link mb-2 mb-lg-0 me-lg-4" data-ajax="true" href="{% url 'friends' %}">Friends</a>
+            <div class="d-flex flex-column flex-lg-row justify-content-center align-items-center w-100">
+                <a class="nav-link mb-2 mb-lg-0 me-lg-4 text-white px-3 py-2 rounded transition-all" data-ajax="true" href="{% url 'profile' %}">
+                    Profile
+                </a>
+                <a class="nav-link mb-2 mb-lg-0 me-lg-4 text-white px-3 py-2 rounded transition-all" data-ajax="true" href="{% url 'stats' %}">
+                    Stats
+                </a>
+                <a class="nav-link mb-2 mb-lg-0 me-lg-4 text-white px-3 py-2 rounded transition-all" data-ajax="true" href="{% url 'friends' %}">
+                    Friends
+                </a>
             </div>
-        </div>
     </div>
 </nav>

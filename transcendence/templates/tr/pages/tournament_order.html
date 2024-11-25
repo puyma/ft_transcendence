@@ -1,14 +1,19 @@
-<h1 class="text-center mt-5">Tournament Order</h1>
+<div class="position-absolute top-50 start-50 translate-middle">
 
-<div class="container mt-5">
+<h1 class="text-center mt-5">Tournament Start</h1>
+<div class=" mt-5">
     <div class="row justify-content-center">
-        <div class="col-md-6">
+        <!-- <div class="col-md-6"> -->
+            <div class="mb-3">
+                <a href="{% url 'tournament_register' %}" class="btn btn-secondary">
+                    <i class="fa fa-arrow-left" aria-hidden="true"></i> Modify Alias of the Participants
+                </a>
+            </div>
             <h3>Number of Participants: {{ num_participants }}</h3>
-            
             {% if aliases %}
                 <ul class="list-group mt-4">
                     {% for alias in aliases %}
-                        <li class="list-group-item">{{ alias }}</li>
+                        <li class="list-group-item">Alias {{ forloop.counter }}: {{ alias }}</li>
                     {% endfor %}
                 </ul>
             {% else %}
@@ -16,11 +21,27 @@
             {% endif %}
         </div>
     </div>
-    
-    <!-- Center only the Start Game button -->
-    <div class="d-flex justify-content-center mt-5">
-        <button id="playGame" class="btn btn-primary">Start Game</button>
+    <div class="d-flex flex-column justify-content-center align-items-center" style="z-index: 3; position: relative; background-color: rgb(0, 0, 0);">
+        <button
+        id="tournamentPlay"
+        data-mode="tournament"
+        data-type="3d"
+        class="btn btn-sm mt-3 px-4 py-3"
+        style="font-size: 30px; background-color: rgb(159, 153, 153); border: none; border-radius: 15px;" >
+        3D
+        <i class="fa-regular fa-circle-play"></i>
+        </button>
+        <button
+          id="tournamentPlay"
+          data-mode="tournament"
+          data-type="2d"
+          class="btn btn-sm my-3 px-4 py-3"
+          style="font-size: 30px; background-color: rgb(49, 99, 209); border: none; border-radius: 15px;">
+          2D
+          <i class="fa-solid fa-circle-play"></i>
+        </button>
     </div>
+</div>
 </div>
 
 

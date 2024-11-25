@@ -1,7 +1,3 @@
-// TODO: space para empezar el juego
-//     set players, 1 y 2, si no hay 2 -> computer
-//     teclas para empezar a jugar y reset game
-
 class Message {
   constructor(ctx, dpr, scaleFactor) {
     this.ctx = ctx;
@@ -32,7 +28,7 @@ class Message {
       this.ctx.fillText(
         this.messageText,
         this.ctx.canvas.width / 2 / this.dpr,
-        this.ctx.canvas.height / 2 / this.dpr
+        this.ctx.canvas.height / 2 / this.dpr,
       );
     }
   }
@@ -43,30 +39,28 @@ class Message {
 }
 
 export class Game {
-  constructor(canvasId, mode, play1, play2) {
+  constructor(canvasId, mode, player1, player2) {
     this.canvas = document.getElementById(canvasId);
     this.ctx = this.canvas ? this.canvas.getContext("2d") : null;
-
     this.dpr = window.devicePixelRatio || 1;
     this.gameMode = mode;
-    this.player1 = play1;
-    if (this.gameMode === "solo_play") this.player2 = "Computer";
-    else this.player2 = play2;
+    this.player1 = player1;
+    this.player2 = player2;
     this.scaleFactor = 1.5;
     this.user = this.createPaddle(
       0,
       this.canvas.height / 2 / this.dpr - 50 * this.scaleFactor,
-      "RED"
+      "RED",
     );
     this.com = this.createPaddle(
       this.canvas.width / this.dpr - 10 * this.scaleFactor,
       this.canvas.height / 2 / this.dpr - 50 * this.scaleFactor,
-      "RED"
+      "RED",
     );
     this.ball = this.createBall(
       this.canvas.width / 2 / this.dpr,
       this.canvas.height / 2 / this.dpr,
-      "WHITE"
+      "WHITE",
     );
 
     this.net = {
@@ -126,7 +120,7 @@ export class Game {
     this.canvas.focus();
 
     this.message.showMessage(
-      `Next Match: ${this.player1} vs ${this.player2}, Press Space to start`
+      `Next Match: ${this.player1} vs ${this.player2}, Press Space to start`,
     );
     document.addEventListener("keydown", (evt) => {
       if (evt.code === "Space" && !this.gameStarted) {
@@ -155,7 +149,7 @@ export class Game {
       Math.round(x),
       Math.round(y),
       Math.round(w),
-      Math.round(h)
+      Math.round(h),
     );
   }
 
@@ -183,7 +177,7 @@ export class Game {
         this.net.y + i,
         this.net.width,
         this.net.height,
-        this.net.color
+        this.net.color,
       );
     }
   }
@@ -194,40 +188,40 @@ export class Game {
       0,
       this.canvas.width / this.dpr,
       this.canvas.height / this.dpr,
-      "BLACK"
+      "BLACK",
     );
     this.drawNet();
     this.drawText(
       this.user.score,
       this.canvas.width / 4 / this.dpr,
       this.canvas.height / 5 / this.dpr,
-      "WHITE"
+      "WHITE",
     );
     this.drawText(
       this.com.score,
       (3 * this.canvas.width) / 4 / this.dpr,
       this.canvas.height / 5 / this.dpr,
-      "WHITE"
+      "WHITE",
     );
     this.drawRectangle(
       this.user.x,
       this.user.y,
       this.user.width,
       this.user.height,
-      this.user.color
+      this.user.color,
     );
     this.drawRectangle(
       this.com.x,
       this.com.y,
       this.com.width,
       this.com.height,
-      this.com.color
+      this.com.color,
     );
     this.drawCircle(
       this.ball.x,
       this.ball.y,
       this.ball.radius,
-      this.ball.color
+      this.ball.color,
     );
 
     if (!this.gameStarted || this.isGameOver) {
@@ -245,7 +239,7 @@ export class Game {
     } else if (evt.key === "s") {
       this.user.y = Math.min(
         this.user.y + paddleSpeed,
-        canvasHeight - this.user.height
+        canvasHeight - this.user.height,
       );
     }
 
@@ -256,7 +250,7 @@ export class Game {
       } else if (evt.key === "ArrowDown") {
         this.com.y = Math.min(
           this.com.y + paddleSpeed,
-          canvasHeight - this.com.height
+          canvasHeight - this.com.height,
         );
       }
     }
@@ -369,21 +363,70 @@ export class Game {
 
   endGame(onFinish, onNextMatch) {
     this.isGameOver = true;
-    let winner = this.user.score >= 1 ? this.player1 : this.player2;
+
+    let winner = this.user.score >= this.com.score ? this.player1 : this.player2;
+    let loser = this.user.score < this.com.score ? this.player1 : this.player2;
+    let winner_points = this.user.score >= this.com.score ? this.user.score : this.com.score;
+    let loser_points = this.user.score < this.com.score ? this.user.score : this.com.score;
+
+    // console.log("winner", winner, "loser", loser, "winn_points:", winner_points, "loser_points", loser_points);
 
     if (this.gameMode === "solo_play" || this.gameMode === "double_play") {
-      this.message.showMessage(`${winner} Wins! Press 'R' to Restart or 'Esc' to finish`);
+      this.message.showMessage(
+        `${winner} Wins! Press 'R' to Restart or 'Esc' to finish`,
+      );
+      const csrfToken = getCSRFToken(); // Ensure this function correctly fetches the CSRF token
+
+      fetch('/solo_play/save_match/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrfToken, // CSRF token is included in the header
+        },
+        body: JSON.stringify({
+          winner: winner,
+          loser: loser,
+          winner_points: winner_points,
+          loser_points: loser_points,
+        })
+      })
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            return response.json().then(data => {
+              throw new Error(data.message || 'An error occurred');
+            });
+          }
+        })
+        .then(data => {
+          if (data.status === 'success') {
+            console.log('Match saved successfully:', data);
+            // Perform any actions that should happen after a successful save
+          } else {
+            console.error('Error saving match:', data.message);
+            // Handle the error (user might not be logged in, etc.)
+          }
+        })
+        .catch(error => {
+          if (error.message === 'User not authenticated') {
+            console.log('User is not logged in, match not saved');
+            // Optionally: Inform the user to log in or redirect to login
+          } else {
+            console.error('Unexpected error:', error);
+          }
+        });
       // document.addEventListener("keydown", (evt) => this.resetGame(evt), {
       //   once: true,
       // });
       const handleKeyPress = (evt) => {
-        if (evt.key === 'R' || evt.key === 'r') {
-          this.resetGame(evt);  // Reiniciar el juego
-        } else if (evt.key === 'Escape') {
-          this.loadHomePage();  // Regresar a la página de inicio
+        if (evt.key === "R" || evt.key === "r") {
+          this.resetGame(evt); // Reiniciar el juego
+        } else if (evt.key === "Escape") {
+          this.loadHomePage(); // Regresar a la página de inicio
         }
       };
-    
+
       document.addEventListener("keydown", handleKeyPress, { once: true });
     }
 
@@ -429,7 +472,17 @@ export class Game {
         history.pushState({}, "", "/");
       })
       .catch((error) =>
-        console.error("Error al cargar la página de inicio:", error)
+        console.error("Error al cargar la página de inicio:", error),
       );
   }
 }
+
+function getCSRFToken() {
+  const csrfToken = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('csrftoken='))
+    ?.split('=')[1];
+  return csrfToken || ''; // Return the token or empty string if not found
+}
+
+const csrfToken = getCSRFToken();
