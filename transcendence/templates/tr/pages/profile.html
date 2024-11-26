@@ -12,10 +12,22 @@
                  style="height: 200px; width: 200px;">
         </div>
     </div>
-
     <div class="form-content">
         <div class="row justify-content-center mt-2">
             <div class="col-md-8">
+                {% if user_form.email.errors %}
+                <div class="alert alert-danger mt-2" 
+                     role="alert">
+                    {{ user_form.email.errors.as_text }}
+                </div>
+                {% endif %}
+                {% if user_form.username.errors %}
+                <div class="alert alert-danger mt-2" 
+                     role="alert">
+                    {{ user_form.username.errors.as_text }}
+                </div>
+                {% endif %}
+
                 <form method="post" 
                       enctype="multipart/form-data">
 

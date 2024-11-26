@@ -185,9 +185,6 @@ def set_user_offline(sender, user, request, **kwargs):
     user.profile.save()
 
 
-# @receiver(db.models.signals.post_save, sender=Profile )
-# def save_profile__profile ( sender, instance, update_fields, **kwargs ):
-# 	return
 @receiver(db.models.signals.post_save, sender=Profile)
 def save_profile__profile(sender, instance, update_fields, **kwargs):
     return

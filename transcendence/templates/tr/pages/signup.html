@@ -33,6 +33,18 @@
 
                             <div data-mdb-input-init 
                                  class="form-outline mb-4">
+                                {{ form.email.label_tag }}
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                <div class="alert alert-danger mt-2" 
+                                     role="alert">
+                                    {{ form.email.errors.as_text }}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <div data-mdb-input-init 
+                                 class="form-outline mb-4">
                                 {{ form.password1.label_tag }}
                                 {{ form.password1 }}
                                 {% if form.password1.errors %}
