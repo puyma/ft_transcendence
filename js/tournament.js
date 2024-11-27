@@ -69,9 +69,6 @@ export class Tournament {
     for (let i = 0; i < this.players.length; i++) {
       for (let j = i + 1; j < this.players.length; j++) {
         this.matches.push([this.players[i], this.players[j]]);
-        // console.log(
-        //   `Partido programado: ${this.players[i]} vs ${this.players[j]}`
-        // );
       }
     }
     this.showRoundMatches(this.matches);
@@ -98,9 +95,6 @@ export class Tournament {
 
         nextRound.push(autoAdvancePlayer);
         previouslyAutoAdvanced.push(autoAdvancePlayer);
-        // console.log(
-        //   `${autoAdvancePlayer} avanza automaticamente a prox ronda.`
-        // );
         round.splice(randomIndex, 1);
       } else autoAdvancePlayer = null;
 
@@ -117,7 +111,6 @@ export class Tournament {
         const winner = await new Promise((resolve) => {
           this.playMatch(match[0], match[1], resolve);
         });
-        // console.log(`Ganador entre ${match[0]} y ${match[1]} es ${winner}`);
         await new Promise((resolve) => this.handleNextMatch(resolve));
         nextRound.push(winner);
       }
@@ -146,7 +139,6 @@ export class Tournament {
     // espera a tocar alguna tecla
     await new Promise((resolve) => {
       const handleKeyPress = (evt) => {
-        console.log('Key pressed:', evt.key);
         if (evt.key === "Enter")
         {
           this.messageManager.hideMessage();
