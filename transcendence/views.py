@@ -381,7 +381,6 @@ class FriendsView(generic.TemplateView):
             req.receiver.user.username for req in friend_requests_sent
         ]
 
-        # context["friends_usernames"] = friends_usernames
         context["profile"] = user_profile
         context["search_results"] = search_results
         context["friends_usernames"] = friends_usernames
