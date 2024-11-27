@@ -1,42 +1,81 @@
-class Message {
-  constructor(ctx, dpr, scaleFactor) {
-    this.ctx = ctx;
-    this.dpr = dpr;
-    this.scaleFactor = scaleFactor;
-    this.messageText = "";
-    this.isVisible = false;
-  }
+import { MessageManager } from "./pong3d";
 
-  showMessage(text) {
-    this.messageText = text;
-    this.isVisible = true;
-    this.render();
-  }
+// class Message {
+  // constructor(ctx, dpr, scaleFactor) {
+  //   this.ctx = ctx;
+  //   this.dpr = dpr;
+  //   this.scaleFactor = scaleFactor;
+  //   this.messageText = "";
+  //   this.isVisible = false;
+  //   // Asociar canvas desde el contexto
+  //   this.canvas = this.ctx.canvas;
+  //   this.resizeCanvas(); // Ajustar tamaño al iniciar
+  // }
 
-  hide() {
-    this.isVisible = false;
-    this.clear();
-  }
+  // resizeCanvas() {
+  //   // Validar existencia de canvas y contexto
+  //   if (!this.canvas || !this.ctx) {
+  //       console.error("Canvas o contexto no definido en Message.");
+  //       return;
+  //   }
 
-  render() {
-    if (this.isVisible) {
-      this.ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-      this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-      this.ctx.font = `${20 * this.scaleFactor}px Arial`;
-      this.ctx.fillStyle = "white";
-      this.ctx.textAlign = "center";
-      this.ctx.fillText(
-        this.messageText,
-        this.ctx.canvas.width / 2 / this.dpr,
-        this.ctx.canvas.height / 2 / this.dpr,
-      );
-    }
-  }
+  //   // Obtener dimensiones del viewport en píxeles
+  //   const viewportWidth = window.innerWidth;
+  //   const viewportHeight = window.innerHeight;
 
-  clear() {
-    this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-  }
-}
+  //   // Calcular dimensiones del canvas ajustadas a DPR
+  //   const newWidth = viewportWidth * this.dpr;
+  //   const newHeight = viewportHeight * this.dpr;
+
+  //   // Redimensionar canvas si las dimensiones cambian
+  //   if (this.canvas.width !== newWidth || this.canvas.height !== newHeight) {
+  //       this.canvas.width = newWidth;
+  //       this.canvas.height = newHeight;
+        
+  //       // Configurar escala del contexto para mantener proporción
+  //       this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+  //   }
+
+  //   console.log(
+  //       `Canvas resized to ${this.canvas.width}x${this.canvas.height} (${viewportWidth}x${viewportHeight} DPR=${this.dpr})`
+  //   );
+  // }
+
+
+
+  // showMessage(text) {
+  //   console.log("show msg");
+  //   console.log(this.ctx);
+  //   this.resizeCanvas();
+  //   this.messageText = text;
+  //   this.isVisible = true;
+  //   this.render();
+  // }
+
+  // hide() {
+  //   this.isVisible = false;
+  //   this.clear();
+  // }
+
+  // render() {
+  //   if (this.isVisible) {
+  //     this.ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+  //     this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+  //     this.ctx.font = `${20 * this.scaleFactor}px Arial`;
+  //     this.ctx.fillStyle = "white";
+  //     this.ctx.textAlign = "center";
+  //     this.ctx.fillText(
+  //       this.messageText,
+  //       this.ctx.canvas.width / 2 / this.dpr,
+  //       this.ctx.canvas.height / 2 / this.dpr,
+  //     );
+  //   }
+  // }
+
+  // clear() {
+  //   this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
+  // }
+// }
 
 export class Game {
   constructor(canvasId, mode, player1, player2) {
@@ -76,7 +115,8 @@ export class Game {
     this.updateInterval = 16;
     this.isGameOver = false;
     this.gameStarted = false;
-    this.message = new Message(this.ctx, this.dpr, this.scaleFactor);
+    // this.message = new Message(this.ctx, this.dpr, this.scaleFactor);
+    this.messageManager = new MessageManager();
   }
 
   createPaddle(x, y, color) {
@@ -119,16 +159,29 @@ export class Game {
     this.canvas.setAttribute("tabindex", 0);
     this.canvas.focus();
 
-    this.message.showMessage(
-      `Next Match: ${this.player1} vs ${this.player2}, Press Space to start`,
-    );
+    this.messageManager.showMessage(`Next Match: ${this.player1} vs ${this.player2}, Press Space to start`, "#FFFFFF", "rgba(0, 0, 0, 0.5)");
+    // document.addEventListener("keydown", this.handleStartGame.bind(this), { once: true });
     document.addEventListener("keydown", (evt) => {
       if (evt.code === "Space" && !this.gameStarted) {
+        // Iniciar el juego al presionar Space
+        this.messageManager.hideMessage();
         this.startGame();
-      } else {
+      } else if (this.gameStarted) {
+        // Si el juego ya empezó, mover al jugador
         this.move(evt);
       }
     });
+    
+    // this.message.showMessage(
+    //   `Next Match: ${this.player1} vs ${this.player2}, Press Space to start`,
+    // );
+    // document.addEventListener("keydown", (evt) => {
+    //   if (evt.code === "Space" && !this.gameStarted) {
+    //     this.startGame();
+    //   } else {
+    //     this.move(evt);
+    //   }
+    // });
     this.render();
   }
 
@@ -224,9 +277,9 @@ export class Game {
       this.ball.color,
     );
 
-    if (!this.gameStarted || this.isGameOver) {
-      this.message.render();
-    }
+    // if (!this.gameStarted || this.isGameOver) {
+    //   this.message.render();
+    // }
   }
 
   move(evt) {
@@ -372,9 +425,10 @@ export class Game {
     // console.log("winner", winner, "loser", loser, "winn_points:", winner_points, "loser_points", loser_points);
 
     if (this.gameMode === "solo_play" || this.gameMode === "double_play") {
-      this.message.showMessage(
-        `${winner} Wins! Press 'R' to Restart or 'Esc' to finish`,
-      );
+      // this.message.showMessage(
+      //   `${winner} Wins! Press 'R' to Restart or 'Esc' to finish`,
+      // );
+      this.messageManager.showMessage(`${winner} Wins! Press 'R' to Restart or 'Esc' to finish`,);
       const csrfToken = getCSRFToken(); // Ensure this function correctly fetches the CSRF token
 
       fetch('/solo_play/save_match/', {
@@ -431,8 +485,17 @@ export class Game {
     }
 
     if (this.gameMode === "all_vs_all" || this.gameMode === "knockout") {
-      this.message.showMessage(`${winner} Wins! Press 'N' for Next Match`);
-      if (onNextMatch) onNextMatch();
+      // this.message.showMessage(`${winner} Wins! Press 'N' for Next Match`);
+      // if (onNextMatch) onNextMatch();
+      this.messageManager.showMessage(`${winner} Wins! Press 'N' for Next Match`, "#FFFFFF", "rgba(0, 0, 0, 0.5)");
+      const handleKeyN = (evt) => {
+        if (evt.code === "KeyN") {
+          document.removeEventListener("keydown", handleKeyN);
+          this.messageManager.hideMessage(); // Ocultar mensaje
+          if (onNextMatch) onNextMatch(); // Avanzar al siguiente partido
+        }
+      };
+      document.addEventListener("keydown", handleKeyN);
     }
 
     if (onFinish) {

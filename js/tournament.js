@@ -123,7 +123,7 @@ export class Tournament {
       }
       round = nextRound;
       // espera antes de mostrar msj o seguir
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // await new Promise((resolve) => setTimeout(resolve, 500));
 
       if (round.length === 1) {
         this.tournamentWinner = round[0];
@@ -141,16 +141,20 @@ export class Tournament {
     if (autoAdvancePlayer) {
       msg += `<br><strong>Note: ${autoAdvancePlayer} advances automatically!</strong>`;
     }
-    msg += `<br><span style="font-size: 0.8em">Press any key to continue</span>`;
+    msg += `<br><span style="font-size: 0.8em">Press 'Enter' to continue</span>`;
     this.messageManager.showMessage(msg, "#FFFFFF");
     // espera a tocar alguna tecla
     await new Promise((resolve) => {
       const handleKeyPress = (evt) => {
-        this.messageManager.hideMessage();
-        document.removeEventListener("keydown", handleKeyPress);
-        resolve();
+        console.log('Key pressed:', evt.key);
+        if (evt.key === "Enter")
+        {
+          this.messageManager.hideMessage();
+          document.removeEventListener("keydown", handleKeyPress);
+          resolve();
+        }
       };
-      document.addEventListener("keydown", handleKeyPress, { once: true });
+      document.addEventListener("keydown", handleKeyPress, { once: false });
     });
   }
 
@@ -213,7 +217,7 @@ export class Tournament {
       "#FF0000",
     );
     document.addEventListener("keydown", this.handleEndTournament.bind(this), {
-      once: true,
+      once: false,
     });
   }
 
