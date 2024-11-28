@@ -404,7 +404,7 @@ export class Game {
         }
       };
 
-      document.addEventListener("keydown", handleKeyPress, { once: true });
+      document.addEventListener("keydown", handleKeyPress, { once: false });
     }
 
     if (this.gameMode === "all_vs_all" || this.gameMode === "knockout") {
