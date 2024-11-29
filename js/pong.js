@@ -38,7 +38,6 @@ export class Game {
     this.updateInterval = 16;
     this.isGameOver = false;
     this.gameStarted = false;
-    // this.message = new Message(this.ctx, this.dpr, this.scaleFactor);
     this.messageManager = new MessageManager();
   }
 
@@ -83,28 +82,14 @@ export class Game {
     this.canvas.focus();
 
     this.messageManager.showMessage(`Next Match: ${this.player1} vs ${this.player2}, Press Space to start`, "#FFFFFF", "rgba(0, 0, 0, 0.5)");
-    // document.addEventListener("keydown", this.handleStartGame.bind(this), { once: true });
     document.addEventListener("keydown", (evt) => {
       if (evt.code === "Space" && !this.gameStarted) {
-        // Iniciar el juego al presionar Space
         this.messageManager.hideMessage();
         this.startGame();
       } else if (this.gameStarted) {
-        // Si el juego ya empezó, mover al jugador
         this.move(evt);
       }
     });
-    
-    // this.message.showMessage(
-    //   `Next Match: ${this.player1} vs ${this.player2}, Press Space to start`,
-    // );
-    // document.addEventListener("keydown", (evt) => {
-    //   if (evt.code === "Space" && !this.gameStarted) {
-    //     this.startGame();
-    //   } else {
-    //     this.move(evt);
-    //   }
-    // });
     this.render();
   }
 
@@ -199,10 +184,6 @@ export class Game {
       this.ball.radius,
       this.ball.color,
     );
-
-    // if (!this.gameStarted || this.isGameOver) {
-    //   this.message.render();
-    // }
   }
 
   move(evt) {
@@ -348,9 +329,6 @@ export class Game {
     // console.log("winner", winner, "loser", loser, "winn_points:", winner_points, "loser_points", loser_points);
 
     if (this.gameMode === "solo_play" || this.gameMode === "double_play") {
-      // this.message.showMessage(
-      //   `${winner} Wins! Press 'R' to Restart or 'Esc' to finish`,
-      // );
       this.messageManager.showMessage(`${winner} Wins! Press 'R' to Restart or 'Esc' to finish`,);
       const csrfToken = getCSRFToken(); // Ensure this function correctly fetches the CSRF token
 
@@ -393,14 +371,11 @@ export class Game {
             console.error('Unexpected error:', error);
           }
         });
-      // document.addEventListener("keydown", (evt) => this.resetGame(evt), {
-      //   once: true,
-      // });
       const handleKeyPress = (evt) => {
         if (evt.key === "R" || evt.key === "r") {
-          this.resetGame(evt); // Reiniciar el juego
+          this.resetGame(evt);
         } else if (evt.key === "Escape") {
-          this.loadHomePage(); // Regresar a la página de inicio
+          this.loadHomePage();
         }
       };
 
@@ -408,14 +383,12 @@ export class Game {
     }
 
     if (this.gameMode === "all_vs_all" || this.gameMode === "knockout") {
-      // this.message.showMessage(`${winner} Wins! Press 'N' for Next Match`);
-      // if (onNextMatch) onNextMatch();
       this.messageManager.showMessage(`${winner} Wins! Press 'N' for Next Match`, "#FFFFFF", "rgba(0, 0, 0, 0.5)");
       const handleKeyN = (evt) => {
         if (evt.code === "KeyN") {
           document.removeEventListener("keydown", handleKeyN);
-          this.messageManager.hideMessage(); // Ocultar mensaje
-          if (onNextMatch) onNextMatch(); // Avanzar al siguiente partido
+          this.messageManager.hideMessage();
+          if (onNextMatch) onNextMatch();
         }
       };
       document.addEventListener("keydown", handleKeyN);
