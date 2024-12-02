@@ -69,9 +69,6 @@ export class Tournament {
     for (let i = 0; i < this.players.length; i++) {
       for (let j = i + 1; j < this.players.length; j++) {
         this.matches.push([this.players[i], this.players[j]]);
-        // console.log(
-        //   `Partido programado: ${this.players[i]} vs ${this.players[j]}`
-        // );
       }
     }
     this.showRoundMatches(this.matches);
@@ -98,9 +95,6 @@ export class Tournament {
 
         nextRound.push(autoAdvancePlayer);
         previouslyAutoAdvanced.push(autoAdvancePlayer);
-        // console.log(
-        //   `${autoAdvancePlayer} avanza automaticamente a prox ronda.`
-        // );
         round.splice(randomIndex, 1);
       } else autoAdvancePlayer = null;
 
@@ -117,13 +111,12 @@ export class Tournament {
         const winner = await new Promise((resolve) => {
           this.playMatch(match[0], match[1], resolve);
         });
-        // console.log(`Ganador entre ${match[0]} y ${match[1]} es ${winner}`);
         await new Promise((resolve) => this.handleNextMatch(resolve));
         nextRound.push(winner);
       }
       round = nextRound;
       // espera antes de mostrar msj o seguir
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // await new Promise((resolve) => setTimeout(resolve, 500));
 
       if (round.length === 1) {
         this.tournamentWinner = round[0];
@@ -141,16 +134,19 @@ export class Tournament {
     if (autoAdvancePlayer) {
       msg += `<br><strong>Note: ${autoAdvancePlayer} advances automatically!</strong>`;
     }
-    msg += `<br><span style="font-size: 0.8em">Press any key to continue</span>`;
+    msg += `<br><span style="font-size: 0.8em">Press 'Enter' to continue</span>`;
     this.messageManager.showMessage(msg, "#FFFFFF");
     // espera a tocar alguna tecla
     await new Promise((resolve) => {
       const handleKeyPress = (evt) => {
-        this.messageManager.hideMessage();
-        document.removeEventListener("keydown", handleKeyPress);
-        resolve();
+        if (evt.key === "Enter")
+        {
+          this.messageManager.hideMessage();
+          document.removeEventListener("keydown", handleKeyPress);
+          resolve();
+        }
       };
-      document.addEventListener("keydown", handleKeyPress, { once: true });
+      document.addEventListener("keydown", handleKeyPress, { once: false });
     });
   }
 
@@ -213,7 +209,7 @@ export class Tournament {
       "#FF0000",
     );
     document.addEventListener("keydown", this.handleEndTournament.bind(this), {
-      once: true,
+      once: false,
     });
   }
 

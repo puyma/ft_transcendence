@@ -44,12 +44,13 @@ export class MessageManager {
       .insertAdjacentElement("afterbegin", this.messageElement);
   }
 
-  showMessage(text, color = "#0000FF") {
+  showMessage(text, color = "#FFFFFF", bg = "black") {
     if (!this.messageElement) {
       this.createMessageElement(); // Crear el elemento si no existe
     }
     this.messageElement.style.color = color;
     this.messageElement.style.display = "flex";
+    this.messageElement.style.backgroundColor = bg;
     this.messageElement.innerHTML = text;
   }
 

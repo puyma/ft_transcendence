@@ -1,42 +1,4 @@
-class Message {
-  constructor(ctx, dpr, scaleFactor) {
-    this.ctx = ctx;
-    this.dpr = dpr;
-    this.scaleFactor = scaleFactor;
-    this.messageText = "";
-    this.isVisible = false;
-  }
-
-  showMessage(text) {
-    this.messageText = text;
-    this.isVisible = true;
-    this.render();
-  }
-
-  hide() {
-    this.isVisible = false;
-    this.clear();
-  }
-
-  render() {
-    if (this.isVisible) {
-      this.ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-      this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-      this.ctx.font = `${20 * this.scaleFactor}px Arial`;
-      this.ctx.fillStyle = "white";
-      this.ctx.textAlign = "center";
-      this.ctx.fillText(
-        this.messageText,
-        this.ctx.canvas.width / 2 / this.dpr,
-        this.ctx.canvas.height / 2 / this.dpr,
-      );
-    }
-  }
-
-  clear() {
-    this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-  }
-}
+import { MessageManager } from "./pong3d";
 
 export class Game {
   constructor(canvasId, mode, player1, player2) {
@@ -76,7 +38,7 @@ export class Game {
     this.updateInterval = 16;
     this.isGameOver = false;
     this.gameStarted = false;
-    this.message = new Message(this.ctx, this.dpr, this.scaleFactor);
+    this.messageManager = new MessageManager();
   }
 
   createPaddle(x, y, color) {
@@ -119,13 +81,12 @@ export class Game {
     this.canvas.setAttribute("tabindex", 0);
     this.canvas.focus();
 
-    this.message.showMessage(
-      `Next Match: ${this.player1} vs ${this.player2}, Press Space to start`,
-    );
+    this.messageManager.showMessage(`Next Match: ${this.player1} vs ${this.player2}, Press Space to start`, "#FFFFFF", "rgba(0, 0, 0, 0.5)");
     document.addEventListener("keydown", (evt) => {
       if (evt.code === "Space" && !this.gameStarted) {
+        this.messageManager.hideMessage();
         this.startGame();
-      } else {
+      } else if (this.gameStarted) {
         this.move(evt);
       }
     });
@@ -223,10 +184,6 @@ export class Game {
       this.ball.radius,
       this.ball.color,
     );
-
-    if (!this.gameStarted || this.isGameOver) {
-      this.message.render();
-    }
   }
 
   move(evt) {
@@ -372,9 +329,7 @@ export class Game {
     // console.log("winner", winner, "loser", loser, "winn_points:", winner_points, "loser_points", loser_points);
 
     if (this.gameMode === "solo_play" || this.gameMode === "double_play") {
-      this.message.showMessage(
-        `${winner} Wins! Press 'R' to Restart or 'Esc' to finish`,
-      );
+      this.messageManager.showMessage(`${winner} Wins! Press 'R' to Restart or 'Esc' to finish`,);
       const csrfToken = getCSRFToken(); // Ensure this function correctly fetches the CSRF token
 
       fetch('/solo_play/save_match/', {
@@ -416,23 +371,27 @@ export class Game {
             console.error('Unexpected error:', error);
           }
         });
-      // document.addEventListener("keydown", (evt) => this.resetGame(evt), {
-      //   once: true,
-      // });
       const handleKeyPress = (evt) => {
         if (evt.key === "R" || evt.key === "r") {
-          this.resetGame(evt); // Reiniciar el juego
+          this.resetGame(evt);
         } else if (evt.key === "Escape") {
-          this.loadHomePage(); // Regresar a la página de inicio
+          this.loadHomePage();
         }
       };
 
-      document.addEventListener("keydown", handleKeyPress, { once: true });
+      document.addEventListener("keydown", handleKeyPress, { once: false });
     }
 
     if (this.gameMode === "all_vs_all" || this.gameMode === "knockout") {
-      this.message.showMessage(`${winner} Wins! Press 'N' for Next Match`);
-      if (onNextMatch) onNextMatch();
+      this.messageManager.showMessage(`${winner} Wins! Press 'N' for Next Match`, "#FFFFFF", "rgba(0, 0, 0, 0.5)");
+      const handleKeyN = (evt) => {
+        if (evt.code === "KeyN") {
+          document.removeEventListener("keydown", handleKeyN);
+          this.messageManager.hideMessage();
+          if (onNextMatch) onNextMatch();
+        }
+      };
+      document.addEventListener("keydown", handleKeyN);
     }
 
     if (onFinish) {
