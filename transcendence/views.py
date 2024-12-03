@@ -326,6 +326,23 @@ def pong_view(request):
     }
     return shortcuts.render(request, "tr/base.html", context)
 
+def tresD_view(request):
+    context = {
+        "title": "P4ngP2ong",
+        "lang": "en",
+        "username": "clara",
+        "page": "tr/pages/3d_play.html",
+    }
+    return shortcuts.render(request, "tr/base.html", context)
+
+def tresD_play_view(request):
+    context = {
+        "title": "P4ngP2ong",
+        "lang": "en",
+        "username": "clara",
+        "page": "tr/pages/3d_play_anonymous.html",
+    }
+    return shortcuts.render(request, "tr/base.html", context)
 
 class StatsView(generic.TemplateView):
     template_name = "tr/base.html"
