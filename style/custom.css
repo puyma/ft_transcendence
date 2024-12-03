@@ -100,6 +100,16 @@ h1 {
     color: black;
 }
 
+.tresd {
+    color: rgb(26, 171, 50);
+    border: 2px solid rgb(26, 171, 50);
+}
+
+.tresd:hover {
+    background-color: rgb(26, 171, 50);
+    color: black;
+}
+
 .nav-link {
     font-size: 1.1rem;
     transition: background-color 0.3s ease;

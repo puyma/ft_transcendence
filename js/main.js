@@ -108,24 +108,32 @@ function initPlay() {
       } else if (mode == "double_play")
         players = button.getAttribute("data-players").split(",");
 
-      /*console.log(`Mode: ${mode}, Game Type: ${gameType}, Players:`, players);*/
+      console.log(`Mode: ${mode}, Game Type: ${gameType}, Players:`, players);
 
-      let canvas = document.createElement("canvas");
-      canvas.id = "canvas";
-      canvas.style.width = `${window.innerWidth}px`;
-      canvas.style.height = `${window.innerHeight}px`;
-      canvas.width = window.innerWidth * window.devicePixelRatio;
-      canvas.height = window.innerHeight * window.devicePixelRatio;
-
-      const main = document.querySelector("main");
-      if (main) {
-        main.replaceChildren(canvas);
-      } else {
-        /*console.error("<main> element not found.");*/
-        return;
+      if (gameType === "3d")
+      {
+        const game = new Game3D();
+        game.start();
       }
-      const tournament = new Tournament(players, "2d", mode);
-      tournament.startTournament();
+      else
+      {
+        let canvas = document.createElement("canvas");
+        canvas.id = "canvas";
+        canvas.style.width = `${window.innerWidth}px`;
+        canvas.style.height = `${window.innerHeight}px`;
+        canvas.width = window.innerWidth * window.devicePixelRatio;
+        canvas.height = window.innerHeight * window.devicePixelRatio;
+  
+        const main = document.querySelector("main");
+        if (main) {
+          main.replaceChildren(canvas);
+        } else {
+          /*console.error("<main> element not found.");*/
+          return;
+        }
+        const tournament = new Tournament(players, "2d", mode);
+        tournament.startTournament();
+      }
     });
   });
 }

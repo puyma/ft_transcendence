@@ -108,6 +108,16 @@ urlpatterns = [
         name="pong",
     ),
     path(
+        "tresD/",
+        views.tresD_view,
+        name="tresD",
+    ),
+    path(
+        "tresD/play",
+        views.tresD_play_view,
+        name="tresD_play",
+    ),
+    path(
         "pong/play/solo",
         views.GameView.as_view(),
     ),
