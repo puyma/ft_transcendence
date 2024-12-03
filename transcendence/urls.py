@@ -12,65 +12,94 @@ urlpatterns = [
         name="home",
     ),
     path(
-        "login/",
+        "user/",
+        views.ProfileView.as_view(),
+        name="profile",
+    ),
+    path(
+        "user/login/",
         views.LoginView.as_view(),
         name="login",
     ),
     path(
-        "logout/",
+        "user/logout/",
         views.LogoutView.as_view(),
         name="logout",
     ),
     path(
-        "signup/",
+        "user/signup/",
         views.SignupView.as_view(),
         name="signup",
     ),
     path(
-        "password/change/",
+        "user/password/change/",
         views.PasswordChangeView.as_view(),
         name="password_change",
     ),
     path(
-        "password/change/done/",
+        "user/password/change/done/",
         views.PasswordChangeDoneView.as_view(),
         name="password_change_done",
     ),
     path(
-        "password/reset/",
+        "user/password/reset/",
         views.PasswordResetView.as_view(),
         name="password_reset",
     ),
     path(
-        "password/reset/done/",
+        "user/password/reset/done/",
         views.PasswordResetDoneView.as_view(),
         name="password_reset_done",
     ),
     path(
-        "password/reset/<uid64>/<token>/",
+        "user/password/reset/<uid64>/<token>/",
         views.PasswordResetConfirmView.as_view(),
         name="password_reset_confirm",
     ),
     path(
-        "password/reset/complete/",
+        "user/password/reset/complete/",
         views.PasswordResetCompleteView.as_view(),
         name="password_reset_complete",
     ),
     path(
-        "profile/",
-        views.ProfileView.as_view(),
-        name="profile",
-    ),
-    path("profile/stats/", views.StatsView.as_view(), name="stats"),
-    path("profile/friends/", views.FriendsView.as_view(), name="friends"),
+        "user/stats/", 
+        views.StatsView.as_view(), 
+        name="stats"
+        ),
     path(
-        "profile/<str:username>/",
+        "user/friends/", 
+        views.FriendsView.as_view(), 
+        name="friends"
+    ),
+    path(
+        "users/<str:username>/",
         views.ProfileOtherView.as_view(),
     ),
+    # try make dynamic: user/oauth/<str:provider>/callback
     path(
-        "settings/",
-        views.ProfileView.as_view(),
-        name="settings",
+        "oauth/callback/",
+        fortytwo.do_provider_login,
+        name="oauth_callback",
+    ),
+    path(
+        "pong/",
+        views.PongView.as_view(),
+        name="pong",
+    ),
+    path(
+        "pong/<str:mode>/",
+        views.PongView.as_view(),
+        name="pong",
+    ),
+    path(
+        "pong/<str:mode>/play/",
+        views.PongPlayView.as_view(),
+        name="play",
+    ),
+    path(
+        'match/', 
+        views.save_match, 
+        name='save_match'
     ),
     path(
         "tournament/",
@@ -88,49 +117,8 @@ urlpatterns = [
         name="tournament_order",
     ),
     path(
-        "double_play/",
-        views.double_play_view,
-        name="double_play",
-    ),
-    path(
-        "solo_play/",
-        views.solo_play_view,
-        name="solo_play",
-    ),
-    path(
-        "solo_play/play/",
-        views.play_view,
-        name="play",
-    ),
-    path(
-        "solo_play/play/pong/",
-        views.pong_view,
-        name="pong",
-    ),
-    path(
-        "pong/play/solo",
-        views.GameView.as_view(),
-    ),
-    path(
-        "oauth/callback/",
-        fortytwo.do_provider_login,
-    ),
-    path(
         "admin/",
         admin.site.urls,
-    ),
-    path(
-        "users/<str:username>/",
-        views.HomepageView.as_view(),
-    ),
-    path(
-        "pong/users/<str:username>/",
-        views.HomepageView.as_view(),
-    ),
-    path(
-        'solo_play/save_match/', 
-        views.save_match, 
-        name='save_match'
     ),
 ]
 

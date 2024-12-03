@@ -1,92 +1,115 @@
 {% load static %}
 
 <header class="p-4">
+  <div class="container text-center">
+    <div class="row align-items-center">
+      <div class="col"></div>
+      <div class="col col-8">
+        <a
+          class="text-decoration-none text-reset display-1"
+          data-ajax="true"
+          href="/"
+          >PONG GAME</a
+        >
+      </div>
+      <div class="col">
+        <div class="btn-group text-end">
+          <a
+            href="#"
+            class="d-block link-body-emphasis text-decoration-none dropdown"
+            data-bs-toggle="dropdown"
+            aria-expanded="false">
+            {% if request.user.is_authenticated %} {% if user.profile.avatar %}
+            <img
+              src="/media/{{ user.profile.avatar }}"
+              alt="{{ user.username }}"
+              width="32"
+              height="32"
+              class="rounded-circle avatar" />
 
-	<div class="container text-center">
-		<div class="row align-items-center">
-			<div class="col"></div>
-			<div class="col col-8">
-				<a class="text-decoration-none text-reset display-1" 
-				   data-ajax="true" 
-				   href="/">PONG GAME</a>
-			</div>
-			<div class="col">
-				{% if request.user.is_authenticated %}
-				<div class="btn-group text-end">
-					<a href="#" 
-					   class="d-block link-body-emphasis text-decoration-none dropdown" 
-					   data-bs-toggle="dropdown" 
-					   aria-expanded="false">
-					{% if user.profile.avatar %}
-						<img src="/media/{{ user.profile.avatar }}" 
-							 alt="{{ user.username }}" 
-							 width="32" 
-							 height="32" 
-							 class="rounded-circle avatar">
-					{% else %}
-						<img src="/static/assets/default_avatar.png" 
-							 alt="{{ user.username }}" 
-							 width="32" 
-							 height="32" 
-							 class="rounded-circle avatar">
-				{% endif %}
-					</a>
-					<ul class="dropdown-menu dropdown-menu-end text-small">
-						<li>
-							<a class="dropdown-item" 
-							   data-ajax="true" 
-							   href="{% url 'profile' %}">
-								Profile
-							</a>
-						</li>
-						<li>
-							<hr class="dropdown-divider">
-						</li>
-						<li>
-							<form id="logout-form" 
-								  method="post" 
-								  action="{% url 'logout' %}"
-								  data-ajax="true">
-								{% csrf_token %}
-								<input type="submit" 
-								class="dropdown-item" 
-								value="Sign out" />
-							</form>
-						</li>
-					</ul>
-				</div>
+            {% else %}
+            <img
+              src="/static/assets/default_avatar.png"
+              alt="{{ user.username }}"
+              width="32"
+              height="32"
+              class="rounded-circle avatar" />
 
-				{% else %}
+            {% endif %} {% else %}
+            <i class="fas fa-2xl fa-circle-user"></i>
 
-				<div class="btn-group text-end">
-					<a href="#"
-					   class="d-block link-body-emphasis text-decoration-none"
-					   data-bs-toggle="dropdown"
-					   aria-expanded="false">
-						<i class="fas fa-2xl fa-circle-user"></i>
-					</a>
-					<ul class="dropdown-menu dropdown-menu-end text-small">
-						<li>
-							<a class="dropdown-item" 
-							   data-ajax="true" 
-							   href="{% url 'login' %}">
-								Login
-							</a>
-						</li>
-						<li>
-							<a class="dropdown-item" 
-							   data-ajax="true" 
-							   href="{% url 'signup' %}">
-								Signup
-							</a>
-						</li>
-					</ul>
-				</div>
+            {% endif %}
+          </a>
 
-				{% endif %}
+          <ul class="dropdown-menu dropdown-menu-end text-small">
+            {% if request.user.is_authenticated %}
+            <li>
+              <a
+                class="dropdown-item"
+                data-ajax="true"
+                href="{% url 'profile' %}">
+                Profile
+              </a>
+            </li>
+            <li>
+              <hr class="dropdown-divider" />
+            </li>
+            <li>
+              <form
+                id="logout-form"
+                method="post"
+                action="{% url 'logout' %}"
+                data-ajax="true">
+                {% csrf_token %}
+                <input type="submit" class="dropdown-item" value="Sign out" />
+              </form>
+            </li>
 
-			</div>
-		</div>
-	</div>
+            {% else %}
+            <li>
+              <a
+                class="dropdown-item"
+                data-ajax="true"
+                href="{% url 'login' %}">
+                Login
+              </a>
+            </li>
+            <li>
+              <a
+                class="dropdown-item"
+                data-ajax="true"
+                href="{% url 'signup' %}">
+                Signup
+              </a>
+            </li>
 
+            {% endif %}
+            <li>
+              <hr class="dropdown-divider" />
+            </li>
+            <li>
+              <form
+                id="graphics-mode-form"
+                class="dropdown-item"
+                method="post"
+                action="#"
+                data-ajax="true">
+                {% csrf_token %}
+                <div class="form-check form-switch">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    role="switch"
+                    id="flexSwitchCheckDefault" />
+                  <label class="form-check-label" for="flexSwitchCheckDefault"
+                    >3D mode</label
+                  >
+                </div>
+              </form>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
 </header>

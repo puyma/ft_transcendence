@@ -1,3 +1,5 @@
+import json
+
 from django import db
 from django import urls
 from django import shortcuts
@@ -6,14 +8,12 @@ from django.contrib.auth import mixins as auth_mixins
 from django.contrib.auth import models as auth_models
 from django.contrib.auth import views as auth_views
 from django.contrib import messages
-from django.views import generic
-import json
-
 from django.http import JsonResponse
+from django.views import generic
+
 from . import forms
 from . import models
 from .providers import fortytwo
-from django.contrib.auth.models import User
 
 
 class HomepageView(generic.TemplateView):
@@ -23,7 +23,6 @@ class HomepageView(generic.TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["page"] = "tr/pages/home.html"
-        context["active_nav"] = "home"
         return context
 
 
@@ -208,6 +207,44 @@ class PasswordResetCompleteView(auth_views.PasswordResetCompleteView):
         return context
 
 
+class PongView(generic.TemplateView):
+    template_name = "tr/base.html"
+    http_method_names = ["get"]
+
+    def get(self, request, *args, **kwargs):
+        mode = kwargs.get("mode", None)
+        print(f"mode {mode}")
+        context = self.get_context_data(**kwargs)
+        if mode == "solo":
+            context["page"] = "tr/pages/pong/solo.html"
+        elif mode == "double":
+            context["page"] = "tr/pages/pong/double.html"
+        else:
+            return shortcuts.redirect("home")
+        return self.render_to_response(context)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page"] = "tr/pages/home.html"
+        return context
+
+
+class PongPlayView(generic.TemplateView):
+    template_name = "tr/base.html"
+    http_method_names = ["get", "post"]
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        return self.render_to_response(context)
+
+    #def post(self, request, *args, **kargs):
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page"] = "tr/pages/pong/play.html"
+        return context
+
+
 class TournamentView(generic.TemplateView):
     template_name = "tr/base.html"
 
@@ -276,55 +313,6 @@ class TournamentOrderView(generic.TemplateView):
         context["aliases"] = aliases
         context["page"] = "tr/pages/tournament_order.html"
         return self.render_to_response(context)
-
-
-class PlayView(generic.TemplateView):
-    template_name = "tr/base.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["page"] = "tr/pages/tournament.html"
-        return context
-
-
-class GameView(generic.TemplateView):
-    template_name = "tr/pages/pong.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["page"] = "tr/pages/pong.html"
-        return context
-
-
-def solo_play_view(request):
-
-    context = {
-        "title": "P4ngP2ong",
-        "lang": "en",
-        "username": "clara",
-        "page": "tr/pages/solo_play.html",
-    }
-    return shortcuts.render(request, "tr/base.html", context)
-
-
-def play_view(request):
-    context = {
-        "title": "P4ngP2ong",
-        "lang": "en",
-        "username": "clara",
-        "page": "tr/pages/play_anonymous.html",
-    }
-    return shortcuts.render(request, "tr/base.html", context)
-
-
-def pong_view(request):
-    context = {
-        "title": "P4ngP2ong",
-        "lang": "en",
-        "username": "clara",
-        "page": "tr/pages/pong.html",
-    }
-    return shortcuts.render(request, "tr/base.html", context)
 
 
 class StatsView(generic.TemplateView):
@@ -489,46 +477,70 @@ def double_play_view(request):
         context["play_enabled"] = False
     return shortcuts.render(request, "tr/base.html", context)
 
+
 def save_match(request):
     if not request.user.is_authenticated:
         print("User not authenticated")
-        return JsonResponse({'status': 'success', 'message': 'User not authenticated, match not saved'}, status=200)
-    
-    if request.method == 'POST':
+        return JsonResponse(
+            {
+                "status": "success",
+                "message": "User not authenticated, match not saved",
+            },
+            status=200,
+        )
+
+    if request.method == "POST":
         try:
             data = json.loads(request.body)
             print("Request body received:", request.body)
             print("Parsed JSON data:", data)
 
-            winner_username = data.get('winner')
-            loser_username = data.get('loser')
-            winner_points = data.get('winner_points')
-            loser_points = data.get('loser_points')
-            
+            winner_username = data.get("winner")
+            loser_username = data.get("loser")
+            winner_points = data.get("winner_points")
+            loser_points = data.get("loser_points")
+
             if winner_username == "guest2":
                 winner_username = "Guest"
             if loser_username == "guest2":
                 loser_username = "Guest"
-            if not winner_username or not loser_username or winner_points is None or loser_points is None:
-                return JsonResponse({'status': 'error', 'message': 'Missing data'}, status=400)
+            if (
+                not winner_username
+                or not loser_username
+                or winner_points is None
+                or loser_points is None
+            ):
+                return JsonResponse(
+                    {"status": "error", "message": "Missing data"}, status=400
+                )
 
             try:
-                winner = User.objects.get(username=winner_username)
-                loser = User.objects.get(username=loser_username)
-            except User.DoesNotExist:
-                return JsonResponse({'status': 'error', 'message': 'User not found'}, status=404)
+                winner = auth_models.User.objects.get(username=winner_username)
+                loser = auth_models.User.objects.get(username=loser_username)
+            except auth_models.User.DoesNotExist:
+                return JsonResponse(
+                    {"status": "error", "message": "User not found"},
+                    status=404,
+                )
 
             match = models.Match.objects.create(
                 winner_username=winner,
                 loser_username=loser,
                 winner_points=winner_points,
-                loser_points=loser_points
+                loser_points=loser_points,
             )
-            return JsonResponse({'status': 'success', 'match_id': match.id})
+            return JsonResponse({"status": "success", "match_id": match.id})
 
         except json.JSONDecodeError:
-            return JsonResponse({'status': 'error', 'message': 'Invalid JSON format'}, status=400)
+            return JsonResponse(
+                {"status": "error", "message": "Invalid JSON format"},
+                status=400,
+            )
         except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+            return JsonResponse(
+                {"status": "error", "message": str(e)}, status=500
+            )
 
-    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+    return JsonResponse(
+        {"status": "error", "message": "Invalid request method"}, status=405
+    )
