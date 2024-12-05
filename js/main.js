@@ -112,8 +112,21 @@ function initPlay() {
 
       if (gameType === "3d")
       {
+        // Verifica si el usuario está registrado
+        const isLoggedIn = Boolean(document.body.dataset.userLoggedIn);
+        let playerName;
+
+        if (isLoggedIn) {
+          // Recoger el nombre del jugador registrado desde la base de datos
+          playerName = document.body.dataset.userName;
+        } else {
+          // Jugar como invitado
+          playerName = "Guest";
+        }
+
+        // Iniciar el juego 3D con el nombre del jugador
         const game = new Game3D();
-        game.start();
+        game.init(playerName);
       }
       else
       {

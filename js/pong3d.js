@@ -7,19 +7,6 @@ export class MessageManager {
     this.messageElement = null; // Elemento del mensaje en el DOM
   }
 
-  // createMessageElement() {
-  //     // Crear el contenedor del mensaje
-  //     this.messageElement = document.createElement('div');
-  //     this.messageElement.id = "pong-message";
-  //     this.messageElement.style.position = 'absolute';
-  //     this.messageElement.style.top = '20%';
-  //     this.messageElement.style.left = '50%';
-  //     this.messageElement.style.transform = 'translate(-50%, -50%)';
-  //     this.messageElement.style.fontSize = '24px';
-  //     this.messageElement.style.color = '#0000FF';
-  //     document.getElementById('main').insertAdjacentElement('afterbegin', this.messageElement);
-  // }
-
   createMessageElement() {
     this.messageElement = document.createElement("div");
     this.messageElement.id = "pong-message";
@@ -63,29 +50,25 @@ export class MessageManager {
 
 // Clase principal del juego
 class Game {
-  constructor() {
+  constructor(playerName = "Guest") {
     this.messageManager = new MessageManager();
 
-    // Configuración de dificultad
-    this.difficulty = "easy"; // Puedes ajustar esto para 'easy', 'medium', 'hard'
-    this.difficultySettings = {
-      easy: 0.5,
-      medium: 1,
-      hard: 2,
+    // Configuración de jugadores
+    this.player = {
+      name: playerName,
+      score: 0,
     };
-    this.initialSpeed = this.difficultySettings[this.difficulty];
-    // // Velocidad inicial de la pelota basada en la dificultad
-    // this.initialSpeed = this.difficultySettings[this.difficulty];
-    // this.ballSpeed = this.initialSpeed; // Velocidad actual de la pelota
 
-    // Ajustar dificultad de la máquina
-    this.aiDifficulty = "easy"; // 'easy', 'medium', 'hard'
-    this.aiDifficultySettings = {
-      easy: 0.5, // velocidad de la máquina
-      medium: 1, // velocidad de la máquina
-      hard: 1.5, // velocidad de la máquina
+    this.ai = {
+      name: "AI",
+      score: 0,
     };
-    this.aiSpeed = this.aiDifficultySettings[this.aiDifficulty];
+
+    // Configuración de dificultad
+    this.difficulty = 1;
+    this.initialSpeed = 1
+    
+    this.aiSpeed = 1;
 
     // Dimensiones y propiedades del campo
     this.ballHeight = 2;
@@ -128,10 +111,6 @@ class Game {
     this.winScore = 1; // Goles necesarios para ganar
   }
 
-  start() {
-    this.init();
-  }
-
   exitGame() {
     this.isGameStarted = false;
     // Función para salir del juego y volver al menú anterior
@@ -140,7 +119,7 @@ class Game {
     );
     if (exitMessage) {
       // Aquí puedes redirigir al menú anterior, por ejemplo:
-      window.location.href = "menu.html"; // Cambiar la URL al menú o página anterior
+      window.location.href = "/"; // Cambiar la URL al menú o página anterior
     }
   }
 
@@ -165,6 +144,7 @@ class Game {
     window.addEventListener("keydown", this.handleKeydown.bind(this));
     window.addEventListener("keyup", this.handleKeyup.bind(this));
 
+    this.messageManager.showMessage(`¡Bienvenido ${this.player.name}! Jugarás contra ${this.ai.name}.`);
     this.messageManager.showMessage("Presiona cualquier tecla para comenzar");
     this.gameLoop();
   }
@@ -178,7 +158,8 @@ class Game {
       this.paddle2.resetPosition();
       // // Reiniciar la velocidad actual de la pelota y posiciones de las palas
       // this.ballSpeed = this.initialSpeed;
-      his.initialSpeed = this.difficultySettings[this.difficulty];
+      // this.initialSpeed = this.initialSpeed;
+      this.ball.resetPosition();
       this.gameLoop(); // Iniciar el bucle del juego
     }
   }
@@ -206,8 +187,7 @@ class Game {
   }
 
   resetGame() {
-    // // Reiniciar la velocidad actual de la pelota y posiciones de las palas
-    // this.ballSpeed = this.initialSpeed;
+    
     // Limpiar el mensaje de fin de juego
     document.getElementById("pong-message").innerHTML = ""; // Asegúrate de eliminar el mensaje
 
@@ -216,6 +196,7 @@ class Game {
     this.paddle2.score = 0;
     this.updateScoreboard(); // Asegurarte de que el marcador se reinicie
     this.isGameStarted = false; // Marcar el juego como no iniciado
+    this.ball.resetPosition();
     // Mostrar el mensaje de inicio
     this.messageManager.showMessage("Presiona cualquier tecla para comenzar");
   }
@@ -480,9 +461,9 @@ class Game {
 
     // Verificar si algún jugador ha alcanzado el puntaje de victoria
     if (this.paddle1.score >= this.winScore) {
-      this.endGame("Jugador 1 gana!");
+      this.endGame(`${this.player.name} gana!`);
     } else if (this.paddle2.score >= this.winScore) {
-      this.endGame("Jugador 2 gana!");
+      this.endGame(`${this.ai.name} gana!`);
     }
 
     // Detectamos el número de jugadores al iniciar el juego
@@ -576,24 +557,34 @@ class Paddle {
   }
 }
 
-// Clase para la pelota
 class Ball {
   constructor(initialSpeed) {
     const ballRadius = 0.5;
     const ballGeometry = new THREE.SphereGeometry(ballRadius, 32, 32);
     const ballMaterial = new THREE.MeshStandardMaterial({ color: 0xffff00 });
     this.mesh = new THREE.Mesh(ballGeometry, ballMaterial);
-    this.initialSpeed = initialSpeed;
-    this.speed = initialSpeed;
+
+    // Guardar siempre la velocidad inicial base
+    this.baseSpeed = initialSpeed; // Velocidad inicial permanente
+    this.initialSpeed = initialSpeed; // Velocidad que puede cambiar durante el juego
     this.resetPosition();
   }
 
   resetPosition() {
+    console.log("Restableciendo posición y velocidad de la pelota");
+
     this.mesh.position.set(0, 3, 0);
+
+    // Reiniciar la velocidad a la velocidad base
+    this.initialSpeed = this.baseSpeed;
     const randomDirectionX = Math.random() < 0.5 ? 1 : -1;
     const randomDirectionZ = Math.random() < 0.5 ? 1 : -1;
-    this.velocityX = randomDirectionX * this.initialSpeed;
-    this.velocityY = randomDirectionZ * this.initialSpeed;
+
+    // Usar la velocidad inicial reiniciada
+    this.velocityX = randomDirectionX * this.baseSpeed;
+    this.velocityY = randomDirectionZ * this.baseSpeed;
+  
+    
   }
 
   updatePosition() {
@@ -614,6 +605,45 @@ class Ball {
     this.velocityY += this.velocityY > 0 ? amount : -amount;
   }
 }
+
+// Clase para la pelota
+// class Ball {
+//   constructor(initialSpeed) {
+//     const ballRadius = 0.5;
+//     const ballGeometry = new THREE.SphereGeometry(ballRadius, 32, 32);
+//     const ballMaterial = new THREE.MeshStandardMaterial({ color: 0xffff00 });
+//     this.mesh = new THREE.Mesh(ballGeometry, ballMaterial);
+//     this.initialSpeed = initialSpeed;
+//     this.speed = initialSpeed;
+//     this.resetPosition();
+//   }
+
+//   resetPosition() {
+//     this.mesh.position.set(0, 3, 0);
+//     const randomDirectionX = Math.random() < 0.5 ? 1 : -1;
+//     const randomDirectionZ = Math.random() < 0.5 ? 1 : -1;
+//     this.velocityX = randomDirectionX * this.initialSpeed;
+//     this.velocityY = randomDirectionZ * this.initialSpeed;
+//   }
+
+//   updatePosition() {
+//     this.mesh.position.x += this.velocityX;
+//     this.mesh.position.z += this.velocityY;
+//   }
+
+//   bounceX() {
+//     this.velocityX = -this.velocityX;
+//   }
+
+//   bounceY() {
+//     this.velocityY = -this.velocityY;
+//   }
+
+//   increaseSpeed(amount) {
+//     this.velocityX += this.velocityX > 0 ? amount : -amount;
+//     this.velocityY += this.velocityY > 0 ? amount : -amount;
+//   }
+// }
 
 // Clase para el campo
 class Field {
@@ -665,3 +695,4 @@ class Walls {
 }
 
 export { Game };
+
