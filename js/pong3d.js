@@ -394,6 +394,28 @@ class Game {
     return ballBox.intersectsBox(paddleBox);
   }
 
+  getCollisionAngle(ball, paddle) {
+    const ballRadius = ball.mesh.geometry.parameters.radius;
+    const paddleHeight = paddle.height; // Asumimos que la pala tiene una propiedad "height"
+    const paddleCenter = paddle.mesh.position.z;
+  
+    // La posición de la pelota al momento de la colisión
+    const ballPosition = ball.mesh.position.z;
+  
+    // Calculamos la distancia relativa desde el centro de la pala
+    const distanceFromCenter = ballPosition - paddleCenter;
+  
+    // Mapeamos la distancia al rango [-1, 1] donde 0 es el centro de la pala
+    const normalizedDistance = distanceFromCenter / (paddleHeight / 2);
+  
+    // Calculamos el ángulo de rebote, en función de la distancia del centro
+    // Cuanto más lejos del centro, más abierto será el ángulo
+    const maxAngle = Math.PI / 4; // El ángulo máximo que puede tener la pelota (45 grados)
+    const angle = normalizedDistance * maxAngle; // Ángulo ajustado en función de la distancia
+  
+    return angle;
+  }
+
   movePaddle(paddle, moveUp, moveDown) {
     if (moveUp) {
       paddle.moveDown(this.speed); // Cambiar a moveDown para invertir el movimiento
@@ -425,14 +447,16 @@ class Game {
 
     // Colisiones con las palas
     if (this.collision(this.ball, this.paddle1)) {
-      this.ball.bounceX();
+      const angle = this.getCollisionAngle(this.ball, this.paddle1);
+      this.ball.bounceX(angle); // Aplicamos el ángulo al rebote
       this.ball.mesh.position.x =
         this.paddle1.mesh.position.x + (ballRadius + this.paddle1.width / 2);
       this.ball.increaseSpeed(this.speedIncrement);
     }
-
+  
     if (this.collision(this.ball, this.paddle2)) {
-      this.ball.bounceX();
+      const angle = this.getCollisionAngle(this.ball, this.paddle2);
+      this.ball.bounceX(angle); // Aplicamos el ángulo al rebote
       this.ball.mesh.position.x =
         this.paddle2.mesh.position.x - (ballRadius + this.paddle2.width / 2);
       this.ball.increaseSpeed(this.speedIncrement);
