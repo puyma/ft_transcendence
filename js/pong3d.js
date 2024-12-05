@@ -144,8 +144,7 @@ class Game {
     window.addEventListener("keydown", this.handleKeydown.bind(this));
     window.addEventListener("keyup", this.handleKeyup.bind(this));
 
-    this.messageManager.showMessage(`¡Bienvenido ${this.player.name}! Jugarás contra ${this.ai.name}.`);
-    this.messageManager.showMessage("Presiona cualquier tecla para comenzar");
+    this.messageManager.showMessage(`¡Bienvenido ${this.player.name}! Jugarás contra ${this.ai.name}.Presiona cualquier tecla para comenzar`);
     this.gameLoop();
   }
 
