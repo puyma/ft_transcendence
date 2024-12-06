@@ -1,7 +1,5 @@
 import * as THREE from "three";
 
-let numberOfPlayers = 1; // Supongamos que se obtiene dinámicamente de la lógica del juego
-
 export class MessageManager {
   constructor() {
     this.messageElement = null; // Elemento del mensaje en el DOM
@@ -60,7 +58,7 @@ class Game {
     };
 
     this.ai = {
-      name: "AI",
+      name: "I.A.",
       score: 0,
     };
 
@@ -88,7 +86,6 @@ class Game {
     this.ball = null;
     this.field = null;
     this.walls = null;
-    // this.soloPlay = sessionStorage.getItem('modoJuego') === 'solo';
 
     // Entradas del teclado
     this.wKey = { isPressed: false };
@@ -108,7 +105,7 @@ class Game {
     this.isGameStarted = false; // Nuevo estado para saber si el juego ha comenzado
 
     this.winner = ""; // Variable para almacenar al ganador
-    this.winScore = 1; // Goles necesarios para ganar
+    this.winScore = 10; // Goles necesarios para ganar
   }
 
   exitGame() {
@@ -145,7 +142,7 @@ class Game {
     window.addEventListener("keyup", this.handleKeyup.bind(this));
 
     this.messageManager.showMessage(`¡Bienvenido ${this.player.name}! Jugarás contra ${this.ai.name}.Presiona cualquier tecla para comenzar`);
-    this.gameLoop();
+    // this.gameLoop();
   }
 
   startGame() {
@@ -160,17 +157,6 @@ class Game {
       // this.initialSpeed = this.initialSpeed;
       this.ball.resetPosition();
       this.gameLoop(); // Iniciar el bucle del juego
-    }
-  }
-
-  exitGame() {
-    // Función para salir del juego y volver al menú anterior
-    const exitMessage = confirm(
-      "¿Estás seguro de que quieres salir del juego?",
-    );
-    if (exitMessage) {
-      // Aquí puedes redirigir al menú anterior, por ejemplo:
-      window.location.href = "/"; // Cambiar la URL al menú o página anterior
     }
   }
 
@@ -194,10 +180,12 @@ class Game {
     this.paddle1.score = 0;
     this.paddle2.score = 0;
     this.updateScoreboard(); // Asegurarte de que el marcador se reinicie
-    this.isGameStarted = false; // Marcar el juego como no iniciado
+    this.isGameStarted = true; // Marcar el juego como no iniciado
     this.ball.resetPosition();
-    // Mostrar el mensaje de inicio
-    this.messageManager.showMessage("Presiona cualquier tecla para comenzar");
+    this.paddle1.resetPosition();
+    this.paddle2.resetPosition();
+    this.messageManager.hideMessage(); // Ocultar el mensaje de inicio
+    this.gameLoop();
   }
 
   createCamera() {
@@ -384,7 +372,7 @@ class Game {
 
   updateScoreboard() {
     // Actualizar el marcador con los puntajes actuales
-    this.scoreboard.innerHTML = `Jugador 1: ${this.paddle1.score} | Jugador 2: ${this.paddle2.score}`;
+    this.scoreboard.innerHTML = `${this.player.name}: ${this.paddle1.score} | ${this.ai.name}: ${this.paddle2.score}`;
   }
 
   collision(ball, paddle) {
@@ -489,28 +477,10 @@ class Game {
       this.endGame(`${this.ai.name} gana!`);
     }
 
-    // Detectamos el número de jugadores al iniciar el juego
-    if (numberOfPlayers === 1) {
-      this.soloPlay = true; // Un solo jugador, modo "solo_play"
-    } else {
-      this.soloPlay = false; // Dos jugadores, modo "double_play"
-    }
-
-    // Lógica de movimiento de las palas
-    if (this.soloPlay) {
-      // Modo "solo_play", movemos la pala del jugador 1 con las teclas 'W' y 'S'
-      this.movePaddle(this.paddle1, this.wKey.isPressed, this.sKey.isPressed);
-      // Y también actualizamos la pala del CPU (computadora)
-      this.updateComPaddle();
-    } else {
-      // Modo "double_play", movemos ambas palas de los jugadores
-      this.movePaddle(this.paddle1, this.wKey.isPressed, this.sKey.isPressed);
-      this.movePaddle(
-        this.paddle2,
-        this.upKey.isPressed,
-        this.downKey.isPressed,
-      );
-    }
+    // Modo "solo_play", movemos la pala del jugador 1 con las teclas 'W' y 'S'
+    this.movePaddle(this.paddle1, this.wKey.isPressed, this.sKey.isPressed);
+    // Y también actualizamos la pala del CPU (computadora)
+    this.updateComPaddle();
   }
 
   updateComPaddle() {
@@ -538,9 +508,9 @@ class Game {
   gameLoop() {
     if (this.isGameStarted) {
       this.update();
+      this.render(); // Asegúrate de seguir renderizando aunque el juego no haya comenzado
+      requestAnimationFrame(this.gameLoop.bind(this));
     }
-    this.render(); // Asegúrate de seguir renderizando aunque el juego no haya comenzado
-    requestAnimationFrame(this.gameLoop.bind(this));
   }
 }
 
@@ -594,10 +564,9 @@ class Ball {
   }
 
   resetPosition() {
-    console.log("Restableciendo posición y velocidad de la pelota");
-
+    
     this.mesh.position.set(0, 3, 0);
-
+    
     // Reiniciar la velocidad a la velocidad base
     this.initialSpeed = this.baseSpeed;
     const randomDirectionX = Math.random() < 0.5 ? 1 : -1;
@@ -628,45 +597,6 @@ class Ball {
     this.velocityY += this.velocityY > 0 ? amount : -amount;
   }
 }
-
-// Clase para la pelota
-// class Ball {
-//   constructor(initialSpeed) {
-//     const ballRadius = 0.5;
-//     const ballGeometry = new THREE.SphereGeometry(ballRadius, 32, 32);
-//     const ballMaterial = new THREE.MeshStandardMaterial({ color: 0xffff00 });
-//     this.mesh = new THREE.Mesh(ballGeometry, ballMaterial);
-//     this.initialSpeed = initialSpeed;
-//     this.speed = initialSpeed;
-//     this.resetPosition();
-//   }
-
-//   resetPosition() {
-//     this.mesh.position.set(0, 3, 0);
-//     const randomDirectionX = Math.random() < 0.5 ? 1 : -1;
-//     const randomDirectionZ = Math.random() < 0.5 ? 1 : -1;
-//     this.velocityX = randomDirectionX * this.initialSpeed;
-//     this.velocityY = randomDirectionZ * this.initialSpeed;
-//   }
-
-//   updatePosition() {
-//     this.mesh.position.x += this.velocityX;
-//     this.mesh.position.z += this.velocityY;
-//   }
-
-//   bounceX() {
-//     this.velocityX = -this.velocityX;
-//   }
-
-//   bounceY() {
-//     this.velocityY = -this.velocityY;
-//   }
-
-//   increaseSpeed(amount) {
-//     this.velocityX += this.velocityX > 0 ? amount : -amount;
-//     this.velocityY += this.velocityY > 0 ? amount : -amount;
-//   }
-// }
 
 // Clase para el campo
 class Field {
@@ -718,4 +648,3 @@ class Walls {
 }
 
 export { Game };
-
