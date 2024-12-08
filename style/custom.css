@@ -91,7 +91,7 @@ h1 {
     border: 2px solid white;
     color: white;
     padding: 12px 24px;
-    font-size: 1rem;
+    /*font-size: 1rem;*/
     transition: background-color 0.3s;
 }
 
