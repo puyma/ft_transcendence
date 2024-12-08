@@ -7,6 +7,7 @@ import { Router } from "./router.js";
 import { Game } from "./pong.js";
 import { Tournament } from "./tournament.js";
 import { Game as Game3D } from "./pong3d.js";
+import { GameTester } from "./pongTester.js";
 
 // variables
 
