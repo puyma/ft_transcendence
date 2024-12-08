@@ -63,12 +63,20 @@ class SignupForm(auth_forms.UserCreationForm):
     class Meta:
         model = auth.get_user_model()
         fields = ["username", "password1", "password2", "first_name", "email"]
-    
+
     def clean_email(self):
         email = self.cleaned_data.get("email")
-        if email and auth_models.User.objects.exclude(pk=self.instance.pk).filter(email=email).exists():
-            raise forms.ValidationError("This email address is already in use.")
+        if (
+            email
+            and auth_models.User.objects.exclude(pk=self.instance.pk)
+            .filter(email=email)
+            .exists()
+        ):
+            raise forms.ValidationError(
+                "This email address is already in use."
+            )
         return email
+
 
 class UpdateUserForm(auth_forms.UserChangeForm):
 
@@ -95,18 +103,30 @@ class UpdateUserForm(auth_forms.UserChangeForm):
     class Meta:
         model = auth_models.User
         fields = ["username", "email", "first_name", "last_name"]
-    
+
     def clean_username(self):
         username = self.cleaned_data.get("username")
-        if auth_models.User.objects.exclude(pk=self.instance.pk).filter(username=username).exists():
+        if (
+            auth_models.User.objects.exclude(pk=self.instance.pk)
+            .filter(username=username)
+            .exists()
+        ):
             raise forms.ValidationError("This username is already in use.")
         return username
 
     def clean_email(self):
         email = self.cleaned_data.get("email")
-        if email and auth_models.User.objects.exclude(pk=self.instance.pk).filter(email=email).exists():
-            raise forms.ValidationError("This email address is already in use.")
+        if (
+            email
+            and auth_models.User.objects.exclude(pk=self.instance.pk)
+            .filter(email=email)
+            .exists()
+        ):
+            raise forms.ValidationError(
+                "This email address is already in use."
+            )
         return email
+
 
 class UpdateProfileForm(forms.ModelForm):
 

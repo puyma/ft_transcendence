@@ -14,26 +14,8 @@ from urllib.request import urlopen
 from . import oauth
 
 
-# pass ?
-# every (almost, not common) method should be inside AuthBackendX
-
-
-class ProviderException(BaseException):
+class AuthBackend42Exception(BaseException):
     pass
-
-
-def do_provider_login(request):
-    try:
-        user = auth.authenticate(request)
-        if user is None:
-            # use django messages
-            return redirect("login")
-        auth.login(request, user)
-        return redirect("home")
-    except ProviderException:
-        # use django messages
-        return redirect("login")
-    return redirect("profile")
 
 
 class AuthBackend42(BaseBackend):

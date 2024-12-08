@@ -64,21 +64,21 @@ urlpatterns = [
     path(
         "user/stats/", 
         views.StatsView.as_view(), 
-        name="stats"
-        ),
+        name="stats"),
     path(
         "user/friends/", 
         views.FriendsView.as_view(), 
-        name="friends"
-    ),
+        name="friends"),
     path(
         "users/<str:username>/",
         views.ProfileOtherView.as_view(),
     ),
-    # try make dynamic: user/oauth/<str:provider>/callback
+    # try make user/oauth/<str:provider>/callback
+    # in order to make room to other providers
     path(
         "oauth/callback/",
-        fortytwo.do_provider_login,
+        views.LoginView.as_view(),
+        {"provider": "fortytwo"},
         name="oauth_callback",
     ),
     path(
@@ -97,10 +97,9 @@ urlpatterns = [
         name="play",
     ),
     path(
-        'match/', 
+        "match/", 
         views.save_match, 
-        name='save_match'
-    ),
+        name="save_match"),
     path(
         "tournament/",
         views.TournamentView.as_view(),

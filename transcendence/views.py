@@ -13,7 +13,7 @@ from django.views import generic
 
 from . import forms
 from . import models
-from .providers import fortytwo
+from . import providers
 
 
 class HomepageView(generic.TemplateView):
@@ -32,13 +32,67 @@ class LoginView(auth_views.LoginView):
     redirect_authenticated_user = True
     template_name = "tr/base.html"
 
+    def form_valid(self, form):
+        """Security check complete. Log the user in."""
+        user = form.get_user()
+        auth.login(self.request, user)
+        self.do_success_message(user)
+        return shortcuts.redirect(self.get_success_url())
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["page"] = "tr/pages/login.html"
-        context["provider_42_login"] = fortytwo.get_login_url(
+        context["provider_42_login"] = providers.fortytwo.get_login_url(
             "42", {"state": self.request.COOKIES.get("csrftoken")}
         )
         return context
+
+    def do_failure_message(self):
+        messages.success(self.request, f"Successfully failed to log in XD.")
+        return
+
+    def do_success_message(self, user):
+        messages.success(self.request, f"Successfully logged in, {user}!")
+        return
+
+    # Overload get method (django.views.generic.ProcessFormView)
+    def get(self, request, *args, **kwargs):
+        """
+        Handle GET requests: instantiate a blank version of the form.
+        OR, if the request comes from an oauth point, try to authenticate.
+        """
+        if request.path == "/oauth/callback/" and kwargs.get('provider'):
+            """
+            Tries to authorize using all backends set up.
+            Will redirect either if it fails or succeeds.
+            """
+            try:
+                user = auth.authenticate(request)
+                if user is None:
+                    self.do_failure_message()
+                    return shortcuts.redirect("login")
+                else:
+                    auth.login(request, user)
+                    self.do_success_message(user)
+                    return shortcuts.redirect("home")
+            except providers.fortytwo.AuthBackend42Exception:
+                self.do_failure_message()
+                return shortcuts.redirect("login")
+            return shortcuts.redirect("profile")
+        else:
+            return self.render_to_response(self.get_context_data())
+
+    # Overload post method (django.views.generic.ProcessFormView)
+    def post(self, request, *args, **kwargs):
+        """
+        Handle POST requests: instantiate a form instance with the passed
+        POST variables and then check if it's valid.
+        """
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
 
 
 class LogoutView(auth_views.LogoutView):
@@ -55,7 +109,7 @@ class LogoutView(auth_views.LogoutView):
         messages.success(request, "Successfully logged out.")
         redirect_to = self.get_success_url()
         if redirect_to != request.get_full_path():
-            return HttpResponseRedirect(redirect_to)
+            return shortcuts.redirect(redirect_to)
         return super().get(request, *args, **kwargs)
 
 
@@ -139,6 +193,7 @@ class ProfileView(auth_mixins.LoginRequiredMixin, generic.TemplateView):
 
 
 class ProfileOtherView(generic.DetailView):
+    http_method_names = ["get"]
     template_name = "tr/base.html"
     model = auth_models.User
 
@@ -237,7 +292,7 @@ class PongPlayView(generic.TemplateView):
         context = self.get_context_data(**kwargs)
         return self.render_to_response(context)
 
-    #def post(self, request, *args, **kargs):
+    # def post(self, request, *args, **kargs):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

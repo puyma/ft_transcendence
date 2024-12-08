@@ -1,8 +1,10 @@
 <div class="vertical"></div>
+
 <div class="d-flex justify-content-center h-100">
   <!--<div class="container d-flex justify-content-center align-items-center">-->
   <div class="row justify-content-center align-items-center w-100">
-    <!-- PLAYER 1 -->
+	  
+	<!-- PLAYER 1 -->
     <div class="col-4">
       <div class="d-flex flex-column align-items-center">
         <h1 class="text-white mb-3">PLAYER 1</h1>
@@ -52,13 +54,9 @@
           border: none;
           border-radius: 15px;
         "
-        {%
-        if
-        not
-        play_enabled
-        %}disabled{%
-        endif
-        %}>
+        {% if not play_enabled %}
+		disabled
+		{% endif %}>
         3D
         <i class="fa-regular fa-circle-play"></i>
       </button>
@@ -74,13 +72,9 @@
           border: none;
           border-radius: 15px;
         "
-        {%
-        if
-        not
-        play_enabled
-        %}disabled{%
-        endif
-        %}>
+        {% if not play_enabled %}
+		disabled
+		{% endif %}>
         2D
         <i class="fa-solid fa-circle-play"></i>
       </button>

@@ -11,7 +11,6 @@ from django.utils import timezone
 from django.templatetags.static import static
 
 
-
 class Profile(db.models.Model):
     user = db.models.OneToOneField(
         auth_models.User, on_delete=db.models.CASCADE
@@ -102,8 +101,9 @@ class Profile(db.models.Model):
             return self.avatar.url  # Serve from MEDIA_URL
         if self.avatar_url:
             return self.avatar_url  # External avatar
-        return static("assets/default_avatar.png")  # Default avatar from static
-
+        return static(
+            "assets/default_avatar.png"
+        )  # Default avatar from static
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
