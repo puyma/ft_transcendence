@@ -137,11 +137,14 @@ urlpatterns = [
         "pong/users/<str:username>/",
         views.HomepageView.as_view(),
     ),
+    path("tresD/play/save_match/", views.save_match, name="save_match"),
+
     path(
-        'solo_play/save_match/', 
+        "solo_play/save_match/", 
         views.save_match, 
         name='save_match'
     ),
+
 ]
 
 # handle404...

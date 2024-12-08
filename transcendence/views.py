@@ -513,7 +513,7 @@ def save_match(request):
     
     if request.method == 'POST':
         try:
-            data = json.loads(request.body)
+            data = json.loads(request.body.decode('utf-8'))
             print("Request body received:", request.body)
             print("Parsed JSON data:", data)
 
@@ -521,14 +521,13 @@ def save_match(request):
             loser_username = data.get('loser')
             winner_points = data.get('winner_points')
             loser_points = data.get('loser_points')
-            
+
             if winner_username == "guest2":
                 winner_username = "Guest"
             if loser_username == "guest2":
                 loser_username = "Guest"
             if not winner_username or not loser_username or winner_points is None or loser_points is None:
                 return JsonResponse({'status': 'error', 'message': 'Missing data'}, status=400)
-
             try:
                 winner = User.objects.get(username=winner_username)
                 loser = User.objects.get(username=loser_username)
