@@ -108,6 +108,16 @@ urlpatterns = [
         name="pong",
     ),
     path(
+        "tresD/",
+        views.tresD_view,
+        name="tresD",
+    ),
+    path(
+        "tresD/play",
+        views.tresD_play_view,
+        name="tresD_play",
+    ),
+    path(
         "pong/play/solo",
         views.GameView.as_view(),
     ),
@@ -127,11 +137,14 @@ urlpatterns = [
         "pong/users/<str:username>/",
         views.HomepageView.as_view(),
     ),
+    path("tresD/play/save_match/", views.save_match, name="save_match"),
+
     path(
-        'solo_play/save_match/', 
+        "solo_play/save_match/", 
         views.save_match, 
         name='save_match'
     ),
+
 ]
 
 # handle404...

@@ -1,32 +1,30 @@
 <div class="vertical"></div>
-
-<div class="container d-flex justify-content-center align-items-center position-relative">
-  <div class="row justify-content-center align-items-center flex-nowrap" style="z-index: 3; position: relative; background-color: rgb(0, 0, 0);">
-    <div class="d-flex flex-column align-items-center my-4">      
-      <h1 class="text-white display-3 mb-4">Hello Guest</h1>
-      <h3 class="text-white mb-4">Are you up for a game?</h3>
-      <div class="d-flex flex-column justify-content-center align-items-center" style="z-index: 3; position: relative; background-color: rgb(0, 0, 0);">
-        <button
-        id="soloPlay"
-        data-mode="solo_play"
-        data-type="3d"
-        data-players="Guest,Computer"
-        class="btn btn-sm mt-3 px-4 py-3"
-        style="font-size: 30px; background-color: rgb(159, 153, 153); border: none; border-radius: 15px;" >
-        3D
-        <i class="fa-regular fa-circle-play"></i>
-        </button>
-        <button
-          id="soloPlay"
-          data-mode="solo_play"
-          data-type="2d"
-          data-players="Guest,Computer"
-          class="btn btn-sm my-3 px-4 py-3"
-          style="font-size: 30px; background-color: rgb(49, 99, 209); border: none; border-radius: 15px;">
-          2D
-          <i class="fa-solid fa-circle-play"></i>
-        </button>
-    </div>     
+<div class="mask d-flex align-items-center h-100 gradient-custom-3">
+  <div class="container h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-12 col-md-9 col-lg-7 col-xl-6">
+        <div class="card">
+          <div class="card-body p-5">
+            <div style="background-color: rgb(0, 0, 0); z-index: 3; position: relative;">
+              <h1 class="text-white text-center display-3">Hello Guest</h1>
+              <h2 class="text-white text-center">Are you up for a game?</h2>
+            
+            <div class="d-flex flex-column justify-content-center align-items-center" style="z-index: 3; position: relative; background-color: rgb(0, 0, 0);">
+              <button
+                  id="soloPlay"
+                  data-mode="solo_play"
+                  data-type="2d"
+                  data-players="Guest,Computer"
+                  class="btn btn-sm my-3 px-4 py-3"
+                  style="font-size: 30px; background-color: rgb(49, 99, 209); border: none; border-radius: 15px;">
+                PLAY
+                <i class="fa-solid fa-circle-play"></i>
+              </button>
+            </div>
+          </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

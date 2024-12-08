@@ -63,7 +63,9 @@ export class MessageManager {
 
 // Clase principal del juego
 class Game {
-  constructor() {
+  constructor(player1, player2) {
+    this.player1 = player1;
+    this.player2 = player2;
     this.messageManager = new MessageManager();
 
     // Configuración de dificultad
@@ -125,7 +127,10 @@ class Game {
     this.isGameStarted = false; // Nuevo estado para saber si el juego ha comenzado
 
     this.winner = ""; // Variable para almacenar al ganador
+    this.loser = ""; // Variable para almacenar al ganador
     this.winScore = 1; // Goles necesarios para ganar
+    this.winner_points = ""; // Goles necesarios para ganar
+    this.loser_points = ""; // Goles necesarios para ganar
   }
 
   start() {
@@ -197,12 +202,58 @@ class Game {
   endGame(winnerMessage) {
     this.isGameStarted = false;
 
-    this.winner = winnerMessage; // Guardar el ganador al final del juego
+    this.winner = this.paddle1.score >= this.paddle2.score ? this.player1 : this.player2;
+    this.loser = this.paddle1.score < this.paddle2.score ? this.player1 : this.player2;
+    this.winner_points = this.paddle1.score >= this.paddle2.score ? this.paddle1.score : this.paddle2.score;
+    this.loser_points = this.paddle1.score < this.paddle2.score ? this.paddle1.score : this.paddle2.score;
+
+    console.log(`Winner: ${this.winner}`);
+    console.log(`Loser: ${this.loser}`);
+    console.log(`Winner Points: ${this.winner_points}`);
+    console.log(`Loser Points: ${this.loser_points}`);
     // Mostrar mensaje de fin de juego
     this.messageManager.showMessage(
       `${winnerMessage}<br>Presiona 'R' para volver a jugar o ESC para salir.`,
       "#FF0000",
     );
+    const csrfToken = getCSRFToken();
+    console.log("token ", csrfToken);
+    fetch("/tresD/play/save_match/", {  // Correct URL
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken,
+      },
+      body: JSON.stringify({
+        winner: this.winner,
+        loser: this.loser,
+        winner_points: this.winner_points,
+        loser_points: this.loser_points,
+      })
+    })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          return response.json().then(data => {
+            throw new Error(data.message || 'An error occurred');
+          });
+        }
+      })
+      .then(data => {
+        if (data.status === 'success') {
+          console.log('Match saved successfully:', data);
+        } else {
+          console.error('Error saving match:', data.message);
+        }
+      })
+      .catch(error => {
+        if (error.message === 'User not authenticated') {
+          console.log('User is not logged in, match not saved');
+        } else {
+          console.error('Unexpected error:', error);
+        }
+      });
   }
 
   resetGame() {
@@ -404,7 +455,7 @@ class Game {
 
   updateScoreboard() {
     // Actualizar el marcador con los puntajes actuales
-    this.scoreboard.innerHTML = `Jugador 1: ${this.paddle1.score} | Jugador 2: ${this.paddle2.score}`;
+    this.scoreboard.innerHTML = `${this.player1} : ${this.paddle1.score} | ${this.player2} ${this.paddle2.score}`;
   }
 
   collision(ball, paddle) {
@@ -480,9 +531,9 @@ class Game {
 
     // Verificar si algún jugador ha alcanzado el puntaje de victoria
     if (this.paddle1.score >= this.winScore) {
-      this.endGame("Jugador 1 gana!");
+      this.endGame(`${this.player1} wins!`); // Use backticks
     } else if (this.paddle2.score >= this.winScore) {
-      this.endGame("Jugador 2 gana!");
+      this.endGame(`${this.player2} wins!`); // Use backticks
     }
 
     // Detectamos el número de jugadores al iniciar el juego
@@ -663,5 +714,15 @@ class Walls {
     );
   }
 }
+
+function getCSRFToken() {
+  const csrfToken = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('csrftoken='))
+    ?.split('=')[1];
+  return csrfToken || ''; // Return the token or empty string if not found
+}
+
+const csrfToken = getCSRFToken();
 
 export { Game };

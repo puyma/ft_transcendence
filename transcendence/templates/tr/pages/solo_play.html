@@ -13,22 +13,12 @@
             <div class="d-flex flex-column justify-content-center align-items-center" style="z-index: 3; position: relative; background-color: rgb(0, 0, 0);">
               <button
                   id="soloPlay"
-                  data-mode="3d_play"
-                  data-type="2d"
-                  data-players="{{ request.user.username }},Computer"
-                  class="btn btn-sm mt-3 px-4 py-3"
-                  style="font-size: 30px; background-color: rgb(159, 153, 153); border: none; border-radius: 15px;" >
-                  3D
-                  <i class="fa-regular fa-circle-play"></i>
-              </button>
-              <button
-                  id="soloPlay"
                   data-mode="solo_play"
-                  data-type="3d"
+                  data-type="2d"
                   data-players="{{ request.user.username }},Computer"
                   class="btn btn-sm my-3 px-4 py-3"
                   style="font-size: 30px; background-color: rgb(49, 99, 209); border: none; border-radius: 15px;">
-                2D
+                PLAY
                 <i class="fa-solid fa-circle-play"></i>
               </button>
             </div>

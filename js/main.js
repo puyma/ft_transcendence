@@ -21,7 +21,7 @@ function event_handler_double_play_btn(event) {
   urlParams.set('anonymous', 'true');
   window.history.pushState({}, '', `${location.pathname}?${urlParams}`);
   //window.location.reload();
-  return ;
+  return;
 }
 
 function event_handler_double_play_btn2(event) {
@@ -30,18 +30,18 @@ function event_handler_double_play_btn2(event) {
   urlParams.set('anonymous2', 'true');
   window.history.pushState({}, '', `${location.pathname}?${urlParams}`);
   //window.location.reload();
-  return ;
+  return;
 }
 
 function updatePageState() {
-    // Check for "anonymous" and "anonymous2" parameters in the URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const isPlayer1Anonymous = urlParams.get('anonymous') === 'true';
-    const isPlayer2Anonymous = urlParams.get('anonymous2') === 'true';
+  // Check for "anonymous" and "anonymous2" parameters in the URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const isPlayer1Anonymous = urlParams.get('anonymous') === 'true';
+  const isPlayer2Anonymous = urlParams.get('anonymous2') === 'true';
 
-    // Update the visibility of the "anonymous" messages
-    const playAnonymousBtn = document.getElementById('playAnonymousBtn');
-    const playAnonymousBtn2 = document.getElementById('playAnonymousBtn2');
+  // Update the visibility of the "anonymous" messages
+  const playAnonymousBtn = document.getElementById('playAnonymousBtn');
+  const playAnonymousBtn2 = document.getElementById('playAnonymousBtn2');
 }
 
 // @fn		setup_login_providers
@@ -87,13 +87,12 @@ function initPlay() {
     : [];
 
   const gameButtons = document.querySelectorAll("[id$='Play']");
-  /*console.log("holaaaaaaaa");*/
   gameButtons.forEach((button) => {
     button.addEventListener("click", (event) => {
       event.preventDefault();
 
       let mode = button.getAttribute("data-mode");
-      let gameType = button.getAttribute("data-type"); // "2d" or "3d"
+      let gameType = button.getAttribute("data-type");
       let players;
 
       if (mode === "tournament") {
@@ -108,24 +107,33 @@ function initPlay() {
       } else if (mode == "double_play")
         players = button.getAttribute("data-players").split(",");
 
-      /*console.log(`Mode: ${mode}, Game Type: ${gameType}, Players:`, players);*/
+      console.log(`Mode: ${mode}, Game Type: ${gameType}, Players:`, players);
 
-      let canvas = document.createElement("canvas");
-      canvas.id = "canvas";
-      canvas.style.width = `${window.innerWidth}px`;
-      canvas.style.height = `${window.innerHeight}px`;
-      canvas.width = window.innerWidth * window.devicePixelRatio;
-      canvas.height = window.innerHeight * window.devicePixelRatio;
-
-      const main = document.querySelector("main");
-      if (main) {
-        main.replaceChildren(canvas);
-      } else {
-        /*console.error("<main> element not found.");*/
-        return;
+      if (gameType === "3d") {
+        let player1 = players[0];
+        let player2 = players[1];
+        console.log(`Mode: ${mode}, Game Type: ${gameType}, Players:`, players);
+        const game = new Game3D(player1, player2);
+        game.start();
       }
-      const tournament = new Tournament(players, "2d", mode);
-      tournament.startTournament();
+      else {
+        let canvas = document.createElement("canvas");
+        canvas.id = "canvas";
+        canvas.style.width = `${window.innerWidth}px`;
+        canvas.style.height = `${window.innerHeight}px`;
+        canvas.width = window.innerWidth * window.devicePixelRatio;
+        canvas.height = window.innerHeight * window.devicePixelRatio;
+
+        const main = document.querySelector("main");
+        if (main) {
+          main.replaceChildren(canvas);
+        } else {
+          /*console.error("<main> element not found.");*/
+          return;
+        }
+        const tournament = new Tournament(players, "2d", mode);
+        tournament.startTournament();
+      }
     });
   });
 }
