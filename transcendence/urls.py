@@ -5,6 +5,11 @@ from django.urls import path
 from . import views
 from .providers import fortytwo
 
+handler400 = "transcendence.views.custom_400"
+handler403 = "transcendence.views.custom_403"
+handler404 = "transcendence.views.custom_404"
+handler500 = "transcendence.views.custom_500"
+
 urlpatterns = [
     path(
         "",
@@ -144,7 +149,5 @@ urlpatterns = [
         views.save_match, 
         name='save_match'
     ),
-
+    path("413/", views.error_413, name='error_413'),
 ]
-
-# handle404...
