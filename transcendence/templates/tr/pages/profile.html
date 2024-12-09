@@ -15,6 +15,20 @@
     <div class="form-content">
         <div class="row justify-content-center mt-2">
             <div class="col-md-8">
+                {% if profile_form.errors %}
+                <div class="container">
+                    <div class="alert alert-danger">
+                        {% for field in profile_form %}
+                        {% for error in field.errors %}
+                        {{ error }}
+                        {% endfor %}
+                        {% endfor %}
+                        {% for error in profile_form.non_field_errors %}
+                        {{ error }}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
                 {% if user_form.email.errors %}
                 <div class="alert alert-danger mt-2" 
                      role="alert">
@@ -131,20 +145,7 @@
                     </div>
                 </form>
 
-                {% if profile_form.errors %}
-                <div class="container">
-                    <div class="alert alert-danger">
-                        {% for field in profile_form %}
-                        {% for error in field.errors %}
-                        {{ error }}
-                        {% endfor %}
-                        {% endfor %}
-                        {% for error in profile_form.non_field_errors %}
-                        {{ error }}
-                        {% endfor %}
-                    </div>
-                </div>
-                {% endif %}
+                
 
                 <p>active?: {{ user.is_active }}</p>
 
