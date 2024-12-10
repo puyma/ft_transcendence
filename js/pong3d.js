@@ -96,7 +96,7 @@ class Game {
     this.downKey = { isPressed: false };
 
     // Variables de juego
-    this.speed = 0.5; // Velocidad de movimiento de las palas
+    this.speed = 1; // Velocidad de movimiento de las palas
     this.speedIncrement = 0.02; // Incremento de velocidad de la pelota en cada colisión
     this.boundaryMargin = 5; // Margen para detectar cuando la pelota sale del campo
 
@@ -108,13 +108,9 @@ class Game {
 
     this.winner = ""; // Variable para almacenar al ganador
     this.loser = ""; // Variable para almacenar al ganador
-    this.winScore = 1; // Goles necesarios para ganar
+    this.winScore = 10; // Goles necesarios para ganar
     this.winner_points = ""; // Goles necesarios para ganar
     this.loser_points = ""; // Goles necesarios para ganar
-  }
-
-  start() {
-    this.init();
   }
 
   exitGame() {
@@ -366,14 +362,14 @@ class Game {
       else this.startGame(); // Iniciar el juego
     } else {
       switch (event.key) {
-        case "ArrowUp":
-          this.upKey.isPressed = true;
-          event.preventDefault(); // Evitar el scroll de la pantalla
-          break;
-        case "ArrowDown":
-          this.downKey.isPressed = true;
-          event.preventDefault(); // Evitar el scroll de la pantalla
-          break;
+        // case "ArrowUp":
+        //   this.upKey.isPressed = true;
+        //   event.preventDefault(); // Evitar el scroll de la pantalla
+        //   break;
+        // case "ArrowDown":
+        //   this.downKey.isPressed = true;
+        //   event.preventDefault(); // Evitar el scroll de la pantalla
+        //   break;
         case "w":
           this.wKey.isPressed = true;
           event.preventDefault(); // Evitar el scroll de la pantalla
@@ -391,12 +387,12 @@ class Game {
 
   handleKeyup(event) {
     switch (event.key) {
-      case "ArrowUp":
-        this.upKey.isPressed = false;
-        break;
-      case "ArrowDown":
-        this.downKey.isPressed = false;
-        break;
+      // case "ArrowUp":
+      //   this.upKey.isPressed = false;
+      //   break;
+      // case "ArrowDown":
+      //   this.downKey.isPressed = false;
+      //   break;
       case "w":
         this.wKey.isPressed = false;
         break;
@@ -572,7 +568,7 @@ class Game {
 // Clase para las palas
 class Paddle {
   constructor(xPosition, fieldHeight) {
-    const paddleGeometry = new THREE.BoxGeometry(2, 2, 10);
+    const paddleGeometry = new THREE.BoxGeometry(2, 2, 15);
     const paddleMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
     this.mesh = new THREE.Mesh(paddleGeometry, paddleMaterial);
     this.mesh.position.set(xPosition, 1.5, 0);
@@ -607,7 +603,7 @@ class Paddle {
 
 class Ball {
   constructor(initialSpeed) {
-    const ballRadius = 0.5;
+    const ballRadius = 1;
     const ballGeometry = new THREE.SphereGeometry(ballRadius, 32, 32);
     const ballMaterial = new THREE.MeshStandardMaterial({ color: 0xffff00 });
     this.mesh = new THREE.Mesh(ballGeometry, ballMaterial);
