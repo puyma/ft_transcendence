@@ -5,16 +5,20 @@
         <div class="card">
           <div class="card-body p-5">
             <div>
-              <h1 class="text-3d text-white text-center display-3">ENTER THE 3D BATTLE ZONE</h1>
-              <h2 class="text-3d text-white text-center">Step Into the Third Dimension</h2>
+              <div class="mb-3">
+                <h1 class="h1-battle text-3d text-white text-center display-3">
+                  ENTER THE 3D <span class="highlight mt-1">BATTLE ZONE</span>
+              </h1>
+                <h2 class="text-3d text-white text-center">Step Into the Third Dimension</h2>
+              </div>
               <div class="d-flex flex-column justify-content-center align-items-center">
                 <button 
                     id="soloPlay"
                     data-mode="solo_play"
                     data-type="3d"
                     data-players="Guest,Computer"
-                    class="btn btn-warning btn-lg btn3d text-black mt-3 px-4 py-2">
-                    <i class="icon-play-3d fa-regular fa-circle-play  fa-3x"></i>
+                    class="btn btn-warning-3d btn-lg btn3d text-black mt-3 px-4 py-2 w-100">
+                    <i class="icon-play-3d fa-regular fa-circle-play  fa-2x"></i>
                 </button>
               </div>
             </div>
@@ -24,12 +28,3 @@
     </div>
   </div>
 </div>
-
-<style>
-body
-{
-  background: linear-gradient(45deg, #10c60d, #243b55);
-  background-size: 200% 200%;
-  animation: gradientMove 10s infinite;
-}
-</style>

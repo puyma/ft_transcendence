@@ -18,11 +18,11 @@
 }
 
 body {
-
     display: flex;
     flex-direction: column;
     flex-grow: 1;
     height: 100vh;
+    background-color: black;
 }
 
 header,
@@ -123,31 +123,44 @@ h1 {
 
 .btn-default {
     box-shadow: 0 0 0 1px #ebebeb inset, 0 0 0 2px rgba(255, 255, 255, 0.15) inset, 0 8px 0 0 #adadad, 0 8px 0 1px rgba(0, 0, 0, 0.4), 0 8px 8px 1px rgba(0, 0, 0, 0.5);
-    background-color: #fff;
+    background-color: white;
+    border: 2px solid white;
+    color: white;
+    padding: 12px 24px;
+    font-size: 1rem;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.btn-default:hover {
+    background-color: #22bd1f8a;
+    color: rgb(255, 255, 255);
+    box-shadow: 0 0 10px 4px rgba(0, 0, 0, 0.7), 0 0 15px 5px rgba(255, 255, 255, 0.3);
 }
 
 .btn3d:active {
     top: 9px;
 }
 
-.btn-warning {
+.btn-warning-3d {
     box-shadow: 0 0 0 1px #f0ad4e inset, 0 0 0 2px rgba(255, 255, 255, 0.15) inset, 0 8px 0 0 #eea236, 0 8px 0 1px rgba(0, 0, 0, 0.4), 0 8px 8px 1px rgba(0, 0, 0, 0.5);
     background-color: #f0ad4e;
 }
 
-.tresd {
-    color: rgb(26, 171, 50);
-    border: 2px solid rgb(26, 171, 50);
-}
-
-.tresd:hover {
-    background-color: rgb(26, 171, 50);
-    color: black;
+.btn-warning-3d:hover {
+    background-color: #f5a739;
+    color: rgb(255, 255, 255);
+    box-shadow: 0 0 10px 4px rgba(0, 0, 0, 0.7), 0 0 15px 5px rgba(255, 255, 255, 0.3);
 }
 
 .text-3d {
     text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8), -2px -2px 10px rgba(255, 255, 255, 0.1);
     transform: perspective(500px) rotateX(10deg);
+}
+
+.tresd-body {
+    background: linear-gradient(45deg, #10c60d, #243b55);
+    background-size: 200% 200%;
+    animation: gradientMove 10s infinite;
 }
 
 @keyframes gradientMove {
@@ -176,4 +189,17 @@ h1 {
 .nav-link:hover {
     background-color: #495057;
     text-decoration: none;
+}
+
+.h1-battle {
+    line-height: 1.5;
+}
+
+.highlight {
+    background-color: black;
+    color: white;
+    padding: 0 5px;
+    border-radius: 3px;
+    display: inline-block;
+    margin-top: 5px;
 }

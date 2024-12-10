@@ -6,8 +6,9 @@
 	<body 
 	  data-host="{{ request.get_host }}" 
 	  data-scheme="{{ request.scheme }}"
-	  data-bs-theme="dark">
-
+	  data-bs-theme="dark"
+	  data-page="{{ page }}"> 
+		
 		{% include 'tr/components/_header.html' %}
 		<main id="main">
 			{% include page %}
@@ -18,3 +19,44 @@
 		{% include 'tr/components/_footer.html' %}
 	</body>
 </html>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+	const updateBackground = () => {
+		const body = document.body;
+		const currentPage = body.getAttribute("data-page");	
+		console.log(currentPage)
+		if (currentPage === "tr/pages/3d_play.html" || currentPage === "tr/pages/3d_play_anonymous.html") {
+			body.classList.add("tresd-body");
+		} else{
+			body.style.background = "black"; 
+		}
+	};
+	updateBackground();
+
+	const ajaxButtons = document.querySelectorAll('[data-ajax="true"]');
+	ajaxButtons.forEach(button => {
+		button.addEventListener("click", (event) => {
+			const url = event.target.getAttribute('href');
+			fetch(url, {
+				method: 'GET',
+				headers: {
+					'X-Requested-With': 'XMLHttpRequest',
+				},
+			})
+			.then(response => response.text())
+			.then(html => {
+				const newPageContent = new DOMParser().parseFromString(html, 'text/html');
+				const newPage = newPageContent.querySelector('[data-page]').getAttribute('data-page');
+				console.log("newpage:", newPageContent);
+				
+				document.body.setAttribute('data-page', newPage);
+				document.querySelector('main').innerHTML = newPageContent.querySelector('main').innerHTML;					
+				updateBackground();
+			})
+			.catch(error => console.error('Error loading page:', error));
+		});
+	});
+});
+</script>
+	
