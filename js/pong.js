@@ -56,7 +56,7 @@ export class Game {
   createBall(x, y, color) {
     let angleRad = (Math.random() * Math.PI) / 4; // ang aleatorio en la salida
     let direction = Math.random() > 0.5 ? 1 : -1; // direccion aleatoria
-    let initialSpeed = 7;
+    let initialSpeed = 5;
     return {
       x: x,
       y: y,
@@ -251,7 +251,7 @@ export class Game {
   resetBall() {
     this.ball.x = this.canvas.width / 2 / this.dpr;
     this.ball.y = this.canvas.height / 2 / this.dpr;
-    this.ball.speed = 7;
+    this.ball.speed = 5;
     // console.log("ball speed: ", this.ball.speed);
 
     let angleRad = (Math.random() * Math.PI) / 4; // nuevo angulo de rebote
@@ -259,7 +259,7 @@ export class Game {
 
     this.ball.velocityX = this.ball.speed * Math.cos(angleRad) * direction;
     this.ball.velocityY = this.ball.speed * Math.sin(angleRad);
-    // console.log("Velocity reset: ", this.ball.velocityX, this.ball.velocityY);
+    console.log("Velocity reset: ", this.ball.velocityX, this.ball.velocityY);
   }
 
   updateComPaddle() {
@@ -291,6 +291,8 @@ export class Game {
   }
 
   update() {
+    console.log("Ball Speed in Update:", this.ball.speed);
+    console.log("Velocity in Update:", this.ball.velocityX, this.ball.velocityY);
     if (this.user.score >= 3 || this.com.score >= 3) {
       //AJUSTAR A 11
       this.endGame();
@@ -455,6 +457,7 @@ export class Game {
       this.winnerMessage = null;
       this.gameStarted = false;
       this.user.y = this.canvas.height / 2 / this.dpr - this.user.height / 2; //(necesario?)
+      this.resetBall();
       this.init();
     }
   }
