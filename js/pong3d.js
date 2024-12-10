@@ -48,19 +48,21 @@ export class MessageManager {
 
 // Clase principal del juego
 class Game {
-  constructor(playerName = "Guest") {
+  constructor(player1, player2) {
+    this.player1 = player1;
+    this.player2 = player2;
     this.messageManager = new MessageManager();
 
     // Configuración de jugadores
-    this.player = {
-      name: playerName,
-      score: 0,
-    };
+    // this.player = {
+    //   name: playerName,
+    //   score: 0,
+    // };
 
-    this.ai = {
-      name: "I.A.",
-      score: 0,
-    };
+    // this.ai = {
+    //   name: "I.A.",
+    //   score: 0,
+    // };
 
     // Configuración de dificultad
     this.difficulty = 1;
@@ -141,7 +143,7 @@ class Game {
     window.addEventListener("keydown", this.handleKeydown.bind(this));
     window.addEventListener("keyup", this.handleKeyup.bind(this));
 
-    this.messageManager.showMessage(`¡Bienvenido ${this.player.name}! Jugarás contra ${this.ai.name}.Presiona cualquier tecla para comenzar`);
+    this.messageManager.showMessage(`¡Bienvenido ${this.player1}! Jugarás contra ${this.player2}.Presiona cualquier tecla para comenzar`);
     // this.gameLoop();
   }
 
@@ -163,12 +165,58 @@ class Game {
   endGame(winnerMessage) {
     this.isGameStarted = false;
 
-    this.winner = winnerMessage; // Guardar el ganador al final del juego
+    this.winner = this.paddle1.score >= this.paddle2.score ? this.player1 : this.player2;
+    this.loser = this.paddle1.score < this.paddle2.score ? this.player1 : this.player2;
+    this.winner_points = this.paddle1.score >= this.paddle2.score ? this.paddle1.score : this.paddle2.score;
+    this.loser_points = this.paddle1.score < this.paddle2.score ? this.paddle1.score : this.paddle2.score;
+
+    console.log(`Winner: ${this.winner}`);
+    console.log(`Loser: ${this.loser}`);
+    console.log(`Winner Points: ${this.winner_points}`);
+    console.log(`Loser Points: ${this.loser_points}`);
     // Mostrar mensaje de fin de juego
     this.messageManager.showMessage(
       `${winnerMessage}<br>Presiona 'R' para volver a jugar o ESC para salir.`,
       "#FF0000",
     );
+    const csrfToken = getCSRFToken();
+    console.log("token ", csrfToken);
+    fetch("/tresD/play/save_match/", {  // Correct URL
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken,
+      },
+      body: JSON.stringify({
+        winner: this.winner,
+        loser: this.loser,
+        winner_points: this.winner_points,
+        loser_points: this.loser_points,
+      })
+    })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          return response.json().then(data => {
+            throw new Error(data.message || 'An error occurred');
+          });
+        }
+      })
+      .then(data => {
+        if (data.status === 'success') {
+          console.log('Match saved successfully:', data);
+        } else {
+          console.error('Error saving match:', data.message);
+        }
+      })
+      .catch(error => {
+        if (error.message === 'User not authenticated') {
+          console.log('User is not logged in, match not saved');
+        } else {
+          console.error('Unexpected error:', error);
+        }
+      });
   }
 
   resetGame() {
@@ -372,7 +420,7 @@ class Game {
 
   updateScoreboard() {
     // Actualizar el marcador con los puntajes actuales
-    this.scoreboard.innerHTML = `${this.player.name}: ${this.paddle1.score} | ${this.ai.name}: ${this.paddle2.score}`;
+    this.scoreboard.innerHTML = `${this.player1} : ${this.paddle1.score} | ${this.player2} ${this.paddle2.score}`;
   }
 
   collision(ball, paddle) {
@@ -472,9 +520,9 @@ class Game {
 
     // Verificar si algún jugador ha alcanzado el puntaje de victoria
     if (this.paddle1.score >= this.winScore) {
-      this.endGame(`${this.player.name} gana!`);
+      this.endGame(`${this.player1} gana!`);
     } else if (this.paddle2.score >= this.winScore) {
-      this.endGame(`${this.ai.name} gana!`);
+      this.endGame(`${this.player2} gana!`);
     }
 
     // Modo "solo_play", movemos la pala del jugador 1 con las teclas 'W' y 'S'

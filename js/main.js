@@ -87,13 +87,12 @@ function initPlay() {
     : [];
 
   const gameButtons = document.querySelectorAll("[id$='Play']");
-  /*console.log("holaaaaaaaa");*/
   gameButtons.forEach((button) => {
     button.addEventListener("click", (event) => {
       event.preventDefault();
 
       let mode = button.getAttribute("data-mode");
-      let gameType = button.getAttribute("data-type"); // "2d" or "3d"
+      let gameType = button.getAttribute("data-type");
       let players;
 
       if (mode === "tournament") {
@@ -110,33 +109,21 @@ function initPlay() {
 
       console.log(`Mode: ${mode}, Game Type: ${gameType}, Players:`, players);
 
-      if (gameType === "3d")
-      {
-        // Verifica si el usuario está registrado
-        const isLoggedIn = Boolean(document.body.dataset.userLoggedIn);
-        let playerName;
-
-        if (isLoggedIn) {
-          // Recoger el nombre del jugador registrado desde la base de datos
-          playerName = document.body.dataset.userName;
-        } else {
-          // Jugar como invitado
-          playerName = "Guest";
-        }
-
-        // Iniciar el juego 3D con el nombre del jugador
-        const game = new Game3D();
-        game.init(playerName);
+      if (gameType === "3d") {
+        let player1 = players[0];
+        let player2 = players[1];
+        console.log(`Mode: ${mode}, Game Type: ${gameType}, Players:`, players);
+        const game = new Game3D(player1, player2);
+        game.init();
       }
-      else
-      {
+      else {
         let canvas = document.createElement("canvas");
         canvas.id = "canvas";
         canvas.style.width = `${window.innerWidth}px`;
         canvas.style.height = `${window.innerHeight}px`;
         canvas.width = window.innerWidth * window.devicePixelRatio;
         canvas.height = window.innerHeight * window.devicePixelRatio;
-  
+
         const main = document.querySelector("main");
         if (main) {
           main.replaceChildren(canvas);
