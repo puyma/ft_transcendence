@@ -39,6 +39,7 @@ export class Game {
     this.isGameOver = false;
     this.gameStarted = false;
     this.messageManager = new MessageManager();
+    this.handleKeydown = this.handleKeydown.bind(this); //(para passar el context y poder usar hideMessage)
   }
 
   createPaddle(x, y, color) {
@@ -67,7 +68,18 @@ export class Game {
     };
   }
 
+  //probar volver a ponerlo donde antes
+  handleKeydown(evt) {
+    if (evt.code === "Space" && !this.gameStarted) {
+      this.messageManager.hideMessage();
+      this.startGame();
+    } else if (this.gameStarted) {
+      this.move(evt);
+    }
+  }
+
   init() {
+    document.removeEventListener("keydown", this.move);
     document
       .getElementsByTagName("header")?.[0]
       .setAttribute("style", "display:none;");
@@ -82,14 +94,15 @@ export class Game {
     this.canvas.focus();
 
     this.messageManager.showMessage(`Next Match: ${this.player1} vs ${this.player2}, Press Space to start`, "#FFFFFF", "rgba(0, 0, 0, 0.5)");
-    document.addEventListener("keydown", (evt) => {
-      if (evt.code === "Space" && !this.gameStarted) {
-        this.messageManager.hideMessage();
-        this.startGame();
-      } else if (this.gameStarted) {
-        this.move(evt);
-      }
-    });
+    // document.addEventListener("keydown", (evt) => {
+    //   if (evt.code === "Space" && !this.gameStarted) {
+    //     this.messageManager.hideMessage();
+    //     this.startGame();
+    //   } else if (this.gameStarted) {
+    //     this.move(evt);
+    //   }
+    // });
+    document.addEventListener("keydown", this.handleKeydown);
     this.render();
   }
 
@@ -191,13 +204,16 @@ export class Game {
     const canvasHeight = this.canvas.height / this.dpr;
 
     // 1er player
-    if (evt.key === "w") {
-      this.user.y = Math.max(this.user.y - paddleSpeed, 0);
-    } else if (evt.key === "s") {
-      this.user.y = Math.min(
-        this.user.y + paddleSpeed,
-        canvasHeight - this.user.height,
-      );
+    if (this.isGameOver === false)
+    {
+      if (evt.key === "w") {
+        this.user.y = Math.max(this.user.y - paddleSpeed, 0);
+      } else if (evt.key === "s") {
+        this.user.y = Math.min(
+          this.user.y + paddleSpeed,
+          canvasHeight - this.user.height,
+        );
+      }
     }
 
     // 2do player / computer
@@ -236,12 +252,14 @@ export class Game {
     this.ball.x = this.canvas.width / 2 / this.dpr;
     this.ball.y = this.canvas.height / 2 / this.dpr;
     this.ball.speed = 7;
+    // console.log("ball speed: ", this.ball.speed);
 
     let angleRad = (Math.random() * Math.PI) / 4; // nuevo angulo de rebote
     let direction = Math.random() > 0.5 ? 1 : -1; //direccion aleatoria
 
     this.ball.velocityX = this.ball.speed * Math.cos(angleRad) * direction;
     this.ball.velocityY = this.ball.speed * Math.sin(angleRad);
+    // console.log("Velocity reset: ", this.ball.velocityX, this.ball.velocityY);
   }
 
   updateComPaddle() {
@@ -273,7 +291,7 @@ export class Game {
   }
 
   update() {
-    if (this.user.score >= 1 || this.com.score >= 1) {
+    if (this.user.score >= 3 || this.com.score >= 3) {
       //AJUSTAR A 11
       this.endGame();
       return;
@@ -281,9 +299,11 @@ export class Game {
 
     if (this.ball.x - this.ball.radius < 0) {
       this.com.score++;
+      // console.log("user point");
       this.resetBall();
     } else if (this.ball.x + this.ball.radius > this.canvas.width / this.dpr) {
       this.user.score++;
+      // console.log("com point");
       this.resetBall();
     }
 
@@ -315,6 +335,16 @@ export class Game {
       this.ball.velocityY = this.ball.speed * Math.sin(angleRad);
 
       this.ball.speed += 0.5;
+    }
+  }
+
+  handleKeyPress = (evt) => {
+    if ((evt.key === "R" || evt.key === "r") && this.isGameOver === true) {
+      document.removeEventListener("keydown", this.handleKeyPress);
+      this.resetGame(evt);
+    } else if (evt.key === "Escape") {
+      document.removeEventListener("keydown", this.handleKeyPress);
+      this.loadHomePage();
     }
   }
 
@@ -371,21 +401,25 @@ export class Game {
             console.error('Unexpected error:', error);
           }
         });
-      const handleKeyPress = (evt) => {
-        if (evt.key === "R" || evt.key === "r") {
-          this.resetGame(evt);
-        } else if (evt.key === "Escape") {
-          this.loadHomePage();
-        }
-      };
+      // const handleKeyPress = (evt) => {
+      //   console.log("key pressed: ", evt.key);
+      //   if (evt.key === "R" || evt.key === "r") {
+      //     document.removeEventListener("keydown", this.handleKeyPress);
+      //     this.resetGame(evt);
+      //   } else if (evt.key === "Escape") {
+      //     this.loadHomePage();
+      //   }
+      // };
 
-      document.addEventListener("keydown", handleKeyPress, { once: false });
+      // document.addEventListener("keydown", handleKeyPress, { once: false });
+      document.removeEventListener("keydown", this.handleKeyPress);
+      document.addEventListener("keydown", this.handleKeyPress.bind(this), { once: false });
     }
 
     if (this.gameMode === "all_vs_all" || this.gameMode === "knockout") {
       this.messageManager.showMessage(`${winner} Wins! Press 'N' for Next Match`, "#FFFFFF", "rgba(0, 0, 0, 0.5)");
       const handleKeyN = (evt) => {
-        if (evt.code === "KeyN") {
+        if ((evt.code === "KeyN") && this.isGameOver === true) {
           document.removeEventListener("keydown", handleKeyN);
           this.messageManager.hideMessage();
           if (onNextMatch) onNextMatch();
@@ -413,12 +447,14 @@ export class Game {
   }
 
   resetGame(evt) {
+    document.removeEventListener("keydown", this.handleKeydown);
     if (evt.code === "KeyR") {
       this.isGameOver = false;
       this.user.score = 0;
       this.com.score = 0;
       this.winnerMessage = null;
       this.gameStarted = false;
+      this.user.y = this.canvas.height / 2 / this.dpr - this.user.height / 2; //(necesario?)
       this.init();
     }
   }
