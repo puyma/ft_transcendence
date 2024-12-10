@@ -21,7 +21,7 @@ function event_handler_double_play_btn(event) {
   urlParams.set('anonymous', 'true');
   window.history.pushState({}, '', `${location.pathname}?${urlParams}`);
   //window.location.reload();
-  return ;
+  return;
 }
 
 function event_handler_double_play_btn2(event) {
@@ -30,18 +30,18 @@ function event_handler_double_play_btn2(event) {
   urlParams.set('anonymous2', 'true');
   window.history.pushState({}, '', `${location.pathname}?${urlParams}`);
   //window.location.reload();
-  return ;
+  return;
 }
 
 function updatePageState() {
-    // Check for "anonymous" and "anonymous2" parameters in the URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const isPlayer1Anonymous = urlParams.get('anonymous') === 'true';
-    const isPlayer2Anonymous = urlParams.get('anonymous2') === 'true';
+  // Check for "anonymous" and "anonymous2" parameters in the URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const isPlayer1Anonymous = urlParams.get('anonymous') === 'true';
+  const isPlayer2Anonymous = urlParams.get('anonymous2') === 'true';
 
-    // Update the visibility of the "anonymous" messages
-    const playAnonymousBtn = document.getElementById('playAnonymousBtn');
-    const playAnonymousBtn2 = document.getElementById('playAnonymousBtn2');
+  // Update the visibility of the "anonymous" messages
+  const playAnonymousBtn = document.getElementById('playAnonymousBtn');
+  const playAnonymousBtn2 = document.getElementById('playAnonymousBtn2');
 }
 
 // @fn		setup_login_providers

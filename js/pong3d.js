@@ -107,7 +107,14 @@ class Game {
     this.isGameStarted = false; // Nuevo estado para saber si el juego ha comenzado
 
     this.winner = ""; // Variable para almacenar al ganador
-    this.winScore = 10; // Goles necesarios para ganar
+    this.loser = ""; // Variable para almacenar al ganador
+    this.winScore = 1; // Goles necesarios para ganar
+    this.winner_points = ""; // Goles necesarios para ganar
+    this.loser_points = ""; // Goles necesarios para ganar
+  }
+
+  start() {
+    this.init();
   }
 
   exitGame() {
@@ -520,9 +527,9 @@ class Game {
 
     // Verificar si algún jugador ha alcanzado el puntaje de victoria
     if (this.paddle1.score >= this.winScore) {
-      this.endGame(`${this.player1} gana!`);
+      this.endGame(`${this.player1} wins!`); // Use backticks
     } else if (this.paddle2.score >= this.winScore) {
-      this.endGame(`${this.player2} gana!`);
+      this.endGame(`${this.player2} wins!`); // Use backticks
     }
 
     // Modo "solo_play", movemos la pala del jugador 1 con las teclas 'W' y 'S'
@@ -694,5 +701,15 @@ class Walls {
     );
   }
 }
+
+function getCSRFToken() {
+  const csrfToken = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('csrftoken='))
+    ?.split('=')[1];
+  return csrfToken || ''; // Return the token or empty string if not found
+}
+
+const csrfToken = getCSRFToken();
 
 export { Game };

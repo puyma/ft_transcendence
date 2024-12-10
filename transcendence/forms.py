@@ -127,20 +127,12 @@ class UpdateProfileForm(forms.ModelForm):
         model = models.Profile
         fields = ["avatar", "avatar_url", "bio"]
 
-    """
     def clean_avatar(self):
         avatar = self.cleaned_data.get("avatar")
         if avatar:
             max_size = 2097152 # 2MB
             if avatar.size > max_size:
                 raise core.exceptions.ValidationError(
-                    "Image size must not exceed 950 KB."
+                    "Image size must not exceed 2MB"
                 )
-            valid_extensions = [".jpg", ".jpeg", ".png", ".gif"]
-            ext = os.path.splitext(avatar.name)[1].lower()
-            if ext not in valid_extensions:
-                raise core.exceptions.ValidationError(
-                        "Unsupported file format. Allowed formats are: JPG, JPEG, PNG, GIF."
-                        )
         return avatar
-    """

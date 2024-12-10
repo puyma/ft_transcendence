@@ -1,22 +1,35 @@
-<div class="vertical"></div>
-
-<div class="container d-flex justify-content-center align-items-center position-relative">
-  <div class="row justify-content-center align-items-center flex-nowrap" style="z-index: 3; position: relative; background-color: rgb(0, 0, 0);">
-    <div class="d-flex flex-column align-items-center my-4">      
-      <h1 class="text-white display-3 mb-4">Hello Guest</h1>
-      <h3 class="text-white mb-4">Are you up for a game?</h3>
-      <div class="d-flex flex-column justify-content-center align-items-center" style="z-index: 3; position: relative; background-color: rgb(0, 0, 0);">
-        <button
-        id="soloPlay"
-        data-mode="solo_play"
-        data-type="3d"
-        data-players="Guest,Computer"
-        class="btn btn-sm mt-3 px-4 py-3"
-        style="font-size: 30px; background-color: rgb(159, 153, 153); border: none; border-radius: 15px;" >
-        3D
-        <i class="fa-regular fa-circle-play"></i>
-        </button>
-    </div>     
+<div class="mask d-flex align-items-center h-100 gradient-custom-3">
+  <div class="container h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-12 col-md-9 col-lg-7 col-xl-6">
+        <div class="card">
+          <div class="card-body p-5">
+            <div>
+              <h1 class="text-3d text-white text-center display-3">ENTER THE 3D BATTLE ZONE</h1>
+              <h2 class="text-3d text-white text-center">Step Into the Third Dimension</h2>
+              <div class="d-flex flex-column justify-content-center align-items-center">
+                <button 
+                    id="soloPlay"
+                    data-mode="solo_play"
+                    data-type="3d"
+                    data-players="Guest,Computer"
+                    class="btn btn-warning btn-lg btn3d text-black mt-3 px-4 py-2">
+                    <i class="icon-play-3d fa-regular fa-circle-play  fa-3x"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
+
+<style>
+body
+{
+  background: linear-gradient(45deg, #10c60d, #243b55);
+  background-size: 200% 200%;
+  animation: gradientMove 10s infinite;
+}
+</style>
