@@ -53,22 +53,11 @@ class Game {
     this.player2 = player2;
     this.messageManager = new MessageManager();
 
-    // Configuración de jugadores
-    // this.player = {
-    //   name: playerName,
-    //   score: 0,
-    // };
-
-    // this.ai = {
-    //   name: "I.A.",
-    //   score: 0,
-    // };
-
     // Configuración de dificultad
-    this.difficulty = 1;
-    this.initialSpeed = 1
-    
+    this.initialSpeed = 0.5
     this.aiSpeed = 1;
+    this.speed = 1; // Velocidad de movimiento de las palas
+    this.speedIncrement = 0.02; // Incremento de velocidad de la pelota en cada colisión
 
     // Dimensiones y propiedades del campo
     this.ballHeight = 2;
@@ -96,8 +85,6 @@ class Game {
     this.downKey = { isPressed: false };
 
     // Variables de juego
-    this.speed = 1; // Velocidad de movimiento de las palas
-    this.speedIncrement = 0.02; // Incremento de velocidad de la pelota en cada colisión
     this.boundaryMargin = 5; // Margen para detectar cuando la pelota sale del campo
 
     // Inicializa las palas
@@ -157,10 +144,8 @@ class Game {
       // Restablecer posiciones de las palas
       this.paddle1.resetPosition();
       this.paddle2.resetPosition();
-      // // Reiniciar la velocidad actual de la pelota y posiciones de las palas
-      // this.ballSpeed = this.initialSpeed;
-      // this.initialSpeed = this.initialSpeed;
       this.ball.resetPosition();
+
       this.gameLoop(); // Iniciar el bucle del juego
     }
   }
@@ -173,17 +158,12 @@ class Game {
     this.winner_points = this.paddle1.score >= this.paddle2.score ? this.paddle1.score : this.paddle2.score;
     this.loser_points = this.paddle1.score < this.paddle2.score ? this.paddle1.score : this.paddle2.score;
 
-    console.log(`Winner: ${this.winner}`);
-    console.log(`Loser: ${this.loser}`);
-    console.log(`Winner Points: ${this.winner_points}`);
-    console.log(`Loser Points: ${this.loser_points}`);
     // Mostrar mensaje de fin de juego
     this.messageManager.showMessage(
       `${winnerMessage}<br>Presiona 'R' para volver a jugar o ESC para salir.`,
       "#FF0000",
     );
     const csrfToken = getCSRFToken();
-    console.log("token ", csrfToken);
     fetch("/tresD/play/save_match/", {  // Correct URL
       method: 'POST',
       headers: {
@@ -362,14 +342,6 @@ class Game {
       else this.startGame(); // Iniciar el juego
     } else {
       switch (event.key) {
-        // case "ArrowUp":
-        //   this.upKey.isPressed = true;
-        //   event.preventDefault(); // Evitar el scroll de la pantalla
-        //   break;
-        // case "ArrowDown":
-        //   this.downKey.isPressed = true;
-        //   event.preventDefault(); // Evitar el scroll de la pantalla
-        //   break;
         case "w":
           this.wKey.isPressed = true;
           event.preventDefault(); // Evitar el scroll de la pantalla
@@ -387,12 +359,6 @@ class Game {
 
   handleKeyup(event) {
     switch (event.key) {
-      // case "ArrowUp":
-      //   this.upKey.isPressed = false;
-      //   break;
-      // case "ArrowDown":
-      //   this.downKey.isPressed = false;
-      //   break;
       case "w":
         this.wKey.isPressed = false;
         break;
