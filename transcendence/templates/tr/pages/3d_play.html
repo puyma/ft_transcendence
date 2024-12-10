@@ -1,6 +1,5 @@
 {% if request.user.is_authenticated %}
-<!-- <div class="vertical"></div> -->
-<div class="mask d-flex align-items-center h-100 gradient-custom-3">
+  <div class="mask d-flex align-items-center h-100 gradient-custom-3">
   <div class="container h-100">
     <div class="row d-flex justify-content-center align-items-center h-100">
       <div class="col-12 col-md-9 col-lg-7 col-xl-6">
@@ -17,8 +16,8 @@
                     data-mode="solo_play"
                     data-type="3d"
                     data-players="{{ request.user.username }},Computer"
-                    class="btn btn-warning btn-lg btn3d text-black mt-3 px-4 py-2">
-                    <i class="icon-play-3d fa-regular fa-circle-play"></i>
+                    class="btn btn-warning-3d btn-lg btn3d text-black mt-3 px-4 py-2 w-100">
+                    <i class="icon-play-3d fa-regular fa-circle-play  fa-2x"></i>
                 </button>
               </div>
             </div>
@@ -41,11 +40,11 @@
             <div class="d-grid gap-3">
               <!-- LOG IN Button -->
               <a href="{% url 'login' %}?next={% url 'tresD' %}" class="w-100">
-                <button type="button" class="btn btn-warning btn-lg btn3d text-black w-100">LOG IN</button>
+                <button type="button" class="btn btn-warning-3d btn-lg btn3d text-black w-100">LOG IN</button>
               </a>
               <!-- PLAY AS GUEST Button -->
               <a href="{% url 'tresD_play' %}" class="w-100">
-                <button type="button" class="btn btn-warning btn-lg btn3d text-black w-100">PLAY AS GUEST</button>
+                <button type="button" class="btn btn-warning-3d btn-lg btn3d text-black w-100">PLAY AS GUEST</button>
               </a>
             </div>
           </div>
@@ -56,14 +55,12 @@
   </div>
 </div>
 {% endif %}
-
-<style>
-
-body
-{
-  background: linear-gradient(45deg, #10c60d, #243b55);
-  background-size: 200% 200%;
-  animation: gradientMove 10s infinite;
-}
-
-</style>
+<!-- 
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const body = document.body;
+    body.style.background = "radial-gradient(circle, #ff9a9e, #fad0c4)";
+    body.style.animation = "none";
+  });
+  </script>
+   -->
