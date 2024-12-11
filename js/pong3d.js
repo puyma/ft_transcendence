@@ -547,22 +547,82 @@ class Game {
   }
 
   updateComPaddle() {
-    const distanceToBall =
-      this.ball.mesh.position.z - this.paddle2.mesh.position.z;
+    const distanceToBall = this.ball.mesh.position.z - this.paddle2.mesh.position.z;
 
-    // Aquí se calcula la velocidad de la pala de la máquina
-    const aiSpeed = this.aiSpeed;
+    // Detectar si la pelota ha sido tocada por el jugador (cuando la dirección de la pelota cambia)
+    const isBallTouchedByPlayer = this.ball.velocityX > 0;  // Si la pelota está viajando hacia la IA, el jugador la tocó.
 
-    // Lógica para seguir la pelota
-    if (distanceToBall > 0) {
-      this.paddle2.moveUp(aiSpeed);
-    } else {
-      this.paddle2.moveDown(aiSpeed);
+    // Si la pelota fue tocada por el jugador, la IA empieza a moverse
+    if (isBallTouchedByPlayer) {
+        // Predicción mejorada de la posición de la pelota en función de su velocidad y tiempo
+        const timeToImpact = Math.abs(this.ball.mesh.position.z - this.paddle2.mesh.position.z) / Math.abs(this.ball.velocityY); // Calcular el tiempo de impacto
+
+        // Predicción de la posición de la pelota en el futuro
+        const predictedPosition = this.ball.mesh.position.z + this.ball.velocityY * timeToImpact;
+
+        // Introducimos un margen de error mucho más pequeño para hacerla casi perfecta
+        const errorMargin = Math.random() * 0.05; // Muy pequeño margen de error para alta precisión
+
+        // Usamos una predicción con un margen de error mucho menor
+        const finalPredictedPosition = predictedPosition + errorMargin;
+
+        // Aumentamos la distancia de reacción para que la IA comience a moverse más rápido
+        const reactionDistance = 6; // Más cerca de la pelota, más reactiva
+
+        // Mueve la pala solo si la pelota está dentro de la zona de reacción
+        if (Math.abs(finalPredictedPosition - this.paddle2.mesh.position.z) < reactionDistance) {
+            // Aumentamos la velocidad de la IA aún más para una reacción rápida y precisa
+            const aiSpeed = this.aiSpeed + Math.random() * 1.0; // Incremento significativo en la velocidad para mayor dificultad
+
+            // Mueve la pala hacia la pelota con un movimiento más rápido
+            if (finalPredictedPosition > this.paddle2.mesh.position.z) {
+                this.paddle2.moveUp(aiSpeed); // Mueve hacia arriba
+            } else {
+                this.paddle2.moveDown(aiSpeed); // Mueve hacia abajo
+            }
+        }
     }
 
-    // Lógica de limitación de posición
+    // Detener la pala si la IA toca la pelota
+    if (this.ball.velocityX < 0) {  // Si la pelota está viajando hacia el jugador, la IA la tocó
+        // Aquí no movemos la pala, simplemente no aplicamos ningún movimiento a la pala
+        this.paddle2.mesh.position.z = this.paddle2.mesh.position.z;  // La posición se mantiene igual
+    }
+
+    // Lógica de limitación de la posición para evitar que la pala se salga del campo
     this.paddle2.limitPosition(-this.fieldHeight / 2, this.fieldHeight / 2);
-  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // updateComPaddle() {
+  //   const distanceToBall =
+  //     this.ball.mesh.position.z - this.paddle2.mesh.position.z;
+
+  //   // Aquí se calcula la velocidad de la pala de la máquina
+  //   const aiSpeed = this.aiSpeed;
+
+  //   // Lógica para seguir la pelota
+  //   if (distanceToBall > 0) {
+  //     this.paddle2.moveUp(aiSpeed);
+  //   } else {
+  //     this.paddle2.moveDown(aiSpeed);
+  //   }
+
+  //   // Lógica de limitación de posición
+  //   this.paddle2.limitPosition(-this.fieldHeight / 2, this.fieldHeight / 2);
+  // }
 
   render() {
     this.renderer.render(this.scene, this.camera);
@@ -677,57 +737,6 @@ class Field {
   }
 }
 
-// Clase para los muros
-// class Walls {
-//   constructor(fieldWidth, fieldHeight, wallHeight, wallThickness) {
-//     // Cargar una textura para los muros (si tienes una)
-//     const textureLoader = new THREE.TextureLoader();
-
-//     // Cargar el mapa de normales para dar una sensación de relieve
-//     const normalMap = textureLoader.load('/static/assets/stone.jpg'); // Asegúrate de que la ruta sea correcta
-
-//     // Material con más detalles, que simula relieve y añade brillo
-//     const wallMaterial = new THREE.MeshStandardMaterial({
-//       color: 0x2F4F4F,             // Color base
-//       roughness: 0.4,              // Un poco menos rugoso para dar un acabado más suave
-//       metalness: 0.2,              // Material con algo de efecto metálico
-//       emissive: 0x333333,          // Le da un resplandor suave
-//       normalMap: normalMap         // Añadir el normalMap para dar más detalles
-//     });
-
-//     // Muro superior con más volumen
-//     const topWallGeometry = new THREE.BoxGeometry(
-//       fieldWidth,          // Ancho del muro
-//       wallThickness * 1.5,   // Grosor del muro (aumentado para dar más presencia)
-//       wallHeight * 1     // Aumentamos la altura para darle más presencia
-//     );
-//     this.topWall = new THREE.Mesh(topWallGeometry, wallMaterial);
-//     this.topWall.position.set(
-//       0,
-//       wallHeight / 2,                  // Posición Y centrada
-//       fieldHeight / 2 + wallThickness / 2  // Posición Z para el muro superior
-//     );
-//     this.topWall.castShadow = true;  // Habilitamos las sombras
-//     this.topWall.receiveShadow = true;
-
-//     // Muro inferior con más volumen
-//     const bottomWallGeometry = new THREE.BoxGeometry(
-//       fieldWidth,          // Ancho del muro
-//       wallThickness * 1.5,   // Grosor del muro (aumentado para dar más presencia)
-//       wallHeight * 1     // Aumentamos la altura para darle más presencia
-//     );
-//     this.bottomWall = new THREE.Mesh(bottomWallGeometry, wallMaterial);
-//     this.bottomWall.position.set(
-//       0,
-//       wallHeight / 2,                  // Posición Y centrada
-//       -fieldHeight / 2 - wallThickness / 2 // Posición Z para el muro inferior
-//     );
-//     this.bottomWall.castShadow = true; // Habilitamos las sombras
-//     this.bottomWall.receiveShadow = true;
-
-//     // Agregar más muros laterales (si es necesario)
-//   }
-// }
 class Walls {
   constructor(fieldWidth, fieldHeight, wallHeight, wallThickness) {
     const textureLoader = new THREE.TextureLoader();
