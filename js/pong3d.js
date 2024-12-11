@@ -232,17 +232,59 @@ class Game {
     this.camera.lookAt(0, 0, 0); // Mirar hacia el centro del campo
   }
 
+  createScoreboard() {
+    // Crear el contenedor del marcador
+    this.scoreboard = document.createElement("div");
+    this.scoreboard.id = "scoreboard";
+    this.scoreboard.style.position = "absolute";
+    this.scoreboard.style.top = "10px";
+    this.scoreboard.style.left = "50%";
+    this.scoreboard.style.transform = "translateX(-50%)";
+    this.scoreboard.style.fontSize = "32px";
+    this.scoreboard.style.color = "#FFD700"; // Oro brillante
+    this.scoreboard.style.textShadow = "2px 2px 4px rgba(0, 0, 0, 0.8), 0px 0px 10px rgba(255, 215, 0, 0.7)"; // Sombra para profundidad
+    this.scoreboard.style.background = "linear-gradient(145deg, rgba(50, 50, 50, 0.8), rgba(0, 0, 0, 0.5))"; // Fondo con degradado
+    this.scoreboard.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.2)"; // Efecto 3D
+    this.scoreboard.style.padding = "15px";
+    this.scoreboard.style.borderRadius = "10px";
+    this.scoreboard.style.fontFamily = "Arial, sans-serif";
+    this.scoreboard.style.textAlign = "center";
+    document.body.appendChild(this.scoreboard);
+
+    // Inicializar el marcador
+    this.updateScoreboard();
+  }
+
   createRenderer() {
+    // Asegúrate de que la escena esté inicializada
+    this.scene = new THREE.Scene();
+
+    // Crear el renderizador
     this.renderer = new THREE.WebGLRenderer();
     this.renderer.setSize(this.screenWidth, this.screenHeight);
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.domElement.style.width = "100%";
     this.renderer.domElement.style.height = "100%";
-    this.renderer.setClearColor(0xfaf0e6);
+    
+    // Cargar la textura de fondo
+    const textureLoader = new THREE.TextureLoader();
+    textureLoader.load(
+        '../static/assets/textura.jpg', // Reemplaza con la ruta a tu imagen
+        (texture) => {
+            // Establece el fondo de la escena una vez la textura haya sido cargada
+            this.scene.background = texture;
+            // Aquí no es necesario usar setClearColor, ya que la textura reemplaza el fondo.
+        },
+        undefined, // Opcional: función de progreso de carga (si quieres mostrar progreso)
+        (error) => {
+            console.error('Error al cargar la textura de fondo:', error);
+        }
+    );
 
-    // Establecer el color de fondo del body
+    // Establecer el color de fondo del body (esto puede ser opcional si usas la textura)
     document.body.style.backgroundColor = "#faf0e6";
 
+    // Asegúrate de que el elemento "main" exista
     const main = document.getElementById("main");
     if (main) {
       main.replaceChildren(this.renderer.domElement);
@@ -376,11 +418,15 @@ class Game {
     this.scoreboard.style.top = "10px";
     this.scoreboard.style.left = "50%";
     this.scoreboard.style.transform = "translateX(-50%)";
-    this.scoreboard.style.fontSize = "24px";
-    this.scoreboard.style.color = "#FFFFFF";
-    this.scoreboard.style.backgroundColor = "rgba(0, 0, 0, 0.5)"; // Fondo semi-transparente
-    this.scoreboard.style.padding = "10px";
-    this.scoreboard.style.borderRadius = "5px";
+    this.scoreboard.style.fontSize = "32px";
+    this.scoreboard.style.color = "#FFD700"; // Oro brillante
+    this.scoreboard.style.textShadow = "2px 2px 4px rgba(0, 0, 0, 0.8), 0px 0px 10px rgba(255, 215, 0, 0.7)"; // Sombra para profundidad
+    this.scoreboard.style.background = "linear-gradient(145deg, rgba(50, 50, 50, 0.8), rgba(0, 0, 0, 0.5))"; // Fondo con degradado
+    this.scoreboard.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.2)"; // Efecto 3D
+    this.scoreboard.style.padding = "15px";
+    this.scoreboard.style.borderRadius = "10px";
+    this.scoreboard.style.fontFamily = "Arial, sans-serif";
+    this.scoreboard.style.textAlign = "center";
     document.body.appendChild(this.scoreboard);
 
     // Inicializar el marcador
@@ -632,37 +678,154 @@ class Field {
 }
 
 // Clase para los muros
+// class Walls {
+//   constructor(fieldWidth, fieldHeight, wallHeight, wallThickness) {
+//     // Cargar una textura para los muros (si tienes una)
+//     const textureLoader = new THREE.TextureLoader();
+
+//     // Cargar el mapa de normales para dar una sensación de relieve
+//     const normalMap = textureLoader.load('/static/assets/stone.jpg'); // Asegúrate de que la ruta sea correcta
+
+//     // Material con más detalles, que simula relieve y añade brillo
+//     const wallMaterial = new THREE.MeshStandardMaterial({
+//       color: 0x2F4F4F,             // Color base
+//       roughness: 0.4,              // Un poco menos rugoso para dar un acabado más suave
+//       metalness: 0.2,              // Material con algo de efecto metálico
+//       emissive: 0x333333,          // Le da un resplandor suave
+//       normalMap: normalMap         // Añadir el normalMap para dar más detalles
+//     });
+
+//     // Muro superior con más volumen
+//     const topWallGeometry = new THREE.BoxGeometry(
+//       fieldWidth,          // Ancho del muro
+//       wallThickness * 1.5,   // Grosor del muro (aumentado para dar más presencia)
+//       wallHeight * 1     // Aumentamos la altura para darle más presencia
+//     );
+//     this.topWall = new THREE.Mesh(topWallGeometry, wallMaterial);
+//     this.topWall.position.set(
+//       0,
+//       wallHeight / 2,                  // Posición Y centrada
+//       fieldHeight / 2 + wallThickness / 2  // Posición Z para el muro superior
+//     );
+//     this.topWall.castShadow = true;  // Habilitamos las sombras
+//     this.topWall.receiveShadow = true;
+
+//     // Muro inferior con más volumen
+//     const bottomWallGeometry = new THREE.BoxGeometry(
+//       fieldWidth,          // Ancho del muro
+//       wallThickness * 1.5,   // Grosor del muro (aumentado para dar más presencia)
+//       wallHeight * 1     // Aumentamos la altura para darle más presencia
+//     );
+//     this.bottomWall = new THREE.Mesh(bottomWallGeometry, wallMaterial);
+//     this.bottomWall.position.set(
+//       0,
+//       wallHeight / 2,                  // Posición Y centrada
+//       -fieldHeight / 2 - wallThickness / 2 // Posición Z para el muro inferior
+//     );
+//     this.bottomWall.castShadow = true; // Habilitamos las sombras
+//     this.bottomWall.receiveShadow = true;
+
+//     // Agregar más muros laterales (si es necesario)
+//   }
+// }
 class Walls {
   constructor(fieldWidth, fieldHeight, wallHeight, wallThickness) {
-    const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x888888 });
+    const textureLoader = new THREE.TextureLoader();
+    
+    // Cargar la textura principal para el muro
+    const wallTexture = textureLoader.load(
+      '/static/assets/stone.jpg', // Asegúrate de que la ruta sea correcta
+      (texture) => {
+        console.log('Textura principal cargada correctamente');
+      },
+      undefined, // Opcional: función de progreso
+      (error) => {
+        console.error('Error al cargar la textura principal:', error);
+      }
+    );
+
+    // Cargar el normal map
+    const normalMap = textureLoader.load(
+      '/static/assets/stone.jpg', // Asegúrate de que la ruta sea correcta
+      (texture) => {
+        console.log('Normal map cargado correctamente');
+      },
+      undefined, // Opcional: función de progreso
+      (error) => {
+        console.error('Error al cargar el normal map:', error);
+      }
+    );
+
+    // Material mejorado con textura, normalMap y otros parámetros
+    const wallMaterial = new THREE.MeshStandardMaterial({
+      map: wallTexture,            // Usamos una textura para los muros
+      color: 0xFF4500,             // Azul oscuro para los muros
+      roughness: 0.4,              // Rugosidad para no ser tan brillante
+      metalness: 0.2,              // Le damos algo de aspecto metálico
+      emissive: 0x333333,          // Le da un resplandor suave (si lo quieres)
+      normalMap: normalMap,        // Mapa normal para más detalles
+    });
 
     // Muro superior
     const topWallGeometry = new THREE.BoxGeometry(
-      fieldWidth,
-      wallThickness,
-      wallThickness,
+      fieldWidth,          // Ancho del muro
+      wallThickness * 3,   // Hacemos el grosor más grueso para más volumen
+      wallHeight * 1     // Aumentamos la altura para darle más presencia
     );
     this.topWall = new THREE.Mesh(topWallGeometry, wallMaterial);
     this.topWall.position.set(
       0,
-      wallHeight / 2,
-      fieldHeight / 2 + wallThickness / 2,
+      wallHeight / 2 + wallThickness,  // Posición Y centrada, ajustada por grosor
+      fieldHeight / 2 + wallThickness  // Posición Z para el muro superior
     );
+    this.topWall.castShadow = true;
+    this.topWall.receiveShadow = true;
 
     // Muro inferior
     const bottomWallGeometry = new THREE.BoxGeometry(
-      fieldWidth,
-      wallThickness,
-      wallThickness,
+      fieldWidth,          // Ancho del muro
+      wallThickness * 3,   // Hacemos el grosor más grueso
+      wallHeight * 1     // Aumentamos la altura para darle más presencia
     );
     this.bottomWall = new THREE.Mesh(bottomWallGeometry, wallMaterial);
     this.bottomWall.position.set(
       0,
-      wallHeight / 2,
-      -fieldHeight / 2 - wallThickness / 2,
+      wallHeight / 2 + wallThickness, // Posición Y centrada, ajustada por grosor
+      -fieldHeight / 2 - wallThickness // Posición Z para el muro inferior
     );
+    this.bottomWall.castShadow = true;
+    this.bottomWall.receiveShadow = true;
+
+    // Agregar los muros a la escena (suponiendo que ya has creado la escena en otro lugar)
+    scene.add(this.topWall);
+    scene.add(this.bottomWall);
   }
 }
+
+// Crear la escena y añadir luces
+const scene = new THREE.Scene();
+
+// Crear una luz direccional
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1); // Luz blanca
+directionalLight.position.set(5, 5, 5); // Posición de la luz
+directionalLight.castShadow = true; // Habilitar sombras
+scene.add(directionalLight);
+
+// Crear una luz ambiental
+const ambientLight = new THREE.AmbientLight(0x404040, 0.5); // Luz ambiental suave
+scene.add(ambientLight);
+
+// Crear una luz puntual (opcional)
+const pointLight = new THREE.PointLight(0xFFFFFF, 1, 100);
+pointLight.position.set(0, 10, 0);
+pointLight.castShadow = true;
+scene.add(pointLight);
+
+// Añadir los muros a la escena
+const walls = new Walls(100, 50, 20, 5);
+
+
+
 
 function getCSRFToken() {
   const csrfToken = document.cookie
