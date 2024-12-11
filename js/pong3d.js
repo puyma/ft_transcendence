@@ -104,7 +104,7 @@ class Game {
     this.isGameStarted = false;
     // Función para salir del juego y volver al menú anterior
     const exitMessage = confirm(
-      "¿Estás seguro de que quieres salir del juego?",
+      "Are you sure you want to exit the game?",
     );
     if (exitMessage) {
       // Aquí puedes redirigir al menú anterior, por ejemplo:
@@ -133,7 +133,7 @@ class Game {
     window.addEventListener("keydown", this.handleKeydown.bind(this));
     window.addEventListener("keyup", this.handleKeyup.bind(this));
 
-    this.messageManager.showMessage(`¡Bienvenido ${this.player1}! Jugarás contra ${this.player2}.Presiona cualquier tecla para comenzar`);
+    this.messageManager.showMessage(`¡Welcome ${this.player1}! You will play against ${this.player2}.Press any key to start`);
     // this.gameLoop();
   }
 
@@ -160,8 +160,8 @@ class Game {
 
     // Mostrar mensaje de fin de juego
     this.messageManager.showMessage(
-      `${winnerMessage}<br>Presiona 'R' para volver a jugar o ESC para salir.`,
-      "#FF0000",
+      `${winnerMessage}<br>Press 'R' to play again or ESC to exit the game.`,
+      "#FFFFFF",
     );
     const csrfToken = getCSRFToken();
     fetch("/tresD/play/save_match/", {  // Correct URL
@@ -269,7 +269,7 @@ class Game {
     // Cargar la textura de fondo
     const textureLoader = new THREE.TextureLoader();
     textureLoader.load(
-        '../static/assets/textura.jpg', // Reemplaza con la ruta a tu imagen
+        '/static/assets/textures/textura.jpg', // Reemplaza con la ruta a tu imagen
         (texture) => {
             // Establece el fondo de la escena una vez la textura haya sido cargada
             this.scene.background = texture;
@@ -445,6 +445,13 @@ class Game {
   }
 
   getCollisionAngle(ball, paddle) {
+    const ballRadius = ball.mesh.geometry.parameters.radius || 0;
+    const paddleHeight = paddle.height || 1; // Asegurarse de que no sea cero
+    const paddleCenterZ = paddle.mesh.position.z || 0;
+    const ballPositionZ = ball.mesh.position.z || 0;
+  }
+
+  getCollisionAngle(ball, paddle) {
     const ballRadius = ball.mesh.geometry.parameters.radius;
     const paddleHeight = paddle.height; // Asumimos que la pala tiene una propiedad "height"
     const paddleCenter = paddle.mesh.position.z;
@@ -552,77 +559,67 @@ class Game {
     // Detectar si la pelota ha sido tocada por el jugador (cuando la dirección de la pelota cambia)
     const isBallTouchedByPlayer = this.ball.velocityX > 0;  // Si la pelota está viajando hacia la IA, el jugador la tocó.
 
+    // Variables que se usan en las predicciones
+    let finalPredictedPosition = this.ball.mesh.position.z; // Inicializamos con la posición actual de la pelota
+
     // Si la pelota fue tocada por el jugador, la IA empieza a moverse
     if (isBallTouchedByPlayer) {
-        // Predicción mejorada de la posición de la pelota en función de su velocidad y tiempo
-        const timeToImpact = Math.abs(this.ball.mesh.position.z - this.paddle2.mesh.position.z) / Math.abs(this.ball.velocityY); // Calcular el tiempo de impacto
+        // Predicción mejorada de la posición de la pelota en función de su velocidad, aceleración y tiempo
+        const timeToImpact = Math.abs(this.ball.mesh.position.z - this.paddle2.mesh.position.z) / (Math.abs(this.ball.velocityY) + Math.abs(this.ball.velocityX)); // Calcular el tiempo de impacto
 
         // Predicción de la posición de la pelota en el futuro
         const predictedPosition = this.ball.mesh.position.z + this.ball.velocityY * timeToImpact;
 
-        // Introducimos un margen de error mucho más pequeño para hacerla casi perfecta
-        const errorMargin = Math.random() * 0.05; // Muy pequeño margen de error para alta precisión
+        // Mejorar la predicción en función de la aceleración de la pelota (reduciendo el margen de error)
+        const errorMargin = Math.random() * 0.01 * (1 - Math.abs(this.ball.velocityX) * 0.02); // Menor margen de error con pelota rápida
+        finalPredictedPosition = predictedPosition + errorMargin; // Guardamos la predicción ajustada
 
-        // Usamos una predicción con un margen de error mucho menor
-        const finalPredictedPosition = predictedPosition + errorMargin;
+        // Aumentamos la zona de reacción dependiendo de la velocidad de la pelota (más amplia para pelotas rápidas)
+        const reactionDistance = 6 + Math.abs(this.ball.velocityX) * 0.7; // Reacción más rápida para pelotas rápidas
 
-        // Aumentamos la distancia de reacción para que la IA comience a moverse más rápido
-        const reactionDistance = 6; // Más cerca de la pelota, más reactiva
+        // Ajuste de comportamiento si la pelota pasa cerca de la pala (mayor precisión)
+        const closeEnoughToTouch = Math.abs(finalPredictedPosition - this.paddle2.mesh.position.z) < reactionDistance * 1.5; // Aumenta la zona de reacción si está cerca
 
-        // Mueve la pala solo si la pelota está dentro de la zona de reacción
-        if (Math.abs(finalPredictedPosition - this.paddle2.mesh.position.z) < reactionDistance) {
-            // Aumentamos la velocidad de la IA aún más para una reacción rápida y precisa
-            const aiSpeed = this.aiSpeed + Math.random() * 1.0; // Incremento significativo en la velocidad para mayor dificultad
-
-            // Mueve la pala hacia la pelota con un movimiento más rápido
+        // Si la pelota está cerca de la pala, hacemos una corrección hacia ella
+        if (closeEnoughToTouch) {
+            // Movimiento más rápido hacia la pelota en caso de que pase cerca
             if (finalPredictedPosition > this.paddle2.mesh.position.z) {
-                this.paddle2.moveUp(aiSpeed); // Mueve hacia arriba
+                this.paddle2.moveUp(this.aiSpeed); // Movimiento ajustado más rápido hacia arriba
             } else {
-                this.paddle2.moveDown(aiSpeed); // Mueve hacia abajo
+                this.paddle2.moveDown(this.aiSpeed); // Movimiento ajustado más rápido hacia abajo
+            }
+        } else {
+            // Mover hacia la posición predicha de forma más precisa y rápida
+            if (Math.abs(finalPredictedPosition - this.paddle2.mesh.position.z) < reactionDistance) {
+                if (finalPredictedPosition > this.paddle2.mesh.position.z) {
+                    this.paddle2.moveUp(this.aiSpeed); // Movimiento hacia arriba
+                } else {
+                    this.paddle2.moveDown(this.aiSpeed); // Movimiento hacia abajo
+                }
             }
         }
     }
 
-    // Detener la pala si la IA toca la pelota
+    // Lógica de limitación de la posición para evitar que la pala se salga del campo
+    this.paddle2.limitPosition(-this.fieldHeight / 2, this.fieldHeight / 2);
+
+    // Detener la pala si la IA toca la pelota (la pelota va hacia el jugador)
     if (this.ball.velocityX < 0) {  // Si la pelota está viajando hacia el jugador, la IA la tocó
         // Aquí no movemos la pala, simplemente no aplicamos ningún movimiento a la pala
         this.paddle2.mesh.position.z = this.paddle2.mesh.position.z;  // La posición se mantiene igual
     }
 
-    // Lógica de limitación de la posición para evitar que la pala se salga del campo
-    this.paddle2.limitPosition(-this.fieldHeight / 2, this.fieldHeight / 2);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // updateComPaddle() {
-  //   const distanceToBall =
-  //     this.ball.mesh.position.z - this.paddle2.mesh.position.z;
-
-  //   // Aquí se calcula la velocidad de la pala de la máquina
-  //   const aiSpeed = this.aiSpeed;
-
-  //   // Lógica para seguir la pelota
-  //   if (distanceToBall > 0) {
-  //     this.paddle2.moveUp(aiSpeed);
-  //   } else {
-  //     this.paddle2.moveDown(aiSpeed);
-  //   }
-
-  //   // Lógica de limitación de posición
-  //   this.paddle2.limitPosition(-this.fieldHeight / 2, this.fieldHeight / 2);
-  // }
+    // Ajustes adicionales después de que el jugador toque la pelota (post-touch)
+    if (isBallTouchedByPlayer) {
+        // Usar la velocidad y dirección para ajustar la predicción
+        const adjustedPrediction = finalPredictedPosition * 1.05; // Modificar la predicción tras cada toque
+        if (adjustedPrediction > this.paddle2.mesh.position.z) {
+            this.paddle2.moveUp(this.aiSpeed); // Movimiento hacia arriba si la predicción lo requiere
+        } else {
+            this.paddle2.moveDown(this.aiSpeed); // Movimiento hacia abajo si la predicción lo requiere
+        }
+    }
+  }
 
   render() {
     this.renderer.render(this.scene, this.camera);
@@ -687,19 +684,21 @@ class Ball {
   }
 
   resetPosition() {
-    
     this.mesh.position.set(0, 3, 0);
-    
+
     // Reiniciar la velocidad a la velocidad base
     this.initialSpeed = this.baseSpeed;
-    const randomDirectionX = Math.random() < 0.5 ? 1 : -1;
-    const randomDirectionZ = Math.random() < 0.5 ? 1 : -1;
 
-    // Usar la velocidad inicial reiniciada
-    this.velocityX = randomDirectionX * this.baseSpeed;
-    this.velocityY = randomDirectionZ * this.baseSpeed;
-  
-    
+    // Generar un ángulo aleatorio dentro de un arco máximo de 90 grados (±45 grados)
+    const angle = (Math.random() * Math.PI) / 2 - Math.PI / 4; // Rango: [-45°, 45°] en radianes
+
+    // Calcular las componentes de velocidad usando trigonometría
+    const randomDirectionX = Math.cos(angle) * this.baseSpeed;
+    const randomDirectionZ = Math.sin(angle) * this.baseSpeed;
+
+    // Asignar las componentes a las velocidades, manteniendo signos aleatorios
+    this.velocityX = Math.random() < 0.5 ? randomDirectionX : -randomDirectionX;
+    this.velocityY = Math.random() < 0.5 ? randomDirectionZ : -randomDirectionZ;
   }
 
   updatePosition() {
@@ -743,7 +742,7 @@ class Walls {
     
     // Cargar la textura principal para el muro
     const wallTexture = textureLoader.load(
-      '/static/assets/stone.jpg', // Asegúrate de que la ruta sea correcta
+      '/static/assets/textures/stone.jpg', // Asegúrate de que la ruta sea correcta
       (texture) => {
         console.log('Textura principal cargada correctamente');
       },
@@ -755,7 +754,7 @@ class Walls {
 
     // Cargar el normal map
     const normalMap = textureLoader.load(
-      '/static/assets/stone.jpg', // Asegúrate de que la ruta sea correcta
+      '/static/assets/textures/stone.jpg', // Asegúrate de que la ruta sea correcta
       (texture) => {
         console.log('Normal map cargado correctamente');
       },
@@ -768,7 +767,7 @@ class Walls {
     // Material mejorado con textura, normalMap y otros parámetros
     const wallMaterial = new THREE.MeshStandardMaterial({
       map: wallTexture,            // Usamos una textura para los muros
-      color: 0xFF4500,             // Azul oscuro para los muros
+      color: 0x808080,             // Azul oscuro para los muros
       roughness: 0.4,              // Rugosidad para no ser tan brillante
       metalness: 0.2,              // Le damos algo de aspecto metálico
       emissive: 0x333333,          // Le da un resplandor suave (si lo quieres)

@@ -138,6 +138,24 @@ function initPlay() {
   });
 }
 
+function updateStyles() {
+  const checkbox = document.getElementById('changeStyleSwitch');
+  const body = document.body;
+  if (checkbox.checked) {
+      // Si el checkbox está activado, añadimos la clase 'mode3D' y el atributo 'data-bs-theme="dark"'
+      body.classList.add('mode3D');
+      // Cambiar el estilo visual del checkbox (activado)
+      checkbox.classList.add('checkbox-activated');
+      console.log("Modo 3D y tema oscuro activados");
+  } else {
+      // Si el checkbox está desactivado, eliminamos los estilos
+      body.classList.remove('mode3D');
+      // Restablecer el estilo visual del checkbox
+      checkbox.classList.remove('checkbox-activated');
+      console.log("Modo 3D y tema oscuro desactivados");
+  }
+}
+
 function main() {
   router = window.router = new Router();
   router.attach([initPlay, updatePageState], "post");
@@ -163,12 +181,20 @@ function main() {
     window.document,
     "click",
     'button#playAnonymousBtn',
-    event_handler_double_play_btn);
+    event_handler_double_play_btn
+  );
   router.add_event(
     window.document,
     "click",
     'button#playAnonymousBtn2',
-    event_handler_double_play_btn2);
+    event_handler_double_play_btn2
+  );
+  router.add_event(
+    window.document,
+    "change",
+    'input[type="checkbox"]#changeStyleSwitch',
+    updateStyles
+  );
   router.init();
   return;
 }
