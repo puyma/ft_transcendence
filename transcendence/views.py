@@ -9,6 +9,9 @@ from django.contrib import messages
 from django.views import generic
 import json
 
+from django.urls import reverse
+from django.http import HttpResponseRedirect
+
 from django.http import JsonResponse
 from . import forms
 from . import models
@@ -41,24 +44,11 @@ class LoginView(auth_views.LoginView):
         )
         return context
 
-
 class LogoutView(auth_views.LogoutView):
-    http_method_names = ["post"]
-    template_name = "tr/base.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["page"] = "tr/pages/logout.html"
-        return context
-
     def post(self, request, *args, **kwargs):
         auth.logout(request)
         messages.success(request, "Successfully logged out.")
-        redirect_to = self.get_success_url()
-        if redirect_to != request.get_full_path():
-            return HttpResponseRedirect(redirect_to)
-        return super().get(request, *args, **kwargs)
-
+        return HttpResponseRedirect(reverse("home"))
 
 class SignupView(generic.FormView):
     http_method_names = ["get", "post"]
