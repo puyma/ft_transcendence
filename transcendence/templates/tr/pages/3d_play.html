@@ -18,7 +18,7 @@
                     data-mode="solo_play"
                     data-type="3d"
                     data-players="{{ request.user.username }},Computer"
-                    class="btn btn-warning-3d btn-lg btn3d text-black mt-3 px-4 py-2 w-100">
+                    class="btn-warning-3d btn btn-lg text-black mt-3 px-4 py-2 w-100">
                     <i class="icon-play-3d fa-regular fa-circle-play  fa-2x"></i>
                 </button>
               </div>
@@ -42,11 +42,11 @@
             <div class="d-grid gap-3">
               <!-- LOG IN Button -->
               <a href="{% url 'login' %}?next={% url 'tresD' %}" class="w-100">
-                <button type="button" class="btn btn-warning-3d btn-lg btn3d text-black w-100">LOG IN</button>
+                <button type="button" class="btn btn-warning-3d btn-lg text-black w-100">LOG IN</button>
               </a>
               <!-- PLAY AS GUEST Button -->
               <a href="{% url 'tresD_play' %}" class="w-100">
-                <button type="button" class="btn btn-warning-3d btn-lg btn3d text-black w-100">PLAY AS GUEST</button>
+                <button type="button" class="btn btn-warning-3d btn-lg text-black w-100">PLAY AS GUEST</button>
               </a>
             </div>
           </div>

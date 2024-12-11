@@ -103,25 +103,7 @@ h1 {
     color: black;
 }
 
-.btn3d {
-    transition: all .08s linear;
-    position: relative;
-    outline: medium none;
-    -moz-outline-style: none;
-    margin-right: 10px;
-    margin-top: 15px;
-    background-color: transparent;
-    color: white;
-    padding: 12px 24px;
-    font-size: 1rem;
-}
-
-.btn3d:focus {
-    outline: medium none;
-    -moz-outline-style: none;
-}
-
-.btn-default {
+.btn-home-3d {
     box-shadow: 0 0 0 1px #ebebeb inset, 0 0 0 2px rgba(255, 255, 255, 0.15) inset, 0 8px 0 0 #adadad, 0 8px 0 1px rgba(0, 0, 0, 0.4), 0 8px 8px 1px rgba(0, 0, 0, 0.5);
     background-color: white;
     border: 2px solid white;
@@ -131,25 +113,33 @@ h1 {
     transition: background-color 0.3s, box-shadow 0.3s;
 }
 
-.btn-default:hover {
-    background-color: #22bd1f8a;
+.btn-home-3d:hover {
+    background-color: #10c60ddf;
     color: rgb(255, 255, 255);
     box-shadow: 0 0 10px 4px rgba(0, 0, 0, 0.7), 0 0 15px 5px rgba(255, 255, 255, 0.3);
-}
-
-.btn3d:active {
-    top: 9px;
 }
 
 .btn-warning-3d {
     box-shadow: 0 0 0 1px #f0ad4e inset, 0 0 0 2px rgba(255, 255, 255, 0.15) inset, 0 8px 0 0 #eea236, 0 8px 0 1px rgba(0, 0, 0, 0.4), 0 8px 8px 1px rgba(0, 0, 0, 0.5);
     background-color: #f0ad4e;
+    margin-right: 10px;
+    margin-top: 15px;
+    color: white;
+    padding: 12px 24px;
+    font-size: 1rem;
 }
 
 .btn-warning-3d:hover {
     background-color: #f5a739;
     color: rgb(255, 255, 255);
     box-shadow: 0 0 10px 4px rgba(0, 0, 0, 0.7), 0 0 15px 5px rgba(255, 255, 255, 0.3);
+}
+
+.btn-warning-3d:active,
+.btn-warning-3d:focus {
+    background-color: #f0ad4e !important;
+    box-shadow: 0 0 0 1px #f0ad4e inset, 0 0 0 2px rgba(255, 255, 255, 0.15) inset, 0 8px 0 0 #eea236, 0 8px 0 1px rgba(0, 0, 0, 0.4), 0 8px 8px 1px rgba(0, 0, 0, 0.5) !important;
+    border-color: #f0ad4e !important;
 }
 
 .text-3d {
