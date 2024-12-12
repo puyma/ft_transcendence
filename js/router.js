@@ -137,7 +137,7 @@ class Router {
     const router = Router._instance;
 
     if (url.startsWith("/")) router.href = `${window.location.origin}${url}`;
-    else if (url.startsWith("https://") || url.startswith("http://"))
+    else if (url.startsWith("https://") || url.startsWith("http://"))
       router.href = url;
     router.load_content();
     return;
