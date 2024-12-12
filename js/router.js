@@ -22,7 +22,8 @@ class Router {
     this.add_event(window.document, "click", 'a[data-ajax="true"]', null);
     //this.add_event(window.document, "submit", 'form[data-ajax="true"]', null);
     this.add_event(window, "popstate", null, function () {
-      Router.get(window.location.href);
+      router.href = window.location.href;
+      router.load_content();
       return;
     });
     return;
@@ -74,11 +75,13 @@ class Router {
     if (Object.hasOwn(router.#events, type) == false) return;
     router.#events[type].forEach((obj) => {
       if (obj.selector === null || target.matches(obj.selector) === true) {
-        event.preventDefault();
-        try {
-          obj.func(event);
-        } catch (err) {
-          window.console.error(err);
+        if (obj.func) {
+          event.preventDefault();
+          try {
+            obj.func(event);
+          } catch (err) {
+            window.console.error(err);
+          }
         }
       }
     });
