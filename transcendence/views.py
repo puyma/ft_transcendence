@@ -8,6 +8,7 @@ from django.contrib.auth import views as auth_views
 from django.contrib import messages
 from django.views import generic
 import json
+from django.shortcuts import render
 
 from django.urls import reverse
 from django.http import HttpResponseRedirect
@@ -538,3 +539,20 @@ def save_match(request):
             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
+
+#views error pages
+def custom_400(request, exception):
+    return render(request, '400.html', status=400)
+
+def custom_403(request, exception):
+    return render(request, '403.html', status=403)
+
+def custom_404(request, exception):
+    return render(request, '404.html', status=404)
+
+def custom_500(request):
+    return render(request, '500.html', status=500)
+
+
+def error_413(request, exception=None):
+    return render(request, '413.html', status=413)
