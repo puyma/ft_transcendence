@@ -68,7 +68,6 @@ export class Game {
     };
   }
 
-  //probar volver a ponerlo donde antes
   handleKeydown(evt) {
     if (evt.code === "Space" && !this.gameStarted) {
       this.messageManager.hideMessage();
@@ -94,14 +93,6 @@ export class Game {
     this.canvas.focus();
 
     this.messageManager.showMessage(`Next Match: ${this.player1} vs ${this.player2}, Press Space to start`, "#FFFFFF", "rgba(0, 0, 0, 0.5)");
-    // document.addEventListener("keydown", (evt) => {
-    //   if (evt.code === "Space" && !this.gameStarted) {
-    //     this.messageManager.hideMessage();
-    //     this.startGame();
-    //   } else if (this.gameStarted) {
-    //     this.move(evt);
-    //   }
-    // });
     document.addEventListener("keydown", this.handleKeydown);
     this.render();
   }
@@ -203,7 +194,6 @@ export class Game {
     const paddleSpeed = 40;
     const canvasHeight = this.canvas.height / this.dpr;
 
-    // 1er player
     if (this.isGameOver === false)
     {
       if (evt.key === "w") {
@@ -216,7 +206,6 @@ export class Game {
       }
     }
 
-    // 2do player / computer
     if (this.gameMode != "solo_play") {
       if (evt.key === "ArrowUp") {
         this.com.y = Math.max(this.com.y - paddleSpeed, 0);
@@ -252,14 +241,12 @@ export class Game {
     this.ball.x = this.canvas.width / 2 / this.dpr;
     this.ball.y = this.canvas.height / 2 / this.dpr;
     this.ball.speed = 5;
-    // console.log("ball speed: ", this.ball.speed);
 
     let angleRad = (Math.random() * Math.PI) / 4; // nuevo angulo de rebote
     let direction = Math.random() > 0.5 ? 1 : -1; //direccion aleatoria
 
     this.ball.velocityX = this.ball.speed * Math.cos(angleRad) * direction;
     this.ball.velocityY = this.ball.speed * Math.sin(angleRad);
-    console.log("Velocity reset: ", this.ball.velocityX, this.ball.velocityY);
   }
 
   updateComPaddle() {
@@ -291,8 +278,6 @@ export class Game {
   }
 
   update() {
-    console.log("Ball Speed in Update:", this.ball.speed);
-    console.log("Velocity in Update:", this.ball.velocityX, this.ball.velocityY);
     if (this.user.score >= 3 || this.com.score >= 3) {
       //AJUSTAR A 11
       this.endGame();
@@ -301,11 +286,9 @@ export class Game {
 
     if (this.ball.x - this.ball.radius < 0) {
       this.com.score++;
-      // console.log("user point");
       this.resetBall();
     } else if (this.ball.x + this.ball.radius > this.canvas.width / this.dpr) {
       this.user.score++;
-      // console.log("com point");
       this.resetBall();
     }
 
@@ -358,17 +341,15 @@ export class Game {
     let winner_points = this.user.score >= this.com.score ? this.user.score : this.com.score;
     let loser_points = this.user.score < this.com.score ? this.user.score : this.com.score;
 
-    // console.log("winner", winner, "loser", loser, "winn_points:", winner_points, "loser_points", loser_points);
-
     if (this.gameMode === "solo_play" || this.gameMode === "double_play") {
       this.messageManager.showMessage(`${winner} Wins! Press 'R' to Restart or 'Esc' to finish`,);
-      const csrfToken = getCSRFToken(); // Ensure this function correctly fetches the CSRF token
+      const csrfToken = getCSRFToken();
 
       fetch('/solo_play/save_match/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRFToken': csrfToken, // CSRF token is included in the header
+          'X-CSRFToken': csrfToken,
         },
         body: JSON.stringify({
           winner: winner,
@@ -389,31 +370,17 @@ export class Game {
         .then(data => {
           if (data.status === 'success') {
             console.log('Match saved successfully:', data);
-            // Perform any actions that should happen after a successful save
           } else {
             console.error('Error saving match:', data.message);
-            // Handle the error (user might not be logged in, etc.)
           }
         })
         .catch(error => {
           if (error.message === 'User not authenticated') {
             console.log('User is not logged in, match not saved');
-            // Optionally: Inform the user to log in or redirect to login
           } else {
             console.error('Unexpected error:', error);
           }
         });
-      // const handleKeyPress = (evt) => {
-      //   console.log("key pressed: ", evt.key);
-      //   if (evt.key === "R" || evt.key === "r") {
-      //     document.removeEventListener("keydown", this.handleKeyPress);
-      //     this.resetGame(evt);
-      //   } else if (evt.key === "Escape") {
-      //     this.loadHomePage();
-      //   }
-      // };
-
-      // document.addEventListener("keydown", handleKeyPress, { once: false });
       document.removeEventListener("keydown", this.handleKeyPress);
       document.addEventListener("keydown", this.handleKeyPress.bind(this), { once: false });
     }
