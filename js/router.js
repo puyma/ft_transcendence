@@ -21,9 +21,16 @@ class Router {
     this.post_load_events = [];
     this.add_event(window.document, "click", 'a[data-ajax="true"]', null);
     //this.add_event(window.document, "submit", 'form[data-ajax="true"]', null);
-    this.add_event(window, "popstate", null, function () {
-      router.href = window.location.href;
-      router.load_content();
+    this.add_event(window, "popstate", null, function (event) {
+      const state = event.state; // This retrieves the state passed via pushState
+      if (state && state.href) {
+        router.href = state.href;
+        router.load_content();
+      } else {
+        // Fallback to window.location.href if state is missing
+        router.href = window.location.href;
+        router.load_content();
+      }
       return;
     });
     return;
@@ -155,13 +162,18 @@ class Router {
     return;
   }
 
-  #history_update() {
-    try {
-      window.history.pushState({}, "", this.href);
-    } catch (err) {
-      window.console.log(err);
+  #history_update(newUrl) {
+    const urlToPush = newUrl || this.href;
+
+    if (window.location.href !== urlToPush) {
+      try {
+        const state = { href: urlToPush }; // Simple state object
+        window.history.pushState(state, "", urlToPush);
+        console.log(`History updated with: ${urlToPush}`);
+      } catch (err) {
+        window.console.log(err);
+      }
     }
-    return;
   }
 
   load_content() {
