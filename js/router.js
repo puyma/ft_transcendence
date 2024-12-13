@@ -24,6 +24,11 @@ class Router {
     this.add_event(window, "popstate", null, (event) => {
       const state = event.state || {};
       this.href = state.href || window.location.href;
+      if (window.location.pathname === "/") {
+        document
+          .getElementsByTagName("header")?.[0]
+          ?.setAttribute("style", "display:flex;");
+      }
       this.load_content();
     });
     return;
