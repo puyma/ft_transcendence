@@ -98,12 +98,16 @@ class Game {
   
   setAbandonedGame() {
     this.abandonedGame = true;
-    console.trace();
+    window.removeEventListener("resize", this.resizeCanvas.bind(this));
+    window.removeEventListener("keydown", this.handleKeydown.bind(this));
+    window.removeEventListener("keyup", this.handleKeyup.bind(this));
   }
   
   exitGame() {
     this.isGameStarted = false;
-    this.abandonedGame = true;
+    this.setAbandonedGame();
+    if (window.location.pathname === "/")
+      return ;
     Router.get("/");
   }
 
@@ -122,9 +126,9 @@ class Game {
 
     this.createScoreboard();
 
-      window.addEventListener("resize", this.resizeCanvas.bind(this));
-      window.addEventListener("keydown", this.handleKeydown.bind(this));
-      window.addEventListener("keyup", this.handleKeyup.bind(this));
+    window.addEventListener("resize", this.resizeCanvas.bind(this));
+    window.addEventListener("keydown", this.handleKeydown.bind(this));
+    window.addEventListener("keyup", this.handleKeyup.bind(this));
 
     this.messageManager.showMessage(`¡Welcome ${this.player1}! You will play against ${this.player2}.Press any key to start`);
   }
@@ -349,7 +353,6 @@ class Game {
   }
 
   handleKeydown(event) {
-    console.log(event.key);
     if (!this.isGameStarted) {
       if (event.key === "Escape")
         this.exitGame();
