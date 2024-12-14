@@ -59,7 +59,6 @@ h1 {
     z-index: 2;
 }
 
-
 .table {
     width: 100%;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -192,4 +191,87 @@ h1 {
     border-radius: 3px;
     display: inline-block;
     margin-top: 5px;
+}
+
+body[data-bs-theme="dark"].mode3D {
+    background-image: url('/static/assets/textures/textura.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-blend-mode: hard-light;
+}
+
+body[data-bs-theme="dark"].mode3D > a {
+    color: fuchsia;
+}
+
+.form-switch .form-check-input {
+    width: 22px; /* Hacemos el checkbox más pequeño */
+    height: 22px; /* Hacemos el checkbox más pequeño */
+    border-radius: 4px; /* Borde cuadrado */
+    position: relative;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    background-color: #aaa; /* Color cuando el checkbox está desactivado (modo normal) */
+}
+
+/* Estilo del control deslizante cuando no está activado */
+.form-switch .form-check-input {
+    width: 30px; /* Hacemos el checkbox más pequeño */
+    height: 20px; /* Hacemos el checkbox más pequeño */
+    border-radius: 15px; /* Bordes redondeados */
+    position: relative;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    background-color: #aaa; /* Color cuando el checkbox está desactivado */
+}
+
+/* Estilo para el control deslizante (bola) cuando no está activado */
+.form-switch .form-check-input:before {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px; /* Bola más pequeña */
+    height: 16px; /* Bola más pequeña */
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.3s ease;
+}
+
+/* Estilo cuando el checkbox está activado (más grande y deslizante) */
+.form-switch .form-check-input:checked {
+    background-color: #4CAF50; /* Color del switch cuando está activado */
+    width: 50px; /* Hacemos el switch más grande */
+    height: 30px; /* Hacemos el switch más grande */
+    border-radius: 15px; /* Bordes redondeados */
+}
+
+.form-switch .form-check-input:checked::before {
+    transform: translateX(20px); /* Mueve el control deslizante al activar */
+    width: 24px; /* Tamaño de la bola cuando está activado */
+    height: 24px; /* Tamaño de la bola cuando está activado */
+}
+
+/* Estilo adicional para cuando el checkbox está activado y en modo 3D */
+.checkbox-activated {
+    background-color: #ff5722 !important; /* Cambia el color del checkbox cuando el modo 3D está activado */
+    border: 2px solid #fff; /* Borde más visible cuando el modo 3D está activado */
+}
+
+/* Minimalista: estilo cuando el checkbox no está activado */
+.form-check-input:not(:checked) {
+    background-color: #d3d3d3; /* Gris claro cuando no está activado */
+    border: 1px solid #bbb; /* Borde sutil */
+}
+
+/* Estilos del switch */
+.form-switch .form-check-label {
+    margin-left: 10px;
+    font-size: 12px; /* Hacemos el texto más pequeño cuando no está activado */
+    font-weight: normal;
+    color: #fff; /* Color blanco para el texto */
+}
+
+/* Cuando el checkbox está activado y en modo 3D, hacer el texto más grande */
+.form-switch .form-check-input:checked + .form-check-label {
+    font-size: 16px; /* Hacer el texto más grande cuando el modo 3D está activado */
 }
