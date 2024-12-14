@@ -165,12 +165,11 @@ function updateBackground3D(event)
 	const body = window.document.getElementsByTagName('body')[0];
 	const currentPage = window.location.pathname;
 
-	console.log(currentPage);
-  if (window.location.pathname === "/") {
-    document
-      .getElementsByTagName("header")?.[0]
-      ?.classList.remove("d-none");
-  }
+    if (currentPage === "/" || currentPage === "/tresD/" || currentPage === "/login/")
+	{
+    	document.getElementsByTagName("header")?.[0]
+			?.classList.remove("d-none");
+	}
 
 	if (currentPage === "/tresD/" || currentPage === "/tresD/play")
 		body.classList.add("tresd-body");
