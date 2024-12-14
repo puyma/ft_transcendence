@@ -88,7 +88,7 @@ class Game {
 
     this.winner = "";
     this.loser = "";
-    this.winScore = 1;
+    this.winScore = 3;
     this.winner_points = "";
     this.loser_points = "";
   }
