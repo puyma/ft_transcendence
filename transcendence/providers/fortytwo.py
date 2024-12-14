@@ -1,38 +1,34 @@
-import urllib
-import requests
 import json
-
+import requests
+import urllib
 from io import BytesIO
 from PIL import Image
 
 from django.conf import settings
-from django.contrib.auth import authenticate
-from django.contrib.auth import login
+from django.contrib import auth
 from django.contrib.auth.backends import BaseBackend
-from django.contrib.auth.models import User
+from django.core.files.base import ContentFile
 from django.shortcuts import redirect
 from urllib.request import urlopen
-from django.core.files.base import ContentFile
 
 from . import oauth
+
+
+# pass ?
+# every (almost, not common) method should be inside AuthBackendX
 
 
 class ProviderException(BaseException):
     pass
 
 
-# pass ?
-
-# every (almost, not common) method should be inside AuthBackendX
-
-
 def do_provider_login(request):
     try:
-        user = authenticate(request)
+        user = auth.authenticate(request)
         if user is None:
             # use django messages
             return redirect("login")
-        login(request, user)
+        auth.login(request, user)
         return redirect("home")
     except ProviderException:
         # use django messages
@@ -47,7 +43,7 @@ class AuthBackend42(BaseBackend):
 
     endpoint = settings.API_42_ENDPOINT
 
-    def authenticate(self, request) -> User:
+    def authenticate(self, request) -> auth.models.User:
         csrf = request.COOKIES.get("csrftoken", None)
         # if csrf is None... abort
         state = request.GET.get("state", None)
@@ -62,12 +58,11 @@ class AuthBackend42(BaseBackend):
             return None
 
         username = me.get("login")
-        print(f"username: {username}")
 
         try:
-            user = User.objects.get(username=username)
-        except User.DoesNotExist:
-            user = User(username=username)
+            user = auth.models.User.objects.get(username=username)
+        except auth.models.User.DoesNotExist:
+            user = auth.models.User(username=username)
             user.email = me.get("email")
             user.first_name = me.get("first_name")
             user.last_name = me.get("last_name")
@@ -101,8 +96,6 @@ class AuthBackend42(BaseBackend):
                 image_content = ContentFile(response.read())
                 image_name = f"{profile.user.username}_avatar.jpg"
                 profile.avatar.save(image_name, image_content, save=True)
-                print(f"Avatar image saved for user: {profile.user.username}")
-                print(f"Avatar path for profile: {profile.avatar_url}")
             except Exception as e:
                 print(f"Error downloading image: {e}")
 
@@ -116,8 +109,8 @@ class AuthBackend42(BaseBackend):
     # permissions for AnonymousUser
     def get_user(self, user_id):
         try:
-            user = User._default_manager.get(pk=user_id)
-        except User.DoesNotExist:
+            user = auth.models.User._default_manager.get(pk=user_id)
+        except auth.models.User.DoesNotExist:
             return None
         return user if self.user_can_authenticate(user) else None
 
@@ -125,7 +118,9 @@ class AuthBackend42(BaseBackend):
         if token is None:
             return None
         params = {"Authorization": f"Bearer {token}"}
-        response = requests.request("GET", f"{self.endpoint}/v2/me", headers=params)
+        response = requests.request(
+            "GET", f"{self.endpoint}/v2/me", headers=params
+        )
         me = response.json()
         # check response if OK
         # else return None
