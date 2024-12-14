@@ -9,6 +9,7 @@ export class Game {
     this.player1 = player1;
     this.player2 = player2;
     this.scaleFactor = 1.5;
+    this.abandonedGame = false;
     this.user = this.createPaddle(
       0,
       this.canvas.height / 2 / this.dpr - 50 * this.scaleFactor,
@@ -78,6 +79,7 @@ export class Game {
   }
 
   init() {
+    window.addEventListener("popstate",  this.setAbandonedGame.bind(this))
     document.removeEventListener("keydown", this.move);
     document
       .getElementsByTagName("header")?.[0]
@@ -100,6 +102,11 @@ export class Game {
   startGame() {
     this.gameStarted = true;
     this.gameLoop();
+  }
+
+  setAbandonedGame() {
+    this.abandonedGame = true;
+    console.trace();
   }
 
   resizeCanvas() {
@@ -278,7 +285,7 @@ export class Game {
   }
 
   update() {
-    if (this.user.score >= 3 || this.com.score >= 3) {
+    if (this.user.score >= 1 || this.com.score >= 1) {
       //AJUSTAR A 11
       this.endGame();
       return;
@@ -329,6 +336,7 @@ export class Game {
       this.resetGame(evt);
     } else if (evt.key === "Escape") {
       document.removeEventListener("keydown", this.handleKeyPress);
+      this.abandonedGame = true;
       this.loadHomePage();
     }
   }
@@ -344,6 +352,10 @@ export class Game {
     if (this.gameMode === "solo_play" || this.gameMode === "double_play") {
       this.messageManager.showMessage(`${winner} Wins! Press 'R' to Restart or 'Esc' to finish`,);
       const csrfToken = getCSRFToken();
+
+      if (this.abandonedGame === true) {
+        return ;
+      }
 
       fetch('/solo_play/save_match/', {
         method: 'POST',
