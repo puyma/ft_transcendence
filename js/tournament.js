@@ -14,7 +14,8 @@ export class Tournament {
     this.mode = mode;
     this.winCounts = {};
     this.tournamentWinner = null;
-    let gameFinished = false;
+    // let gameFinished = false;
+    this.endTournament = false;
 
     this.players.forEach((player) => {
       this.winCounts[player] = 0;
@@ -187,10 +188,10 @@ export class Tournament {
       this.finishTournament();
       return;
     }
-
+    
     const [player1, player2] = this.matches.shift();
     console.log(`Partido entre ${player1} y ${player2}`);
-
+    
     this.playMatch(player1, player2, (winner) => {
       this.winners.push(winner);
       this.handleNextMatch(() => {
@@ -198,8 +199,9 @@ export class Tournament {
       });
     });
   }
-
+  
   finishTournament() {
+    this.endTournament = true;
     if (this.mode === "all_vs_all") {
       this.determineWinner();
     }
@@ -214,15 +216,19 @@ export class Tournament {
   }
 
   handleEndTournament(event) {
-    if (event.key === "R" || event.key === "r") {
-      this.retryTournament();
-    } else if (event.key === "Escape") {
-      this.loadHomePage();
+    if (this.endTournament === true)
+    {
+      if (event.key === "R" || event.key === "r") {
+        this.retryTournament();
+      } else if (event.key === "Escape") {
+        this.loadHomePage();
+      }
     }
   }
 
   retryTournament() {
     document.removeEventListener("keydown", this.handleEndTournament);
+    this.endTournament = false;
     this.matches = [];
     this.rounds = [];
     this.tournamentWinner = null;
