@@ -21,9 +21,15 @@ class Router {
     this.post_load_events = [];
     this.add_event(window.document, "click", 'a[data-ajax="true"]', null);
     //this.add_event(window.document, "submit", 'form[data-ajax="true"]', null);
-    this.add_event(window, "popstate", null, function () {
-      Router.get(window.location.href);
-      return;
+    this.add_event(window, "popstate", null, (event) => {
+      const state = event.state || {};
+      this.href = state.href || window.location.href;
+      if (window.location.pathname === "/") {
+        document
+          .getElementsByTagName("header")?.[0]
+          ?.setAttribute("style", "display:flex;");
+      }
+      this.load_content();
     });
     return;
   }
@@ -74,11 +80,13 @@ class Router {
     if (Object.hasOwn(router.#events, type) == false) return;
     router.#events[type].forEach((obj) => {
       if (obj.selector === null || target.matches(obj.selector) === true) {
-        event.preventDefault();
-        try {
-          obj.func(event);
-        } catch (err) {
-          window.console.error(err);
+        if (obj.func) {
+          event.preventDefault();
+          try {
+            obj.func(event);
+          } catch (err) {
+            window.console.error(err);
+          }
         }
       }
     });
@@ -137,7 +145,7 @@ class Router {
     const router = Router._instance;
 
     if (url.startsWith("/")) router.href = `${window.location.origin}${url}`;
-    else if (url.startsWith("https://") || url.startswith("http://"))
+    else if (url.startsWith("https://") || url.startsWith("http://"))
       router.href = url;
     router.load_content();
     return;
@@ -152,13 +160,21 @@ class Router {
     return;
   }
 
-  #history_update() {
-    try {
-      window.history.pushState({}, "", this.href);
-    } catch (err) {
-      window.console.log(err);
+  #history_update(newUrl, additionalState = {}) {
+    const urlToPush = newUrl || this.href;
+
+    if (window.location.href !== urlToPush) {
+      try {
+        const state = {
+          href: urlToPush,
+          ...additionalState,
+        };
+        window.history.pushState(state, "", urlToPush);
+        console.log(`History updated with: ${urlToPush}`);
+      } catch (err) {
+        window.console.log(err);
+      }
     }
-    return;
   }
 
   load_content() {
