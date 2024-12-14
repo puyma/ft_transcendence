@@ -129,6 +129,7 @@ class Router {
   }
 
   post_load() {
+    this.#history_update(this.url);
     if (this.post_load_events.length === 0) return;
     this.post_load_events.forEach((fn) => {
       try {
@@ -137,7 +138,6 @@ class Router {
         window.console.log(err);
       }
     });
-    this.#history_update(this.url);
     return;
   }
 

@@ -41,12 +41,16 @@
             <h2 class="text-white">ONE PLAYER MODE</h2>
             <div class="d-grid gap-3">
               <!-- LOG IN Button -->
-              <a href="{% url 'login' %}?next={% url 'tresD' %}" class="w-100">
-                <button type="button" class="btn btn-warning-3d btn-lg text-black w-100">LOG IN</button>
+              <a href="{% url 'login' %}?next={% url 'tresD' %}"
+				 class="btn btn-warning-3d btn-lg text-black w-100"
+				 data-ajax="true">
+					LOG IN
               </a>
               <!-- PLAY AS GUEST Button -->
-              <a href="{% url 'tresD_play' %}" class="w-100">
-                <button type="button" class="btn btn-warning-3d btn-lg text-black w-100">PLAY AS GUEST</button>
+              <a href="{% url 'tresD_play' %}" 
+				 class="btn btn-warning-3d btn-lg text-black w-100"
+				 data-ajax="true">
+					PLAY AS GUEST
               </a>
               <!-- <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="changeStyleSwitch">
@@ -61,14 +65,3 @@
   </div>
 </div>
 {% endif %}
-
-<!-- <style>
-
-body
-{
-  background: linear-gradient(45deg, #10c60d, #243b55);
-  background-size: 200% 200%;
-  animation: gradientMove 10s infinite;
-}
-
-</style> -->

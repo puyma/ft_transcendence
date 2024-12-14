@@ -214,7 +214,8 @@ class Game {
     this.camera.position.set(20, 70, 70); 
     this.camera.lookAt(0, 0, 0);
   }
-
+  
+  /*
   createScoreboard() {
     this.scoreboard = document.createElement("div");
     this.scoreboard.id = "scoreboard";
@@ -231,10 +232,12 @@ class Game {
     this.scoreboard.style.borderRadius = "10px";
     this.scoreboard.style.fontFamily = "Arial, sans-serif";
     this.scoreboard.style.textAlign = "center";
-    document.body.appendChild(this.scoreboard);
+	document.body.appendChild(
+    //document.body.appendChild(this.scoreboard);
 
     this.updateScoreboard();
   }
+  */
 
   createRenderer() {
     this.scene = new THREE.Scene();
@@ -257,7 +260,7 @@ class Game {
         }
     );
 
-    document.body.style.backgroundColor = "#faf0e6";
+    //document.body.style.backgroundColor = "#faf0e6";
 
     const main = document.getElementById("main");
     if (main) {
@@ -389,7 +392,7 @@ class Game {
     this.scoreboard.style.borderRadius = "10px";
     this.scoreboard.style.fontFamily = "Arial, sans-serif";
     this.scoreboard.style.textAlign = "center";
-    document.body.appendChild(this.scoreboard);
+    window.document.getElementsByTagName('main')[0].insertAdjacentElement('afterbegin', this.scoreboard);
 
     this.updateScoreboard();
   }

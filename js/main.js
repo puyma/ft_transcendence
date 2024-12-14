@@ -160,9 +160,21 @@ function updateStyles() {
   }
 }
 
+function updateBackground3D(event)
+{
+	const body = window.document.getElementsByTagName('body')[0];
+	const currentPage = window.location.pathname;
+
+	console.log(currentPage);
+	if (currentPage === "/tresD/" || currentPage === "/tresD/play")
+		body.classList.add("tresd-body");
+	else
+		body.classList.remove("tresd-body"); 
+}
+
 function main() {
   router = window.router = new Router();
-  router.attach([initPlay, updatePageState], "post");
+  router.attach([initPlay, updatePageState, updateBackground3D], "post");
   router.add_event(
     window.document,
     "click",
