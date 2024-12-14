@@ -473,6 +473,9 @@ def double_play_view(request):
                 player2 = auth_models.User.objects.get(
                     username=player2_username
                 )
+                if player1.username == player2.username:
+                    messages.error(request, "Hey! You cannot play against yourself. Nice try...")
+                    return shortcuts.render(request, "tr/base.html", context)
                 user = auth.authenticate(
                     request,
                     username=player2_username,
