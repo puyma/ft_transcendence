@@ -49,6 +49,8 @@ export class MessageManager {
 
 class Game {
   constructor(player1, player2) {
+    this.abandonedGame = false;
+
     this.player1 = player1;
     this.player2 = player2;
     this.messageManager = new MessageManager();
@@ -93,22 +95,24 @@ class Game {
     this.winner_points = "";
     this.loser_points = "";
   }
-
+  
+  setAbandonedGame() {
+    this.abandonedGame = true;
+    console.trace();
+  }
+  
   exitGame() {
-    this.isGameStarted = false
-
-    const exitMessage = confirm(
-      "Are you sure you want to exit the game?",
-    );
-    if (exitMessage) {
-      Router.get("/");
-    }
+    this.isGameStarted = false;
+    this.abandonedGame = true;
+    Router.get("/");
   }
 
   init() {
     document
       .getElementsByTagName("header")?.[0]
       ?.classList.add("d-none");
+
+    window.addEventListener("popstate",  this.setAbandonedGame.bind(this))
 
     this.scene = new THREE.Scene();
     this.createCamera();
@@ -118,9 +122,9 @@ class Game {
 
     this.createScoreboard();
 
-    window.addEventListener("resize", this.resizeCanvas.bind(this));
-    window.addEventListener("keydown", this.handleKeydown.bind(this));
-    window.addEventListener("keyup", this.handleKeyup.bind(this));
+      window.addEventListener("resize", this.resizeCanvas.bind(this));
+      window.addEventListener("keydown", this.handleKeydown.bind(this));
+      window.addEventListener("keyup", this.handleKeyup.bind(this));
 
     this.messageManager.showMessage(`¡Welcome ${this.player1}! You will play against ${this.player2}.Press any key to start`);
   }
@@ -149,6 +153,10 @@ class Game {
       `${winnerMessage}<br>Press 'R' to play again or ESC to exit the game.`,
       "#FFFFFF",
     );
+    
+    if (this.abandonedGame === true)
+      return;
+
     const csrfToken = getCSRFToken();
     fetch("/tresD/play/save_match/", {
       method: 'POST',
