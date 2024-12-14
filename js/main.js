@@ -166,6 +166,12 @@ function updateBackground3D(event)
 	const currentPage = window.location.pathname;
 
 	console.log(currentPage);
+  if (window.location.pathname === "/") {
+    document
+      .getElementsByTagName("header")?.[0]
+      ?.classList.remove("d-none");
+  }
+
 	if (currentPage === "/tresD/" || currentPage === "/tresD/play")
 		body.classList.add("tresd-body");
 	else
@@ -205,12 +211,12 @@ function main() {
     'button#playAnonymousBtn2',
     event_handler_double_play_btn2
   );
-  router.add_event(
-    window.document,
-    "change",
-    'input[type="checkbox"]#changeStyleSwitch',
-    updateStyles
-  );
+  // router.add_event(
+  //   window.document,
+  //   "change",
+  //   'input[type="checkbox"]#changeStyleSwitch',
+  //   updateStyles
+  // );
   router.init();
   return;
 }

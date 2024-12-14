@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import {Router} from "./router"
 
 export class MessageManager {
   constructor() {
@@ -94,21 +95,20 @@ class Game {
   }
 
   exitGame() {
-    this.isGameStarted = false;
+    this.isGameStarted = false
 
     const exitMessage = confirm(
       "Are you sure you want to exit the game?",
     );
     if (exitMessage) {
-      window.location.href = "/";
+      Router.get("/");
     }
   }
 
   init() {
-    const header = document.getElementsByTagName("header")?.[0];
-    if (header) {
-      header.setAttribute("style", "display:none;");
-    }
+    document
+      .getElementsByTagName("header")?.[0]
+      ?.classList.add("d-none");
 
     this.scene = new THREE.Scene();
     this.createCamera();

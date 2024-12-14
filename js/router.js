@@ -27,7 +27,7 @@ class Router {
       if (window.location.pathname === "/") {
         document
           .getElementsByTagName("header")?.[0]
-          ?.setAttribute("style", "display:flex;");
+          ?.classList.remove("d-none");
       }
       this.load_content();
     });

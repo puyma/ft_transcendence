@@ -83,7 +83,7 @@ export class Game {
     document.removeEventListener("keydown", this.move);
     document
       .getElementsByTagName("header")?.[0]
-      .setAttribute("style", "display:none;");
+      ?.classList.add("d-none");
     this.resizeCanvas();
     window.addEventListener("resize", () => this.resizeCanvas());
     this.user.y = this.canvas.height / 2 / this.dpr - this.user.height / 2;
