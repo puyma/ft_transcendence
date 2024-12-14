@@ -1,0 +1,67 @@
+{% if request.user.is_authenticated %}
+<div class="mask d-flex align-items-center h-100 gradient-custom-3">
+  <div class="container h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-12 col-md-9 col-lg-7 col-xl-6">
+        <div class="card">
+          <div class="card-body p-5">
+            <div>
+              <div class="mb-3">
+                <h1 class="h1-battle text-3d text-white text-center display-3">
+                  ENTER THE 3D <span class="highlight mt-1">BATTLE ZONE</span>
+              </h1>
+                <h2 class="text-3d text-white text-center">{{ request.user.username }} vs Computer</h2>
+              </div>
+              <div class="d-flex flex-column justify-content-center align-items-center">
+                <button 
+                    id="soloPlay"
+                    data-mode="solo_play"
+                    data-type="3d"
+                    data-players="{{ request.user.username }},Computer"
+                    class="btn-warning-3d btn btn-lg text-black mt-3 px-4 py-2 w-100">
+                    <i class="icon-play-3d fa-regular fa-circle-play  fa-2x"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% else %}
+<div class="mask d-flex align-items-center h-100 gradient-custom-3">
+  <div class="container h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-12 col-md-9 col-lg-7 col-xl-6">
+        <div class="card card-3d">
+          <div class="card-body p-5">
+            <h1 class="text-white">READY TO PLAY?</h1>
+            <h2 class="text-white">ONE PLAYER MODE</h2>
+            <div class="d-grid gap-3">
+              <!-- LOG IN Button -->
+              <!--<a href="{% url 'login' %}?next={% url 'tresD' %}"
+				 class="btn btn-warning-3d btn-lg text-black w-100"
+				 data-ajax="true">
+					LOG IN
+			  </a>-->
+              <!-- PLAY AS GUEST Button -->
+              <a href="{% url 'tresD_play' %}" 
+				 class="btn btn-warning-3d btn-lg text-black w-100"
+				 data-ajax="true">
+					PLAY AS GUEST
+              </a>
+              <!-- <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="changeStyleSwitch">
+                <label class="form-check-label" for="changeStyleSwitch">Activar/Desactivar 3D y Tema Oscuro</label>
+            </div> -->
+            </div>
+          </div>
+         
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}

@@ -1,6 +1,6 @@
 # Setup and configuration
 
-## Setup
+## Set up
 
 Install docker on your system.
 Run `make`.

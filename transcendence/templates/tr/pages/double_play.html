@@ -1,5 +1,6 @@
 <div class="vertical"></div>
-<div class="container d-flex justify-content-center align-items-center">
+<div class="d-flex justify-content-center h-100">
+<!--<div class="container d-flex justify-content-center align-items-center">-->
   <div class="row justify-content-center align-items-center w-100">
     <!-- PLAYER 1 -->
     <div class="col-4">
@@ -11,11 +12,12 @@
           {% elif player1 == "guest" %}
             <span class="text-white mb-2">Hello, Guest</span>
           {% else %}
-            <button id="playAnonymousBtn" class="btn btn-secondary btn-lg w-100 mt-3">PLAY AS GUEST</button>
-            <a href="{% url 'signup' %}?next={% url 'double_play' %}" class="btn btn-light btn-lg w-100">REGISTER</a>
+            <button id="playAnonymousBtn" class="btn btn-secondary btn-lg w-100 mt-3" data-ajax="true">PLAY AS GUEST</button>
+			<a href="{% url 'signup' %}?next={% url 'double_play' %}?{{ request.META.QUERY_STRING }}" class="btn btn-light btn-lg w-100" data-ajax="true">REGISTER</a>
+			{{ request.META.QUERY_STRING }}
             <p class="mt-4">
               Already have an account? 
-              <a href="{% url 'login' %}?next={% url 'double_play' %}" class="link-primary">Log in</a>
+			  <a href="{% url 'login' %}?next={% url 'double_play' %}{{ request.META.QUERY_STRING }}" class="link-primary" data-ajax="true">Log in</a>
             </p>
           {% endif %}
         </div>
@@ -24,18 +26,6 @@
 
     <!-- Play Button -->
     <div class="col-2 d-flex flex-column justify-content-center align-items-center" style="z-index: 3; position: relative; background-color: rgb(0, 0, 0);">
-      <!-- 3D Button -->
-      <button
-      id="doublePlay"
-      data-mode="3d_play"
-      data-type="3d"
-      data-players="{{ player1 }},{{ player2 }}"
-      class="btn btn-sm mt-3 px-4 py-3"
-      style="font-size: 30px; background-color: rgb(159, 153, 153); border: none; border-radius: 15px;" 
-      {% if not play_enabled %}disabled{% endif %}>
-      3D
-      <i class="fa-regular fa-circle-play"></i>
-    </button>  
       <button
         id="doublePlay"
         data-mode="double_play"
@@ -43,8 +33,10 @@
         data-players="{{ player1 }},{{ player2 }}"
         class="btn btn-sm my-3 px-4 py-3"
         style="font-size: 30px; background-color: rgb(49, 99, 209); border: none; border-radius: 15px;" 
-        {% if not play_enabled %}disabled{% endif %}>
-        2D
+        {% if not play_enabled %}
+		  disabled
+		{% endif %}>
+        PLAY
         <i class="fa-solid fa-circle-play"></i>
       </button>
   </div>
@@ -60,16 +52,46 @@
           {% elif player2 %}
             <span class="text-white mb-2">Hello, {{ player2 }}</span>
           {% else %}
-            <button id="playAnonymousBtn2" class="btn btn-secondary btn-lg w-100 mt-3">PLAY AS GUEST2</button>
-            <form method="POST" class="mb-4">
+            <button id="playAnonymousBtn2" 
+                    class="btn btn-secondary btn-lg w-100 mt-3" 
+                    {% if not player1 %}
+                    disabled
+                    {% endif %} 
+                    data-ajax="true">
+                PLAY AS GUEST2
+            </button>
+            <form method="post" 
+                  class="mb-4" 
+                  data-ajax="true">
               {% csrf_token %}
               <div class="mb-3">
-                <input type="text" name="player2_username" class="form-control form-control-lg" placeholder="Username" required>
+                <input type="text" 
+                       name="player2_username" 
+                       class="form-control form-control-lg" 
+                       placeholder="Username" 
+                       {% if not player1 %}
+                       disabled
+                       {% endif %} 
+                       required>
               </div>
               <div class="mb-3">
-                <input type="password" name="player2_password" class="form-control form-control-lg" placeholder="Password" required>
+                <input type="password" 
+                       name="player2_password" 
+                       class="form-control form-control-lg" 
+                       placeholder="Password" 
+                       {% if not player1 %}
+                       disabled
+                       {% endif %} 
+                       required>
               </div>
-              <button type="submit" class="btn btn-primary btn-lg w-100">VERIFY PLAYER 2</button>
+              <button type="submit" 
+                      class="btn btn-primary btn-lg w-100" 
+                      {% if not player1 %}
+                      disabled
+                      {% endif %} 
+                      data-ajax="true">
+                  VERIFY PLAYER 2
+              </button>
             </form>
           {% endif %}
         </div>
@@ -77,59 +99,3 @@
     </div>
   </div>
 </div>
-
-<script>
-// Function to add event listeners dynamically
-function addEventListeners() {
-  const playAnonymousBtn = document.getElementById('playAnonymousBtn');
-  const playAnonymousBtn2 = document.getElementById('playAnonymousBtn2');
-
-  if (playAnonymousBtn) {
-    playAnonymousBtn.addEventListener('click', function() {
-        // Add query parameter for Player 1 without affecting Player 2's state
-        const urlParams = new URLSearchParams(window.location.search);
-        urlParams.set('anonymous', 'true');
-        window.history.pushState({}, '', `${location.pathname}?${urlParams}`);
-        window.location.reload();
-    });
-  }
-
-  if (playAnonymousBtn2) {
-    playAnonymousBtn2.addEventListener('click', function() {
-        const urlParams = new URLSearchParams(window.location.search);
-        urlParams.set('anonymous2', 'true');
-        window.history.pushState({}, '', `${location.pathname}?${urlParams}`);
-        window.location.reload();
-    });
-  }
-}
-
-function updatePageState() {
-    // Check for "anonymous" and "anonymous2" parameters in the URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const isPlayer1Anonymous = urlParams.get('anonymous') === 'true';
-    const isPlayer2Anonymous = urlParams.get('anonymous2') === 'true';
-
-    // Update the visibility of the "anonymous" messages
-    const anonymousMessage = document.getElementById('anonymousMessage');
-    const playAnonymousBtn = document.getElementById('playAnonymousBtn');
-    const playAnonymousBtn2 = document.getElementById('playAnonymousBtn2');
-
-    if (isPlayer1Anonymous) {
-        anonymousMessage.style.display = 'block'; // Show message for Player 1 as anonymous
-    } else {
-        anonymousMessage.style.display = 'none'; // Hide message for Player 1
-    }
-
-    if (isPlayer2Anonymous) {
-        playAnonymousBtn2.style.display = 'none'; // Hide "Play as Guest" button for Player 2 when playing anonymously
-    } else {
-        playAnonymousBtn2.style.display = 'block'; // Show "Play as Guest" button for Player 2
-    }
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    addEventListeners(); // Add event listeners
-    updatePageState(); // Update the page state based on current URL parameters
-});
-</script>

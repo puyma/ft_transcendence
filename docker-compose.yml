@@ -80,7 +80,7 @@ services:
         restart: true
     expose:
       - 6379
-    image: redis:7.4-alpine
+    image: redis:7.4-alpine3.20
     networks:
       - tr-network
 
@@ -106,7 +106,7 @@ services:
     command: npm install
     environment:
       DEBUG: ${DEBUG:-false}
-    image: node:22.7-alpine3.19
+    image: node:22.7-alpine3.20
     volumes:
       - ./:/usr/app
     working_dir: /usr/app/
@@ -120,7 +120,7 @@ services:
     environment:
       DEBUG: ${DEBUG:-false}
     entrypoint: ./sass-entrypoint.sh
-    image: node:22.7-alpine3.19
+    image: node:22.7-alpine3.20
     volumes:
       - ./:/usr/app/
     working_dir: /usr/app/
@@ -146,7 +146,7 @@ services:
         restart: true
     environment:
       DEBUG: ${DEBUG:-false}
-    image: node:22.7-alpine3.19
+    image: node:22.7-alpine3.20
     volumes:
       - ./:/usr/app/
     working_dir: /usr/app/

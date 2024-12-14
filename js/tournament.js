@@ -14,7 +14,8 @@ export class Tournament {
     this.mode = mode;
     this.winCounts = {};
     this.tournamentWinner = null;
-    let gameFinished = false;
+    // let gameFinished = false;
+    this.endTournament = false;
 
     this.players.forEach((player) => {
       this.winCounts[player] = 0;
@@ -69,9 +70,6 @@ export class Tournament {
     for (let i = 0; i < this.players.length; i++) {
       for (let j = i + 1; j < this.players.length; j++) {
         this.matches.push([this.players[i], this.players[j]]);
-        // console.log(
-        //   `Partido programado: ${this.players[i]} vs ${this.players[j]}`
-        // );
       }
     }
     this.showRoundMatches(this.matches);
@@ -98,9 +96,6 @@ export class Tournament {
 
         nextRound.push(autoAdvancePlayer);
         previouslyAutoAdvanced.push(autoAdvancePlayer);
-        // console.log(
-        //   `${autoAdvancePlayer} avanza automaticamente a prox ronda.`
-        // );
         round.splice(randomIndex, 1);
       } else autoAdvancePlayer = null;
 
@@ -117,13 +112,12 @@ export class Tournament {
         const winner = await new Promise((resolve) => {
           this.playMatch(match[0], match[1], resolve);
         });
-        // console.log(`Ganador entre ${match[0]} y ${match[1]} es ${winner}`);
         await new Promise((resolve) => this.handleNextMatch(resolve));
         nextRound.push(winner);
       }
       round = nextRound;
       // espera antes de mostrar msj o seguir
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // await new Promise((resolve) => setTimeout(resolve, 500));
 
       if (round.length === 1) {
         this.tournamentWinner = round[0];
@@ -141,16 +135,19 @@ export class Tournament {
     if (autoAdvancePlayer) {
       msg += `<br><strong>Note: ${autoAdvancePlayer} advances automatically!</strong>`;
     }
-    msg += `<br><span style="font-size: 0.8em">Press any key to continue</span>`;
+    msg += `<br><span style="font-size: 0.8em">Press 'Enter' to continue</span>`;
     this.messageManager.showMessage(msg, "#FFFFFF");
     // espera a tocar alguna tecla
     await new Promise((resolve) => {
       const handleKeyPress = (evt) => {
-        this.messageManager.hideMessage();
-        document.removeEventListener("keydown", handleKeyPress);
-        resolve();
+        if (evt.key === "Enter")
+        {
+          this.messageManager.hideMessage();
+          document.removeEventListener("keydown", handleKeyPress);
+          resolve();
+        }
       };
-      document.addEventListener("keydown", handleKeyPress, { once: true });
+      document.addEventListener("keydown", handleKeyPress, { once: false });
     });
   }
 
@@ -191,10 +188,10 @@ export class Tournament {
       this.finishTournament();
       return;
     }
-
+    
     const [player1, player2] = this.matches.shift();
     console.log(`Partido entre ${player1} y ${player2}`);
-
+    
     this.playMatch(player1, player2, (winner) => {
       this.winners.push(winner);
       this.handleNextMatch(() => {
@@ -202,8 +199,9 @@ export class Tournament {
       });
     });
   }
-
+  
   finishTournament() {
+    this.endTournament = true;
     if (this.mode === "all_vs_all") {
       this.determineWinner();
     }
@@ -213,20 +211,24 @@ export class Tournament {
       "#FF0000",
     );
     document.addEventListener("keydown", this.handleEndTournament.bind(this), {
-      once: true,
+      once: false,
     });
   }
 
   handleEndTournament(event) {
-    if (event.key === "R" || event.key === "r") {
-      this.retryTournament();
-    } else if (event.key === "Escape") {
-      this.loadHomePage();
+    if (this.endTournament === true)
+    {
+      if (event.key === "R" || event.key === "r") {
+        this.retryTournament();
+      } else if (event.key === "Escape") {
+        this.loadHomePage();
+      }
     }
   }
 
   retryTournament() {
     document.removeEventListener("keydown", this.handleEndTournament);
+    this.endTournament = false;
     this.matches = [];
     this.rounds = [];
     this.tournamentWinner = null;

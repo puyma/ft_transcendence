@@ -1,46 +1,90 @@
 <div class="mask d-flex align-items-center h-100 gradient-custom-3">
-	<div class="container h-100">
-		<div class="row d-flex justify-content-center align-items-center h-100">
-			<div class="col-12 col-md-9 col-lg-7 col-xl-6">
-				<div class="card" style="border-radius: 15px; background-color: transparent; border: none;">
-					<div class="card-body p-5">
-						<h2 class="text-uppercase text-center mb-5">Create an account</h2>
+    <div class="container h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-12 col-md-9 col-lg-7 col-xl-6">
+                <div class="card" style="border-radius: 15px; background-color: transparent; border: none;">
+                    <div class="card-body p-5">
+                        <h2 class="text-uppercase text-center mb-5">Create an account</h2>
 
-						<form method="post" id="signup-form" data-ajax="true">
-							{% csrf_token %}
+                        <form method="post" id="signup-form" data-ajax="true">
 
-							{% if form.errors %}
-							<div class="alert alert-danger" role="alert">
-								There are errors in the form. Please check and try again.
-							</div>
-							{% endif %}
+                            {% csrf_token %}
 
-							<div data-mdb-input-init class="form-outline mb-4">
-								{{ form.username.label_tag }}
-								{{ form.username }}
-							</div>
+                            {% if form.non_field_errors %}
+                            <div class="alert alert-danger" 
+                                 role="alert">
+                                {% for key, error in form.errors.items %}
+                                {{ error.as_text }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
 
-							<div data-mdb-input-init class="form-outline mb-4">
-								{{ form.password.label_tag }}
-								{{ form.password }}
-							</div>
+                            <div data-mdb-input-init 
+                                 class="form-outline mb-4">
+                                {{ form.username.label_tag }}
+                                {{ form.username }}
+                                {% if form.username.errors %}
+                                <div class="alert alert-danger mt-2" 
+                                     role="alert">
+                                    {{ form.username.errors.as_text }}
+                                </div>
+                                {% endif %}
+                            </div>
 
-							<div data-mdb-input-init class="form-outline mb-4">
-								{{ form.password_confirm.label_tag }}
-								{{ form.password_confirm }}
-							</div>
+                            <div data-mdb-input-init 
+                                 class="form-outline mb-4">
+                                {{ form.email.label_tag }}
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                <div class="alert alert-danger mt-2" 
+                                     role="alert">
+                                    {{ form.email.errors.as_text }}
+                                </div>
+                                {% endif %}
+                            </div>
 
-							<div class="d-flex justify-content-center">
-								<button type="submit" class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">
-									Register
-								</button>
-							</div>
+                            <div data-mdb-input-init 
+                                 class="form-outline mb-4">
+                                {{ form.password1.label_tag }}
+                                {{ form.password1 }}
+                                {% if form.password1.errors %}
+                                <div class="alert alert-danger mt-2" 
+                                     role="alert">
+                                    {{ form.password1.errors.as_text }}
+                                </div>
+                                {% endif %}
+                            </div>
 
-							<p class="text-center text-muted mt-5 mb-0">Already have an account? <a href="{% url 'login' %}" class="fw-bold text-body"><u>Login here</u></a></p>
-						</form>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+                            <div data-mdb-input-init 
+                                 class="form-outline mb-4">
+                                {{ form.password2.label_tag }}
+                                {{ form.password2 }}
+                                {% if form.password2.errors %}
+                                <div class="alert alert-danger mt-2" 
+                                     role="alert">
+                                    {{ form.password2.errors.as_text }}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            <p class="text-start text-muted">
+                            <span>Already have an account? </span>
+                            <a href="{% url 'login' %}" 
+                               class="fw-bold text-body">
+                                <u>Login instead</u>
+                            </a>
+                            </p>
+
+                            <div class="d-flex justify-content-center">
+                                <button type="submit" class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">
+                                    Register
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

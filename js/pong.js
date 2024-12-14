@@ -1,58 +1,15 @@
-// TODO: space para empezar el juego
-//     set players, 1 y 2, si no hay 2 -> computer
-//     teclas para empezar a jugar y reset game
-
-class Message {
-  constructor(ctx, dpr, scaleFactor) {
-    this.ctx = ctx;
-    this.dpr = dpr;
-    this.scaleFactor = scaleFactor;
-    this.messageText = "";
-    this.isVisible = false;
-  }
-
-  showMessage(text) {
-    this.messageText = text;
-    this.isVisible = true;
-    this.render();
-  }
-
-  hide() {
-    this.isVisible = false;
-    this.clear();
-  }
-
-  render() {
-    if (this.isVisible) {
-      this.ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-      this.ctx.fillRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-      this.ctx.font = `${20 * this.scaleFactor}px Arial`;
-      this.ctx.fillStyle = "white";
-      this.ctx.textAlign = "center";
-      this.ctx.fillText(
-        this.messageText,
-        this.ctx.canvas.width / 2 / this.dpr,
-        this.ctx.canvas.height / 2 / this.dpr,
-      );
-    }
-  }
-
-  clear() {
-    this.ctx.clearRect(0, 0, this.ctx.canvas.width, this.ctx.canvas.height);
-  }
-}
+import { MessageManager } from "./pong3d";
 
 export class Game {
-  constructor(canvasId, mode, play1, play2) {
+  constructor(canvasId, mode, player1, player2) {
     this.canvas = document.getElementById(canvasId);
     this.ctx = this.canvas ? this.canvas.getContext("2d") : null;
-
     this.dpr = window.devicePixelRatio || 1;
     this.gameMode = mode;
-    this.player1 = play1;
-    if (this.gameMode === "solo_play") this.player2 = "Computer";
-    else this.player2 = play2;
+    this.player1 = player1;
+    this.player2 = player2;
     this.scaleFactor = 1.5;
+    this.abandonedGame = false;
     this.user = this.createPaddle(
       0,
       this.canvas.height / 2 / this.dpr - 50 * this.scaleFactor,
@@ -82,7 +39,8 @@ export class Game {
     this.updateInterval = 16;
     this.isGameOver = false;
     this.gameStarted = false;
-    this.message = new Message(this.ctx, this.dpr, this.scaleFactor);
+    this.messageManager = new MessageManager();
+    this.handleKeydown = this.handleKeydown.bind(this); //(para passar el context y poder usar hideMessage)
   }
 
   createPaddle(x, y, color) {
@@ -99,7 +57,7 @@ export class Game {
   createBall(x, y, color) {
     let angleRad = (Math.random() * Math.PI) / 4; // ang aleatorio en la salida
     let direction = Math.random() > 0.5 ? 1 : -1; // direccion aleatoria
-    let initialSpeed = 7;
+    let initialSpeed = 5;
     return {
       x: x,
       y: y,
@@ -111,10 +69,21 @@ export class Game {
     };
   }
 
+  handleKeydown(evt) {
+    if (evt.code === "Space" && !this.gameStarted) {
+      this.messageManager.hideMessage();
+      this.startGame();
+    } else if (this.gameStarted) {
+      this.move(evt);
+    }
+  }
+
   init() {
+    window.addEventListener("popstate",  this.setAbandonedGame.bind(this))
+    document.removeEventListener("keydown", this.move);
     document
       .getElementsByTagName("header")?.[0]
-      .setAttribute("style", "display:none;");
+      ?.classList.add("d-none");
     this.resizeCanvas();
     window.addEventListener("resize", () => this.resizeCanvas());
     this.user.y = this.canvas.height / 2 / this.dpr - this.user.height / 2;
@@ -125,22 +94,24 @@ export class Game {
     this.canvas.setAttribute("tabindex", 0);
     this.canvas.focus();
 
-    this.message.showMessage(
-      `Next Match: ${this.player1} vs ${this.player2}, Press Space to start`,
-    );
-    document.addEventListener("keydown", (evt) => {
-      if (evt.code === "Space" && !this.gameStarted) {
-        this.startGame();
-      } else {
-        this.move(evt);
-      }
-    });
+    this.messageManager.showMessage(`Next Match: ${this.player1} vs ${this.player2}, Press Space to start`, "#FFFFFF", "rgba(0, 0, 0, 0.5)");
+    document.addEventListener("keydown", this.handleKeydown);
     this.render();
   }
 
   startGame() {
     this.gameStarted = true;
     this.gameLoop();
+  }
+
+  setAbandonedGame() {
+    this.abandonedGame = true;
+    window.document.removeEventListener("keydown", this.handleKeyPress);
+    window.document.removeEventListener("keydown", this.handleKeyPress.bind(this));
+    window.document.removeEventListener("keydown", this.handleN);
+    window.document.removeEventListener("keydown", this.handleKeydown);
+    window.document.removeEventListener("keydown", this.handleKeydown.bind(this));
+    console.trace();
   }
 
   resizeCanvas() {
@@ -229,27 +200,24 @@ export class Game {
       this.ball.radius,
       this.ball.color,
     );
-
-    if (!this.gameStarted || this.isGameOver) {
-      this.message.render();
-    }
   }
 
   move(evt) {
     const paddleSpeed = 40;
     const canvasHeight = this.canvas.height / this.dpr;
 
-    // 1er player
-    if (evt.key === "w") {
-      this.user.y = Math.max(this.user.y - paddleSpeed, 0);
-    } else if (evt.key === "s") {
-      this.user.y = Math.min(
-        this.user.y + paddleSpeed,
-        canvasHeight - this.user.height,
-      );
+    if (this.isGameOver === false)
+    {
+      if (evt.key === "w") {
+        this.user.y = Math.max(this.user.y - paddleSpeed, 0);
+      } else if (evt.key === "s") {
+        this.user.y = Math.min(
+          this.user.y + paddleSpeed,
+          canvasHeight - this.user.height,
+        );
+      }
     }
 
-    // 2do player / computer
     if (this.gameMode != "solo_play") {
       if (evt.key === "ArrowUp") {
         this.com.y = Math.max(this.com.y - paddleSpeed, 0);
@@ -284,7 +252,7 @@ export class Game {
   resetBall() {
     this.ball.x = this.canvas.width / 2 / this.dpr;
     this.ball.y = this.canvas.height / 2 / this.dpr;
-    this.ball.speed = 7;
+    this.ball.speed = 5;
 
     let angleRad = (Math.random() * Math.PI) / 4; // nuevo angulo de rebote
     let direction = Math.random() > 0.5 ? 1 : -1; //direccion aleatoria
@@ -367,31 +335,93 @@ export class Game {
     }
   }
 
+  handleKeyPress(evt) {
+	  if (this.isGameOver === true)
+	  {
+		  if (evt.key === "R" || evt.key === "r")
+		  {
+	      	document.removeEventListener("keydown", this.handleKeyPress);
+	      	document.removeEventListener("keydown", this.handleKeyPress.bind(this));
+	     	 this.resetGame(evt);
+		  }
+		  else if (evt.key === "Escape")
+		  {
+	      	document.removeEventListener("keydown", this.handleKeyPress);
+	      	document.removeEventListener("keydown", this.handleKeyPress.bind(this));
+	      	//this.setAbandonedGame();
+	      	this.loadHomePage();
+			delete this;
+		  }
+	  }
+  }
+
   endGame(onFinish, onNextMatch) {
     this.isGameOver = true;
-    let winner = this.user.score >= 1 ? this.player1 : this.player2;
+
+    let winner = this.user.score >= this.com.score ? this.player1 : this.player2;
+    let loser = this.user.score < this.com.score ? this.player1 : this.player2;
+    let winner_points = this.user.score >= this.com.score ? this.user.score : this.com.score;
+    let loser_points = this.user.score < this.com.score ? this.user.score : this.com.score;
 
     if (this.gameMode === "solo_play" || this.gameMode === "double_play") {
-      this.message.showMessage(
-        `${winner} Wins! Press 'R' to Restart or 'Esc' to finish`,
-      );
-      // document.addEventListener("keydown", (evt) => this.resetGame(evt), {
-      //   once: true,
-      // });
-      const handleKeyPress = (evt) => {
-        if (evt.key === "R" || evt.key === "r") {
-          this.resetGame(evt); // Reiniciar el juego
-        } else if (evt.key === "Escape") {
-          this.loadHomePage(); // Regresar a la página de inicio
-        }
-      };
+      this.messageManager.showMessage(`${winner} Wins! Press 'R' to Restart or 'Esc' to finish`,);
+      const csrfToken = getCSRFToken();
 
-      document.addEventListener("keydown", handleKeyPress, { once: true });
+      if (this.abandonedGame === true) {
+        return ;
+      }
+
+      fetch('/solo_play/save_match/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrfToken,
+        },
+        body: JSON.stringify({
+          winner: winner,
+          loser: loser,
+          winner_points: winner_points,
+          loser_points: loser_points,
+        })
+      })
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            return response.json().then(data => {
+              throw new Error(data.message || 'An error occurred');
+            });
+          }
+        })
+        .then(data => {
+          if (data.status === 'success') {
+            console.log('Match saved successfully:', data);
+          } else {
+            console.error('Error saving match:', data.message);
+          }
+        })
+        .catch(error => {
+          if (error.message === 'User not authenticated') {
+            console.log('User is not logged in, match not saved');
+          } else {
+            console.error('Unexpected error:', error);
+          }
+        });
+      document.removeEventListener("keydown", this.handleKeyPress);
+      document.removeEventListener("keydown", this.handleKeyPress.bind(this));
+      document.addEventListener("keydown", this.handleKeyPress.bind(this), { once: false });
     }
 
     if (this.gameMode === "all_vs_all" || this.gameMode === "knockout") {
-      this.message.showMessage(`${winner} Wins! Press 'N' for Next Match`);
-      if (onNextMatch) onNextMatch();
+      this.messageManager.showMessage(`${winner} Wins! Press 'N' for Next Match`, "#FFFFFF", "rgba(0, 0, 0, 0.5)");
+      const handleKeyN = (evt) => {
+        if ((evt.code === "KeyN") && this.isGameOver === true) {
+          document.removeEventListener("keydown", handleKeyN);
+          this.messageManager.hideMessage();
+          if (onNextMatch) onNextMatch();
+        }
+      };
+      document.addEventListener("keydown", handleKeyN);
     }
 
     if (onFinish) {
@@ -413,17 +443,22 @@ export class Game {
   }
 
   resetGame(evt) {
+    document.removeEventListener("keydown", this.handleKeydown);
     if (evt.code === "KeyR") {
       this.isGameOver = false;
       this.user.score = 0;
       this.com.score = 0;
       this.winnerMessage = null;
       this.gameStarted = false;
+      this.user.y = this.canvas.height / 2 / this.dpr - this.user.height / 2; //(necesario?)
+      this.resetBall();
       this.init();
     }
   }
 
   loadHomePage() {
+	if (window.location.pathname == '/')
+	  return ;
     fetch("/")
       .then((response) => response.text())
       .then((html) => {
@@ -435,3 +470,13 @@ export class Game {
       );
   }
 }
+
+function getCSRFToken() {
+  const csrfToken = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('csrftoken='))
+    ?.split('=')[1];
+  return csrfToken || ''; // Return the token or empty string if not found
+}
+
+const csrfToken = getCSRFToken();

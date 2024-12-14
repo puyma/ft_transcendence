@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="{{ lang|default:'en' }}">
+    {% include 'tr/components/_head.html' %}
+    <body data-host="{{ request.get_host }}" data-scheme="{{ request.scheme }}" data-bs-theme="dark">
+        {% include 'tr/components/_header.html' %}
+        
+        <main id="main" class="d-flex justify-content-center align-items-center" style="height: 100vh; text-align: center;">
+            <div>
+                <h1 class="display-3">Oops! Something Went Wrong</h1>
+                <p class="lead">Sorry, there was an internal server error. Please try again later.</p>
+                <a href="/" class="btn btn-primary btn-lg mt-4">Go back to the homepage</a>
+            </div>
+        </main>
+        
+        {% include 'tr/components/_footer.html' %}
+    </body>
+</html>
