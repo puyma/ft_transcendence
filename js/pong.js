@@ -106,6 +106,11 @@ export class Game {
 
   setAbandonedGame() {
     this.abandonedGame = true;
+    window.document.removeEventListener("keydown", this.handleKeyPress);
+    window.document.removeEventListener("keydown", this.handleKeyPress.bind(this));
+    window.document.removeEventListener("keydown", this.handleN);
+    window.document.removeEventListener("keydown", this.handleKeydown);
+    window.document.removeEventListener("keydown", this.handleKeydown.bind(this));
     console.trace();
   }
 
@@ -330,15 +335,24 @@ export class Game {
     }
   }
 
-  handleKeyPress = (evt) => {
-    if ((evt.key === "R" || evt.key === "r") && this.isGameOver === true) {
-      document.removeEventListener("keydown", this.handleKeyPress);
-      this.resetGame(evt);
-    } else if (evt.key === "Escape") {
-      document.removeEventListener("keydown", this.handleKeyPress);
-      this.abandonedGame = true;
-      this.loadHomePage();
-    }
+  handleKeyPress(evt) {
+	  if (this.isGameOver === true)
+	  {
+		  if (evt.key === "R" || evt.key === "r")
+		  {
+	      	document.removeEventListener("keydown", this.handleKeyPress);
+	      	document.removeEventListener("keydown", this.handleKeyPress.bind(this));
+	     	 this.resetGame(evt);
+		  }
+		  else if (evt.key === "Escape")
+		  {
+	      	document.removeEventListener("keydown", this.handleKeyPress);
+	      	document.removeEventListener("keydown", this.handleKeyPress.bind(this));
+	      	//this.setAbandonedGame();
+	      	this.loadHomePage();
+			delete this;
+		  }
+	  }
   }
 
   endGame(onFinish, onNextMatch) {
@@ -394,6 +408,7 @@ export class Game {
           }
         });
       document.removeEventListener("keydown", this.handleKeyPress);
+      document.removeEventListener("keydown", this.handleKeyPress.bind(this));
       document.addEventListener("keydown", this.handleKeyPress.bind(this), { once: false });
     }
 
@@ -442,6 +457,8 @@ export class Game {
   }
 
   loadHomePage() {
+	if (window.location.pathname == '/')
+	  return ;
     fetch("/")
       .then((response) => response.text())
       .then((html) => {
