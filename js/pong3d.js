@@ -2,7 +2,7 @@ import * as THREE from "three";
 
 export class MessageManager {
   constructor() {
-    this.messageElement = null; // Elemento del mensaje en el DOM
+    this.messageElement = null;
   }
 
   createMessageElement() {
@@ -31,7 +31,7 @@ export class MessageManager {
 
   showMessage(text, color = "#FFFFFF", bg = "black") {
     if (!this.messageElement) {
-      this.createMessageElement(); // Crear el elemento si no existe
+      this.createMessageElement();
     }
     this.messageElement.style.color = color;
     this.messageElement.style.display = "flex";
@@ -46,20 +46,17 @@ export class MessageManager {
   }
 }
 
-// Clase principal del juego
 class Game {
   constructor(player1, player2) {
     this.player1 = player1;
     this.player2 = player2;
     this.messageManager = new MessageManager();
 
-    // Configuración de dificultad
     this.initialSpeed = 0.5
     this.aiSpeed = 1;
-    this.speed = 1; // Velocidad de movimiento de las palas
-    this.speedIncrement = 0.02; // Incremento de velocidad de la pelota en cada colisión
+    this.speed = 1; 
+    this.speedIncrement = 0.02;
 
-    // Dimensiones y propiedades del campo
     this.ballHeight = 2;
     this.wallHeight = this.ballHeight * 2;
     this.wallThickness = 1;
@@ -68,7 +65,6 @@ class Game {
     this.fieldWidth = 150;
     this.fieldHeight = 75;
 
-    // Estado del juego
     this.scene = null;
     this.camera = null;
     this.renderer = null;
@@ -78,42 +74,37 @@ class Game {
     this.field = null;
     this.walls = null;
 
-    // Entradas del teclado
     this.wKey = { isPressed: false };
     this.sKey = { isPressed: false };
     this.upKey = { isPressed: false };
     this.downKey = { isPressed: false };
 
-    // Variables de juego
-    this.boundaryMargin = 5; // Margen para detectar cuando la pelota sale del campo
+    this.boundaryMargin = 5;
 
-    // Inicializa las palas
-    this.paddle1 = new Paddle(-10, 20); // Ejemplo de posición x para la pala 1
-    this.paddle2 = new Paddle(10, 20); // Ejemplo de posición x para la pala 2
+    this.paddle1 = new Paddle(-10, 20);
+    this.paddle2 = new Paddle(10, 20); 
 
-    this.isGameStarted = false; // Nuevo estado para saber si el juego ha comenzado
+    this.isGameStarted = false;
 
-    this.winner = ""; // Variable para almacenar al ganador
-    this.loser = ""; // Variable para almacenar al ganador
-    this.winScore = 10; // Goles necesarios para ganar
-    this.winner_points = ""; // Goles necesarios para ganar
-    this.loser_points = ""; // Goles necesarios para ganar
+    this.winner = "";
+    this.loser = "";
+    this.winScore = 10;
+    this.winner_points = "";
+    this.loser_points = "";
   }
 
   exitGame() {
     this.isGameStarted = false;
-    // Función para salir del juego y volver al menú anterior
+
     const exitMessage = confirm(
       "Are you sure you want to exit the game?",
     );
     if (exitMessage) {
-      // Aquí puedes redirigir al menú anterior, por ejemplo:
-      window.location.href = "/"; // Cambiar la URL al menú o página anterior
+      window.location.href = "/";
     }
   }
 
   init() {
-    // Ocultar el header siempre que inicie el juego
     const header = document.getElementsByTagName("header")?.[0];
     if (header) {
       header.setAttribute("style", "display:none;");
@@ -125,28 +116,24 @@ class Game {
     this.createLights();
     this.createObjects();
 
-    // Crear el marcador
     this.createScoreboard();
 
-    // Configurar los event listeners
     window.addEventListener("resize", this.resizeCanvas.bind(this));
     window.addEventListener("keydown", this.handleKeydown.bind(this));
     window.addEventListener("keyup", this.handleKeyup.bind(this));
 
     this.messageManager.showMessage(`¡Welcome ${this.player1}! You will play against ${this.player2}.Press any key to start`);
-    // this.gameLoop();
   }
 
   startGame() {
     if (!this.isGameStarted) {
-      this.messageManager.hideMessage(); // Ocultar el mensaje de inicio
-      this.isGameStarted = true; // Marcar que el juego ha comenzado
-      // Restablecer posiciones de las palas
+      this.messageManager.hideMessage();
+      this.isGameStarted = true;
       this.paddle1.resetPosition();
       this.paddle2.resetPosition();
       this.ball.resetPosition();
 
-      this.gameLoop(); // Iniciar el bucle del juego
+      this.gameLoop();
     }
   }
 
@@ -158,13 +145,12 @@ class Game {
     this.winner_points = this.paddle1.score >= this.paddle2.score ? this.paddle1.score : this.paddle2.score;
     this.loser_points = this.paddle1.score < this.paddle2.score ? this.paddle1.score : this.paddle2.score;
 
-    // Mostrar mensaje de fin de juego
     this.messageManager.showMessage(
       `${winnerMessage}<br>Press 'R' to play again or ESC to exit the game.`,
       "#FFFFFF",
     );
     const csrfToken = getCSRFToken();
-    fetch("/tresD/play/save_match/", {  // Correct URL
+    fetch("/tresD/play/save_match/", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -204,36 +190,32 @@ class Game {
 
   resetGame() {
     
-    // Limpiar el mensaje de fin de juego
-    document.getElementById("pong-message").innerHTML = ""; // Asegúrate de eliminar el mensaje
+    document.getElementById("pong-message").innerHTML = "";
 
-    // Reiniciar puntajes y estado del juego
     this.paddle1.score = 0;
     this.paddle2.score = 0;
-    this.updateScoreboard(); // Asegurarte de que el marcador se reinicie
-    this.isGameStarted = true; // Marcar el juego como no iniciado
+    this.updateScoreboard();
+    this.isGameStarted = true;
     this.ball.resetPosition();
     this.paddle1.resetPosition();
     this.paddle2.resetPosition();
-    this.messageManager.hideMessage(); // Ocultar el mensaje de inicio
+    this.messageManager.hideMessage();
     this.gameLoop();
   }
 
   createCamera() {
     this.camera = new THREE.PerspectiveCamera(
-      75, // Campo de visión (FOV)
-      window.innerWidth / window.innerHeight, // Relación de aspecto
-      1, // Plano cercano
-      1000, // Plano lejano
+      75,
+      window.innerWidth / window.innerHeight,
+      1,
+      1000,
     );
 
-    // Ajustar la posición de la cámara
-    this.camera.position.set(20, 70, 70); // Colocarla en una posición elevada
-    this.camera.lookAt(0, 0, 0); // Mirar hacia el centro del campo
+    this.camera.position.set(20, 70, 70); 
+    this.camera.lookAt(0, 0, 0);
   }
 
   createScoreboard() {
-    // Crear el contenedor del marcador
     this.scoreboard = document.createElement("div");
     this.scoreboard.id = "scoreboard";
     this.scoreboard.style.position = "absolute";
@@ -241,50 +223,42 @@ class Game {
     this.scoreboard.style.left = "50%";
     this.scoreboard.style.transform = "translateX(-50%)";
     this.scoreboard.style.fontSize = "32px";
-    this.scoreboard.style.color = "#FFD700"; // Oro brillante
-    this.scoreboard.style.textShadow = "2px 2px 4px rgba(0, 0, 0, 0.8), 0px 0px 10px rgba(255, 215, 0, 0.7)"; // Sombra para profundidad
-    this.scoreboard.style.background = "linear-gradient(145deg, rgba(50, 50, 50, 0.8), rgba(0, 0, 0, 0.5))"; // Fondo con degradado
-    this.scoreboard.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.2)"; // Efecto 3D
+    this.scoreboard.style.color = "#FFD700";
+    this.scoreboard.style.textShadow = "2px 2px 4px rgba(0, 0, 0, 0.8), 0px 0px 10px rgba(255, 215, 0, 0.7)";
+    this.scoreboard.style.background = "linear-gradient(145deg, rgba(50, 50, 50, 0.8), rgba(0, 0, 0, 0.5))";
+    this.scoreboard.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.2)";
     this.scoreboard.style.padding = "15px";
     this.scoreboard.style.borderRadius = "10px";
     this.scoreboard.style.fontFamily = "Arial, sans-serif";
     this.scoreboard.style.textAlign = "center";
     document.body.appendChild(this.scoreboard);
 
-    // Inicializar el marcador
     this.updateScoreboard();
   }
 
   createRenderer() {
-    // Asegúrate de que la escena esté inicializada
     this.scene = new THREE.Scene();
 
-    // Crear el renderizador
     this.renderer = new THREE.WebGLRenderer();
     this.renderer.setSize(this.screenWidth, this.screenHeight);
     this.renderer.setPixelRatio(window.devicePixelRatio);
     this.renderer.domElement.style.width = "100%";
     this.renderer.domElement.style.height = "100%";
     
-    // Cargar la textura de fondo
     const textureLoader = new THREE.TextureLoader();
     textureLoader.load(
-        '/static/assets/textures/textura.jpg', // Reemplaza con la ruta a tu imagen
+        '/static/assets/textures/textura.jpg',
         (texture) => {
-            // Establece el fondo de la escena una vez la textura haya sido cargada
             this.scene.background = texture;
-            // Aquí no es necesario usar setClearColor, ya que la textura reemplaza el fondo.
         },
-        undefined, // Opcional: función de progreso de carga (si quieres mostrar progreso)
+        undefined,
         (error) => {
             console.error('Error al cargar la textura de fondo:', error);
         }
     );
 
-    // Establecer el color de fondo del body (esto puede ser opcional si usas la textura)
     document.body.style.backgroundColor = "#faf0e6";
 
-    // Asegúrate de que el elemento "main" exista
     const main = document.getElementById("main");
     if (main) {
       main.replaceChildren(this.renderer.domElement);
@@ -304,21 +278,17 @@ class Game {
   }
 
   createObjects() {
-    // Crear el campo
     this.field = new Field(this.fieldWidth, this.fieldHeight);
     this.scene.add(this.field.mesh);
 
-    // Crear las palas
     this.paddle1 = new Paddle(-this.fieldWidth / 2 + 1, this.fieldHeight);
     this.paddle2 = new Paddle(this.fieldWidth / 2 - 1, this.fieldHeight);
     this.scene.add(this.paddle1.mesh);
     this.scene.add(this.paddle2.mesh);
 
-    // Crear la pelota
     this.ball = new Ball(this.initialSpeed);
     this.scene.add(this.ball.mesh);
 
-    // Crear los muros laterales
     this.walls = new Walls(
       this.fieldWidth,
       this.fieldHeight,
@@ -328,7 +298,6 @@ class Game {
     this.scene.add(this.walls.topWall);
     this.scene.add(this.walls.bottomWall);
 
-    // Crear la línea central
     this.createCenterLine();
   }
 
@@ -355,45 +324,39 @@ class Game {
   }
 
   resizeCanvas() {
-    // Obtener el nuevo ancho y alto de la ventana
     this.screenWidth = window.innerWidth;
     this.screenHeight = window.innerHeight;
 
-    // Ajustar el tamaño del renderizador
     this.renderer.setSize(this.screenWidth, this.screenHeight);
     this.renderer.setPixelRatio(window.devicePixelRatio);
 
-    // Calcular la nueva relación de aspecto
     const aspectRatio = this.screenWidth / this.screenHeight;
 
-    // Ajustar la cámara con la nueva relación de aspecto
     this.camera.aspect = aspectRatio;
 
-    // Actualizar la matriz de proyección de la cámara
     this.camera.updateProjectionMatrix();
   }
 
   handleKeydown(event) {
     console.log(event.key);
     if (!this.isGameStarted) {
-      // Si el juego no ha comenzado, permite iniciar el juego
       if (event.key === "Escape")
-        this.exitGame(); // Salir del juego
+        this.exitGame();
       else if (event.key === "r")
-        this.resetGame(); // Reiniciar el juego
-      else this.startGame(); // Iniciar el juego
+        this.resetGame();
+      else this.startGame();
     } else {
       switch (event.key) {
         case "w":
           this.wKey.isPressed = true;
-          event.preventDefault(); // Evitar el scroll de la pantalla
+          event.preventDefault();
           break;
         case "s":
           this.sKey.isPressed = true;
-          event.preventDefault(); // Evitar el scroll de la pantalla
+          event.preventDefault();
           break;
-        case "Escape": // Detectar si se presiona 'ESC'
-          this.exitGame(); // Llamar a la función para salir del juego
+        case "Escape":
+          this.exitGame();
           break;
       }
     }
@@ -411,7 +374,6 @@ class Game {
   }
 
   createScoreboard() {
-    // Crear el contenedor del marcador
     this.scoreboard = document.createElement("div");
     this.scoreboard.id = "scoreboard";
     this.scoreboard.style.position = "absolute";
@@ -420,21 +382,19 @@ class Game {
     this.scoreboard.style.transform = "translateX(-50%)";
     this.scoreboard.style.fontSize = "32px";
     this.scoreboard.style.color = "#FFD700"; // Oro brillante
-    this.scoreboard.style.textShadow = "2px 2px 4px rgba(0, 0, 0, 0.8), 0px 0px 10px rgba(255, 215, 0, 0.7)"; // Sombra para profundidad
-    this.scoreboard.style.background = "linear-gradient(145deg, rgba(50, 50, 50, 0.8), rgba(0, 0, 0, 0.5))"; // Fondo con degradado
-    this.scoreboard.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.2)"; // Efecto 3D
+    this.scoreboard.style.textShadow = "2px 2px 4px rgba(0, 0, 0, 0.8), 0px 0px 10px rgba(255, 215, 0, 0.7)";
+    this.scoreboard.style.background = "linear-gradient(145deg, rgba(50, 50, 50, 0.8), rgba(0, 0, 0, 0.5))";
+    this.scoreboard.style.boxShadow = "0 4px 8px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.2)";
     this.scoreboard.style.padding = "15px";
     this.scoreboard.style.borderRadius = "10px";
     this.scoreboard.style.fontFamily = "Arial, sans-serif";
     this.scoreboard.style.textAlign = "center";
     document.body.appendChild(this.scoreboard);
 
-    // Inicializar el marcador
     this.updateScoreboard();
   }
 
   updateScoreboard() {
-    // Actualizar el marcador con los puntajes actuales
     this.scoreboard.innerHTML = `${this.player1} : ${this.paddle1.score} | ${this.player2} ${this.paddle2.score}`;
   }
 
@@ -446,39 +406,34 @@ class Game {
 
   getCollisionAngle(ball, paddle) {
     const ballRadius = ball.mesh.geometry.parameters.radius || 0;
-    const paddleHeight = paddle.height || 1; // Asegurarse de que no sea cero
+    const paddleHeight = paddle.height || 1;
     const paddleCenterZ = paddle.mesh.position.z || 0;
     const ballPositionZ = ball.mesh.position.z || 0;
   }
 
   getCollisionAngle(ball, paddle) {
     const ballRadius = ball.mesh.geometry.parameters.radius;
-    const paddleHeight = paddle.height; // Asumimos que la pala tiene una propiedad "height"
+    const paddleHeight = paddle.height;
     const paddleCenter = paddle.mesh.position.z;
   
-    // La posición de la pelota al momento de la colisión
     const ballPosition = ball.mesh.position.z;
   
-    // Calculamos la distancia relativa desde el centro de la pala
     const distanceFromCenter = ballPosition - paddleCenter;
   
-    // Mapeamos la distancia al rango [-1, 1] donde 0 es el centro de la pala
     const normalizedDistance = distanceFromCenter / (paddleHeight / 2);
   
-    // Calculamos el ángulo de rebote, en función de la distancia del centro
-    // Cuanto más lejos del centro, más abierto será el ángulo
-    const maxAngle = Math.PI / 4; // El ángulo máximo que puede tener la pelota (45 grados)
-    const angle = normalizedDistance * maxAngle; // Ángulo ajustado en función de la distancia
+    const maxAngle = Math.PI / 4;
+    const angle = normalizedDistance * maxAngle;
   
     return angle;
   }
 
   movePaddle(paddle, moveUp, moveDown) {
     if (moveUp) {
-      paddle.moveDown(this.speed); // Cambiar a moveDown para invertir el movimiento
+      paddle.moveDown(this.speed);
     }
     if (moveDown) {
-      paddle.moveUp(this.speed); // Cambiar a moveUp para invertir el movimiento
+      paddle.moveUp(this.speed);
     }
     paddle.limitPosition(-this.fieldHeight / 2, this.fieldHeight / 2);
   }
@@ -488,7 +443,6 @@ class Game {
 
     const ballRadius = this.ball.mesh.geometry.parameters.radius;
 
-    // Rebote en los muros superior e inferior
     if (this.ball.mesh.position.z + ballRadius >= this.fieldHeight / 2) {
       this.ball.bounceY();
       this.ball.mesh.position.z = this.fieldHeight / 2 - ballRadius;
@@ -502,10 +456,9 @@ class Game {
       this.ball.increaseSpeed(this.speedIncrement);
     }
 
-    // Colisiones con las palas
     if (this.collision(this.ball, this.paddle1)) {
       const angle = this.getCollisionAngle(this.ball, this.paddle1);
-      this.ball.bounceX(angle); // Aplicamos el ángulo al rebote
+      this.ball.bounceX(angle);
       this.ball.mesh.position.x =
         this.paddle1.mesh.position.x + (ballRadius + this.paddle1.width / 2);
       this.ball.increaseSpeed(this.speedIncrement);
@@ -513,13 +466,12 @@ class Game {
   
     if (this.collision(this.ball, this.paddle2)) {
       const angle = this.getCollisionAngle(this.ball, this.paddle2);
-      this.ball.bounceX(angle); // Aplicamos el ángulo al rebote
+      this.ball.bounceX(angle);
       this.ball.mesh.position.x =
         this.paddle2.mesh.position.x - (ballRadius + this.paddle2.width / 2);
       this.ball.increaseSpeed(this.speedIncrement);
     }
 
-    // Comprobar si la pelota salió del campo
     if (
       this.ball.mesh.position.x - ballRadius <=
       -this.fieldWidth / 2 - this.boundaryMargin
@@ -527,7 +479,7 @@ class Game {
       if (!this.collision(this.ball, this.paddle1)) {
         this.ball.resetPosition();
         this.paddle2.score++;
-        this.updateScoreboard(); // Actualizar el marcador
+        this.updateScoreboard();
       }
     } else if (
       this.ball.mesh.position.x + ballRadius >=
@@ -536,87 +488,68 @@ class Game {
       if (!this.collision(this.ball, this.paddle2)) {
         this.ball.resetPosition();
         this.paddle1.score++;
-        this.updateScoreboard(); // Actualizar el marcador
+        this.updateScoreboard(); 
       }
     }
 
-    // Verificar si algún jugador ha alcanzado el puntaje de victoria
     if (this.paddle1.score >= this.winScore) {
-      this.endGame(`${this.player1} wins!`); // Use backticks
+      this.endGame(`${this.player1} wins!`);
     } else if (this.paddle2.score >= this.winScore) {
-      this.endGame(`${this.player2} wins!`); // Use backticks
+      this.endGame(`${this.player2} wins!`);
     }
 
-    // Modo "solo_play", movemos la pala del jugador 1 con las teclas 'W' y 'S'
     this.movePaddle(this.paddle1, this.wKey.isPressed, this.sKey.isPressed);
-    // Y también actualizamos la pala del CPU (computadora)
     this.updateComPaddle();
   }
 
   updateComPaddle() {
     const distanceToBall = this.ball.mesh.position.z - this.paddle2.mesh.position.z;
 
-    // Detectar si la pelota ha sido tocada por el jugador (cuando la dirección de la pelota cambia)
-    const isBallTouchedByPlayer = this.ball.velocityX > 0;  // Si la pelota está viajando hacia la IA, el jugador la tocó.
+    const isBallTouchedByPlayer = this.ball.velocityX > 0;
 
-    // Variables que se usan en las predicciones
-    let finalPredictedPosition = this.ball.mesh.position.z; // Inicializamos con la posición actual de la pelota
+    let finalPredictedPosition = this.ball.mesh.position.z;
 
-    // Si la pelota fue tocada por el jugador, la IA empieza a moverse
     if (isBallTouchedByPlayer) {
-        // Predicción mejorada de la posición de la pelota en función de su velocidad, aceleración y tiempo
         const timeToImpact = Math.abs(this.ball.mesh.position.z - this.paddle2.mesh.position.z) / (Math.abs(this.ball.velocityY) + Math.abs(this.ball.velocityX)); // Calcular el tiempo de impacto
 
-        // Predicción de la posición de la pelota en el futuro
         const predictedPosition = this.ball.mesh.position.z + this.ball.velocityY * timeToImpact;
 
-        // Mejorar la predicción en función de la aceleración de la pelota (reduciendo el margen de error)
-        const errorMargin = Math.random() * 0.01 * (1 - Math.abs(this.ball.velocityX) * 0.02); // Menor margen de error con pelota rápida
-        finalPredictedPosition = predictedPosition + errorMargin; // Guardamos la predicción ajustada
+        const errorMargin = Math.random() * 0.01 * (1 - Math.abs(this.ball.velocityX) * 0.02);
+        finalPredictedPosition = predictedPosition + errorMargin;
 
-        // Aumentamos la zona de reacción dependiendo de la velocidad de la pelota (más amplia para pelotas rápidas)
-        const reactionDistance = 6 + Math.abs(this.ball.velocityX) * 0.7; // Reacción más rápida para pelotas rápidas
+        const reactionDistance = 6 + Math.abs(this.ball.velocityX) * 0.7;
 
-        // Ajuste de comportamiento si la pelota pasa cerca de la pala (mayor precisión)
         const closeEnoughToTouch = Math.abs(finalPredictedPosition - this.paddle2.mesh.position.z) < reactionDistance * 1.5; // Aumenta la zona de reacción si está cerca
 
-        // Si la pelota está cerca de la pala, hacemos una corrección hacia ella
         if (closeEnoughToTouch) {
-            // Movimiento más rápido hacia la pelota en caso de que pase cerca
             if (finalPredictedPosition > this.paddle2.mesh.position.z) {
-                this.paddle2.moveUp(this.aiSpeed); // Movimiento ajustado más rápido hacia arriba
+                this.paddle2.moveUp(this.aiSpeed);
             } else {
-                this.paddle2.moveDown(this.aiSpeed); // Movimiento ajustado más rápido hacia abajo
+                this.paddle2.moveDown(this.aiSpeed);
             }
         } else {
-            // Mover hacia la posición predicha de forma más precisa y rápida
             if (Math.abs(finalPredictedPosition - this.paddle2.mesh.position.z) < reactionDistance) {
                 if (finalPredictedPosition > this.paddle2.mesh.position.z) {
-                    this.paddle2.moveUp(this.aiSpeed); // Movimiento hacia arriba
+                    this.paddle2.moveUp(this.aiSpeed);
                 } else {
-                    this.paddle2.moveDown(this.aiSpeed); // Movimiento hacia abajo
+                    this.paddle2.moveDown(this.aiSpeed);
                 }
             }
         }
     }
 
-    // Lógica de limitación de la posición para evitar que la pala se salga del campo
     this.paddle2.limitPosition(-this.fieldHeight / 2, this.fieldHeight / 2);
 
-    // Detener la pala si la IA toca la pelota (la pelota va hacia el jugador)
-    if (this.ball.velocityX < 0) {  // Si la pelota está viajando hacia el jugador, la IA la tocó
-        // Aquí no movemos la pala, simplemente no aplicamos ningún movimiento a la pala
-        this.paddle2.mesh.position.z = this.paddle2.mesh.position.z;  // La posición se mantiene igual
+    if (this.ball.velocityX < 0) {
+        this.paddle2.mesh.position.z = this.paddle2.mesh.position.z; 
     }
 
-    // Ajustes adicionales después de que el jugador toque la pelota (post-touch)
     if (isBallTouchedByPlayer) {
-        // Usar la velocidad y dirección para ajustar la predicción
-        const adjustedPrediction = finalPredictedPosition * 1.05; // Modificar la predicción tras cada toque
+        const adjustedPrediction = finalPredictedPosition * 1.05;
         if (adjustedPrediction > this.paddle2.mesh.position.z) {
-            this.paddle2.moveUp(this.aiSpeed); // Movimiento hacia arriba si la predicción lo requiere
+            this.paddle2.moveUp(this.aiSpeed);
         } else {
-            this.paddle2.moveDown(this.aiSpeed); // Movimiento hacia abajo si la predicción lo requiere
+            this.paddle2.moveDown(this.aiSpeed);
         }
     }
   }
@@ -628,13 +561,12 @@ class Game {
   gameLoop() {
     if (this.isGameStarted) {
       this.update();
-      this.render(); // Asegúrate de seguir renderizando aunque el juego no haya comenzado
+      this.render();
       requestAnimationFrame(this.gameLoop.bind(this));
     }
   }
 }
 
-// Clase para las palas
 class Paddle {
   constructor(xPosition, fieldHeight) {
     const paddleGeometry = new THREE.BoxGeometry(2, 2, 15);
@@ -646,8 +578,7 @@ class Paddle {
     this.fieldHeight = fieldHeight;
     this.score = 0;
 
-    // Guardar la posición inicial
-    this.initialPosition = this.mesh.position.clone(); // Clonar la posición inicial
+    this.initialPosition = this.mesh.position.clone();
   }
 
   moveUp(speed) {
@@ -666,7 +597,7 @@ class Paddle {
   }
 
   resetPosition() {
-    this.mesh.position.copy(this.initialPosition); // Restablecer la posición inicial
+    this.mesh.position.copy(this.initialPosition);
   }
 }
 
@@ -677,26 +608,21 @@ class Ball {
     const ballMaterial = new THREE.MeshStandardMaterial({ color: 0xffff00 });
     this.mesh = new THREE.Mesh(ballGeometry, ballMaterial);
 
-    // Guardar siempre la velocidad inicial base
-    this.baseSpeed = initialSpeed; // Velocidad inicial permanente
-    this.initialSpeed = initialSpeed; // Velocidad que puede cambiar durante el juego
+    this.baseSpeed = initialSpeed;
+    this.initialSpeed = initialSpeed;
     this.resetPosition();
   }
 
   resetPosition() {
     this.mesh.position.set(0, 3, 0);
 
-    // Reiniciar la velocidad a la velocidad base
     this.initialSpeed = this.baseSpeed;
 
-    // Generar un ángulo aleatorio dentro de un arco máximo de 90 grados (±45 grados)
-    const angle = (Math.random() * Math.PI) / 2 - Math.PI / 4; // Rango: [-45°, 45°] en radianes
+    const angle = (Math.random() * Math.PI) / 2 - Math.PI / 4;
 
-    // Calcular las componentes de velocidad usando trigonometría
     const randomDirectionX = Math.cos(angle) * this.baseSpeed;
     const randomDirectionZ = Math.sin(angle) * this.baseSpeed;
 
-    // Asignar las componentes a las velocidades, manteniendo signos aleatorios
     this.velocityX = Math.random() < 0.5 ? randomDirectionX : -randomDirectionX;
     this.velocityY = Math.random() < 0.5 ? randomDirectionZ : -randomDirectionZ;
   }
@@ -720,7 +646,6 @@ class Ball {
   }
 }
 
-// Clase para el campo
 class Field {
   constructor(width, height) {
     const geometry = new THREE.PlaneGeometry(width, height);
@@ -730,8 +655,7 @@ class Field {
     });
     this.mesh = new THREE.Mesh(geometry, material);
 
-    // Rotar el campo para que esté alineado con la vista
-    this.mesh.rotation.x = -Math.PI / 2; // Girar el campo para que esté recto
+    this.mesh.rotation.x = -Math.PI / 2;
     this.mesh.position.y = 0;
   }
 }
@@ -740,107 +664,93 @@ class Walls {
   constructor(fieldWidth, fieldHeight, wallHeight, wallThickness) {
     const textureLoader = new THREE.TextureLoader();
     
-    // Cargar la textura principal para el muro
     const wallTexture = textureLoader.load(
-      '/static/assets/textures/stone.jpg', // Asegúrate de que la ruta sea correcta
+      '/static/assets/textures/stone.jpg',
       (texture) => {
         console.log('Textura principal cargada correctamente');
       },
-      undefined, // Opcional: función de progreso
+      undefined,
       (error) => {
         console.error('Error al cargar la textura principal:', error);
       }
     );
 
-    // Cargar el normal map
     const normalMap = textureLoader.load(
-      '/static/assets/textures/stone.jpg', // Asegúrate de que la ruta sea correcta
+      '/static/assets/textures/stone.jpg',
       (texture) => {
         console.log('Normal map cargado correctamente');
       },
-      undefined, // Opcional: función de progreso
+      undefined,
       (error) => {
         console.error('Error al cargar el normal map:', error);
       }
     );
 
-    // Material mejorado con textura, normalMap y otros parámetros
     const wallMaterial = new THREE.MeshStandardMaterial({
-      map: wallTexture,            // Usamos una textura para los muros
-      color: 0x808080,             // Azul oscuro para los muros
-      roughness: 0.4,              // Rugosidad para no ser tan brillante
-      metalness: 0.2,              // Le damos algo de aspecto metálico
-      emissive: 0x333333,          // Le da un resplandor suave (si lo quieres)
-      normalMap: normalMap,        // Mapa normal para más detalles
+      map: wallTexture,            
+      color: 0x808080,             
+      roughness: 0.4,              
+      metalness: 0.2,              
+      emissive: 0x333333,          
+      normalMap: normalMap,        
     });
 
-    // Muro superior
     const topWallGeometry = new THREE.BoxGeometry(
-      fieldWidth,          // Ancho del muro
-      wallThickness * 3,   // Hacemos el grosor más grueso para más volumen
-      wallHeight * 1     // Aumentamos la altura para darle más presencia
+      fieldWidth,          
+      wallThickness * 3,   
+      wallHeight * 1     
     );
     this.topWall = new THREE.Mesh(topWallGeometry, wallMaterial);
     this.topWall.position.set(
       0,
-      wallHeight / 2 + wallThickness,  // Posición Y centrada, ajustada por grosor
-      fieldHeight / 2 + wallThickness  // Posición Z para el muro superior
+      wallHeight / 2 + wallThickness,  
+      fieldHeight / 2 + wallThickness  
     );
     this.topWall.castShadow = true;
     this.topWall.receiveShadow = true;
 
-    // Muro inferior
     const bottomWallGeometry = new THREE.BoxGeometry(
-      fieldWidth,          // Ancho del muro
-      wallThickness * 3,   // Hacemos el grosor más grueso
-      wallHeight * 1     // Aumentamos la altura para darle más presencia
+      fieldWidth,          
+      wallThickness * 3,   
+      wallHeight * 1     
     );
     this.bottomWall = new THREE.Mesh(bottomWallGeometry, wallMaterial);
     this.bottomWall.position.set(
       0,
-      wallHeight / 2 + wallThickness, // Posición Y centrada, ajustada por grosor
-      -fieldHeight / 2 - wallThickness // Posición Z para el muro inferior
+      wallHeight / 2 + wallThickness, 
+      -fieldHeight / 2 - wallThickness 
     );
     this.bottomWall.castShadow = true;
     this.bottomWall.receiveShadow = true;
 
-    // Agregar los muros a la escena (suponiendo que ya has creado la escena en otro lugar)
     scene.add(this.topWall);
     scene.add(this.bottomWall);
   }
 }
 
-// Crear la escena y añadir luces
 const scene = new THREE.Scene();
 
-// Crear una luz direccional
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1); // Luz blanca
-directionalLight.position.set(5, 5, 5); // Posición de la luz
-directionalLight.castShadow = true; // Habilitar sombras
+const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+directionalLight.position.set(5, 5, 5);
+directionalLight.castShadow = true;
 scene.add(directionalLight);
 
-// Crear una luz ambiental
-const ambientLight = new THREE.AmbientLight(0x404040, 0.5); // Luz ambiental suave
+const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
 scene.add(ambientLight);
 
-// Crear una luz puntual (opcional)
 const pointLight = new THREE.PointLight(0xFFFFFF, 1, 100);
 pointLight.position.set(0, 10, 0);
 pointLight.castShadow = true;
 scene.add(pointLight);
 
-// Añadir los muros a la escena
 const walls = new Walls(100, 50, 20, 5);
-
-
-
 
 function getCSRFToken() {
   const csrfToken = document.cookie
     .split('; ')
     .find(row => row.startsWith('csrftoken='))
     ?.split('=')[1];
-  return csrfToken || ''; // Return the token or empty string if not found
+  return csrfToken || '';
 }
 
 const csrfToken = getCSRFToken();
