@@ -19,7 +19,9 @@ function event_handler_double_play_btn(event) {
   // Add query parameter for Player 1 without affecting Player 2's state
   const urlParams = new URLSearchParams(window.location.search);
   urlParams.set('anonymous', 'true');
-  window.history.pushState({}, '', `${location.pathname}?${urlParams}`);
+  let url = `${location.pathname}?${urlParams}`;
+  //window.history.pushState({}, '', url);
+  Router.get(url);
   //window.location.reload();
   return;
 }
@@ -28,7 +30,9 @@ function event_handler_double_play_btn2(event) {
   // Add query parameter for Player 1 without affecting Player 2's state
   const urlParams = new URLSearchParams(window.location.search);
   urlParams.set('anonymous2', 'true');
-  window.history.pushState({}, '', `${location.pathname}?${urlParams}`);
+  let url = `${location.pathname}?${urlParams}`;
+  //window.history.pushState({}, '', `${location.pathname}?${urlParams}`);
+  Router.get(url);
   //window.location.reload();
   return;
 }

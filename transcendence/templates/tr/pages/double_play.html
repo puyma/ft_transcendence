@@ -12,11 +12,12 @@
           {% elif player1 == "guest" %}
             <span class="text-white mb-2">Hello, Guest</span>
           {% else %}
-            <button id="playAnonymousBtn" class="btn btn-secondary btn-lg w-100 mt-3">PLAY AS GUEST</button>
-            <a href="{% url 'signup' %}?next={% url 'double_play' %}" class="btn btn-light btn-lg w-100">REGISTER</a>
+            <button id="playAnonymousBtn" class="btn btn-secondary btn-lg w-100 mt-3" data-ajax="true">PLAY AS GUEST</button>
+			<a href="{% url 'signup' %}?next={% url 'double_play' %}?{{ request.META.QUERY_STRING }}" class="btn btn-light btn-lg w-100" data-ajax="true">REGISTER</a>
+			{{ request.META.QUERY_STRING }}
             <p class="mt-4">
               Already have an account? 
-              <a href="{% url 'login' %}?next={% url 'double_play' %}" class="link-primary">Log in</a>
+			  <a href="{% url 'login' %}?next={% url 'double_play' %}{{ request.META.QUERY_STRING }}" class="link-primary" data-ajax="true">Log in</a>
             </p>
           {% endif %}
         </div>
@@ -32,7 +33,9 @@
         data-players="{{ player1 }},{{ player2 }}"
         class="btn btn-sm my-3 px-4 py-3"
         style="font-size: 30px; background-color: rgb(49, 99, 209); border: none; border-radius: 15px;" 
-        {% if not play_enabled %}disabled{% endif %}>
+        {% if not play_enabled %}
+		  disabled
+		{% endif %}>
         PLAY
         <i class="fa-solid fa-circle-play"></i>
       </button>
@@ -49,16 +52,46 @@
           {% elif player2 %}
             <span class="text-white mb-2">Hello, {{ player2 }}</span>
           {% else %}
-            <button id="playAnonymousBtn2" class="btn btn-secondary btn-lg w-100 mt-3">PLAY AS GUEST2</button>
-            <form method="POST" class="mb-4">
+            <button id="playAnonymousBtn2" 
+                    class="btn btn-secondary btn-lg w-100 mt-3" 
+                    {% if not player1 %}
+                    disabled
+                    {% endif %} 
+                    data-ajax="true">
+                PLAY AS GUEST2
+            </button>
+            <form method="post" 
+                  class="mb-4" 
+                  data-ajax="true">
               {% csrf_token %}
               <div class="mb-3">
-                <input type="text" name="player2_username" class="form-control form-control-lg" placeholder="Username" required>
+                <input type="text" 
+                       name="player2_username" 
+                       class="form-control form-control-lg" 
+                       placeholder="Username" 
+                       {% if not player1 %}
+                       disabled
+                       {% endif %} 
+                       required>
               </div>
               <div class="mb-3">
-                <input type="password" name="player2_password" class="form-control form-control-lg" placeholder="Password" required>
+                <input type="password" 
+                       name="player2_password" 
+                       class="form-control form-control-lg" 
+                       placeholder="Password" 
+                       {% if not player1 %}
+                       disabled
+                       {% endif %} 
+                       required>
               </div>
-              <button type="submit" class="btn btn-primary btn-lg w-100">VERIFY PLAYER 2</button>
+              <button type="submit" 
+                      class="btn btn-primary btn-lg w-100" 
+                      {% if not player1 %}
+                      disabled
+                      {% endif %} 
+                      data-ajax="true">
+                  VERIFY PLAYER 2
+              </button>
             </form>
           {% endif %}
         </div>
