@@ -68,10 +68,10 @@ urlpatterns = [
     ),
     path("profile/stats/", views.StatsView.as_view(), name="stats"),
     path("profile/friends/", views.FriendsView.as_view(), name="friends"),
-    path(
-        "profile/<str:username>/",
-        views.ProfileOtherView.as_view(),
-    ),
+    # path(
+    #     "profile/<str:username>/",
+    #     views.ProfileOtherView.as_view(),
+    # ),
     path(
         "settings/",
         views.ProfileView.as_view(),
