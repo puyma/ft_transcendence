@@ -72,11 +72,6 @@ class SignupForm(auth_forms.UserCreationForm):
 
 class UpdateUserForm(auth_forms.UserChangeForm):
 
-    username = forms.CharField(
-        max_length=100,
-        required=True,
-        widget=forms.TextInput(attrs={"class": "form-control"}),
-    )
     email = forms.EmailField(
         required=False,
         widget=forms.EmailInput(attrs={"class": "form-control"}),
@@ -94,13 +89,13 @@ class UpdateUserForm(auth_forms.UserChangeForm):
 
     class Meta:
         model = auth_models.User
-        fields = ["username", "email", "first_name", "last_name"]
+        fields = ["email", "first_name", "last_name"]
     
-    def clean_username(self):
-        username = self.cleaned_data.get("username")
-        if auth_models.User.objects.exclude(pk=self.instance.pk).filter(username=username).exists():
-            raise forms.ValidationError("This username is already in use.")
-        return username
+    # def clean_username(self):
+    #     username = self.cleaned_data.get("username")
+    #     if auth_models.User.objects.exclude(pk=self.instance.pk).filter(username=username).exists():
+    #         raise forms.ValidationError("This username is already in use.")
+    #     return username
 
     def clean_email(self):
         email = self.cleaned_data.get("email")
